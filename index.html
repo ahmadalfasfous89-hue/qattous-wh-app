@@ -927,20 +927,139 @@
       display: block;
     }
 
-    @media (max-width: 640px) {
-      .brand-logo {
-        height: 34px;
-      }
+    /* ============================================================
+       MOBILE / PDA LAYER  (phones, Android PDA, APK)
+       Desktop layout above is untouched. Everything below only
+       activates on narrow screens, so the website stays as-is.
+       ============================================================ */
+    .m-only { display: none; }
+    .bottom-nav { display: none; }
 
-      .header-inner {
-        padding: 8px 12px;
-      }
-
-      .scan-input {
-        font-size: 0.95rem;
-        padding: 11px 12px;
-      }
+    /* Result cards (generated from the same data as the tables) */
+    .rc {
+      background: #fff;
+      border: 1px solid #e6dfd5;
+      border-inline-start: 5px solid var(--q-bronze);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(21,21,21,.05);
     }
+    .rc.has-wh { border-inline-start-color: #1f6fb2; }
+    .rc.star   { border-inline-start-color: #16794b; background: #f5fbf7; }
+    .rc-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .rc-title { font-weight:800; font-size:1.02rem; color:var(--q-onyx); line-height:1.25; }
+    .rc-sub { font-size:.8rem; color:var(--q-muted); margin-top:2px; }
+    .rc-code { font-family:'Roboto',monospace; font-weight:800; font-size:.92rem; letter-spacing:.2px; }
+    .rc-size { background:var(--q-charcoal); color:#fff; font-weight:900; font-size:1rem;
+               padding:6px 12px; border-radius:10px; white-space:nowrap; }
+    .rc-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+    .chip { display:inline-flex; align-items:center; gap:5px; padding:6px 11px; border-radius:999px;
+            font-size:.88rem; font-weight:800; background:#f1ede6; color:var(--q-charcoal); }
+    .chip b { font-family:'Roboto',sans-serif; font-size:1rem; }
+    .chip.wh   { background:#e3f0fb; color:#0c5489; }
+    .chip.bin  { background:#f5efe8; color:#745736; cursor:pointer; }
+    .chip.good { background:#e7f6ee; color:#16794b; }
+    .chip.warn { background:#fff3cd; color:#8a5a00; }
+    .chip.zero { background:#f3f3f3; color:#aaa; font-weight:600; }
+    .rc-label { font-size:.74rem; font-weight:800; color:var(--q-muted); margin:10px 0 4px; }
+    .rc-star { margin-top:10px; padding:9px 12px; border-radius:10px; background:#e7f6ee; color:#16794b;
+               font-weight:800; font-size:.9rem; }
+    .rc-star.transfer { background:#fff3cd; color:#8a5a00; }
+    .rc-star.none { background:#f3f3f3; color:#777; font-weight:600; }
+
+    .m-summary { background:linear-gradient(135deg,#3d3d3d,#1c1c1c); color:#fff; border-radius:16px;
+                 padding:14px 16px; margin-bottom:12px; border-bottom:4px solid var(--q-bronze); }
+    .m-summary .t { font-size:1.05rem; font-weight:800; }
+    .m-summary .s { font-size:.82rem; color:#e9dcc9; margin-top:3px; }
+    .m-kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
+    .m-kpi { background:rgba(255,255,255,.1); border-radius:12px; padding:8px 6px; text-align:center; }
+    .m-kpi b { display:block; font-size:1.35rem; font-family:'Roboto',sans-serif; }
+    .m-kpi span { font-size:.7rem; color:#d8c6b0; font-weight:700; }
+
+    /* Mode switch = compact segmented control instead of 3 big cards */
+    .m-seg { display:none; }
+
+    @media (max-width: 760px) {
+      .m-only { display:block; }
+      .d-only { display:none !important; }
+
+      body { padding-bottom: 76px; font-size: 16px; }
+      .container { padding: 10px 10px 90px; }
+
+      /* Header: single slim row, secondary controls move into the Account sheet */
+      .proto-bar { display:none; }
+      .top-header { border-bottom-width: 2px; }
+      .header-inner { padding: 8px 12px; flex-wrap: nowrap; }
+      .brand-logo { height: 32px; }
+      .brand-divider, .brand-titles p { display:none; }
+      .brand-titles h1 { font-size: .92rem; }
+      .header-controls .btn, .header-controls .user-pill { display:none; }
+      .header-controls #btnMenu { display:inline-flex !important; }
+      .main-nav { display:none; }
+
+      /* Segmented mode control */
+      .mode-grid { display:none; }
+      .m-seg { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
+      .m-seg button { border:2px solid #e0d6c8; background:#fff; border-radius:12px; padding:9px 4px;
+                      font-family:inherit; font-weight:800; font-size:.8rem; color:var(--q-charcoal);
+                      display:flex; flex-direction:column; align-items:center; gap:2px; min-height:56px; }
+      .m-seg button .ic { font-size:1.25rem; }
+      .m-seg button.active { background:var(--q-bronze); border-color:var(--q-bronze); color:#fff; }
+      .m-seg button.disabled { opacity:.35; }
+
+      /* Scanner box: compact, sticky, thumb friendly */
+      .scanner-box { position: sticky; top: 0; z-index: 60; padding: 12px; margin: 0 -2px 12px;
+                     border-radius: 16px; }
+      .scanner-top { display:none; }
+      .quick-samples { display:none; }
+      .input-row { display:grid; grid-template-columns: 1fr 56px; gap:8px; }
+      .scan-input-wrap { grid-column: 1 / -1; min-width:0; }
+      .scan-input { font-size: 1.1rem; padding: 15px 14px; border-radius: 12px; }
+      .input-row .btn { min-height: 52px; font-size: 1rem; border-radius: 12px; }
+      .input-row .btn-bronze { grid-column: 1; }
+      .input-row .btn span + span { display:inline; }
+      .btn-cam { grid-column: 2; }
+      .input-row .btn-clear { display:none; }
+      .suggest-dropdown { max-height: 55vh; }
+      .suggest-item { padding: 14px; }
+
+      /* Cards replace wide tables */
+      .table-wrap.has-cards { display:none; }
+      .card { padding: 12px; border-radius: 14px; }
+      .card-header { margin-bottom: 8px; padding-bottom: 8px; }
+      .card-title { font-size: .95rem; }
+
+      /* Bottom navigation (thumb zone) */
+      .bottom-nav { position:fixed; inset-inline:0; bottom:0; z-index:120; display:flex; background:#fff;
+                    border-top:2px solid var(--q-bronze); box-shadow:0 -4px 18px rgba(0,0,0,.12);
+                    padding-bottom: env(safe-area-inset-bottom); }
+      .bottom-nav button { flex:1; border:none; background:none; padding:8px 2px 7px; font-family:inherit;
+                           font-size:.7rem; font-weight:800; color:var(--q-muted);
+                           display:flex; flex-direction:column; align-items:center; gap:2px; min-height:58px; }
+      .bottom-nav button .ic { font-size:1.35rem; }
+      .bottom-nav button.active { color:var(--q-bronze); background:rgba(144,111,73,.08); }
+
+      .filter-grid { grid-template-columns: 1fr; }
+      .modal-card { padding: 16px; border-radius: 18px; }
+      .btn { min-height: 44px; }
+      .btn-sm { min-height: 40px; padding: 8px 12px; }
+    }
+
+    /* Account / menu sheet (mobile) */
+    .sheet-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:300; display:none; }
+    .sheet-backdrop.open { display:block; }
+    .sheet { position:fixed; inset-inline:0; bottom:0; background:#fff; border-radius:22px 22px 0 0;
+             padding:16px 16px calc(20px + env(safe-area-inset-bottom)); z-index:310; max-height:85vh; overflow:auto;
+             transform:translateY(105%); transition:transform .25s ease; border-top:5px solid var(--q-bronze); }
+    .sheet.open { transform:translateY(0); }
+    .sheet h3 { font-size:1rem; margin-bottom:10px; }
+    .sheet .row { display:flex; align-items:center; justify-content:space-between; gap:10px;
+                  padding:13px 4px; border-bottom:1px solid #f0ebe3; font-weight:700; }
+    .sheet .acc { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:8px 0 12px; }
+    .sheet .acc button { padding:13px 8px; border-radius:12px; border:2px solid #e0d6c8; background:#fff;
+                         font-family:inherit; font-weight:800; font-size:.85rem; }
+    .sheet .acc button.active { background:var(--q-bronze); color:#fff; border-color:var(--q-bronze); }
   </style>
 </head>
 
@@ -970,12 +1089,15 @@
         <div class="brand-divider"></div>
         <div class="brand-titles">
           <h1 data-i18n="app_title">نظام المستودعات وتوزيع السيري الذكي</h1>
-          <p>QATTOUS GROUP • LA FAMILIA &amp; WAREHOUSE PDA SYSTEM <span id="lastSyncBadge" style="color:#16794b; margin-inline-start:6px;"></span></p>
+          <p>QATTOUS GROUP • LA FAMILIA &amp; WAREHOUSE PDA SYSTEM <span id="lastSyncBadge"
+              style="color:#16794b; margin-inline-start:6px;"></span></p>
         </div>
       </div>
 
       <div class="header-controls">
-        <button class="btn btn-bronze btn-sm" onclick="refreshRemoteCloudData(true)" id="btnRemoteRefresh" title="سحب أحدث أرقام ولوكيشنات من السحابة عبر 4G / Wi-Fi">
+        <button class="btn btn-charcoal btn-sm" id="btnMenu" style="display:none;" onclick="openSheet()" aria-label="menu">☰ <span id="menuUserShort">Admin</span></button>
+        <button class="btn btn-bronze btn-sm" onclick="refreshRemoteCloudData(true)" id="btnRemoteRefresh"
+          title="سحب أحدث أرقام ولوكيشنات من السحابة عبر 4G / Wi-Fi">
           🔄 <span data-i18n="btn_remote_refresh">تحديث الداتا (Refresh)</span>
         </button>
         <div class="user-pill">
@@ -1013,8 +1135,15 @@
     <!-- ==================== VIEW 1: SCANNER & INQUIRY ==================== -->
     <section id="scannerView" class="view-section active">
 
-      <!-- 3 Check Modes on Homepage -->
-      <div class="mode-grid">
+      <!-- Mobile: compact segmented mode control -->
+      <div class="m-seg" id="mSeg">
+        <button id="mSeg_wh_only" onclick="selectCheckMode('wh_only')"><span class="ic">🏭</span><span data-mi="seg_wh">مستودع</span></button>
+        <button id="mSeg_stores_only" onclick="selectCheckMode('stores_only')"><span class="ic">🏬</span><span data-mi="seg_st">محلات</span></button>
+        <button id="mSeg_wh_stores" class="active" onclick="selectCheckMode('wh_stores')"><span class="ic">🔄</span><span data-mi="seg_both">الاثنان</span></button>
+      </div>
+
+      <!-- 3 Check Modes on Homepage (desktop) -->
+      <div class="mode-grid d-only">
         <button class="mode-card" id="modeCard_wh_only" onclick="selectCheckMode('wh_only')">
           <div class="mode-icon">🏭</div>
           <div class="mode-info">
@@ -1066,11 +1195,11 @@
           <button class="btn btn-bronze" onclick="triggerScanFromInput()">
             <span>🔍</span> <span data-i18n="btn_manual_search">فحص / بحث يدوي</span>
           </button>
-          <button class="btn btn-outline" style="background:#2b2b2b; color:#fff; border-color:#555;"
-            onclick="toggleCameraScanner()">
-            <span>📷</span> <span data-i18n="btn_camera">مسح بالكاميرا</span>
+          <button class="btn btn-outline btn-cam" style="background:#2b2b2b; color:#fff; border-color:#555;"
+            onclick="toggleCameraScanner()" aria-label="camera">
+            <span>📷</span> <span class="d-only" data-i18n="btn_camera">مسح بالكاميرا</span>
           </button>
-          <button class="btn btn-outline" style="background:#2b2b2b; color:#fff; border-color:#555;"
+          <button class="btn btn-outline btn-clear" style="background:#2b2b2b; color:#fff; border-color:#555;"
             onclick="clearScanInput()">
             <span>✖</span>
           </button>
@@ -1210,27 +1339,33 @@
           </div>
         </div>
         <p style="font-size:0.86rem; color:var(--q-muted); margin-bottom:14px;" data-i18n="data_sync_desc">
-          يمكنك <strong>سحب وإفلات (Drag &amp; Drop)</strong> ملفات الإكسل المحدثة مباشرة في المربع أدناه (أو الضغط لاختيارها من جهازك) ليتم قراءتها وتحديث الرابط الخارجي وجميع الأجهزة فوراً!
+          يمكنك <strong>سحب وإفلات (Drag &amp; Drop)</strong> ملفات الإكسل المحدثة مباشرة في المربع أدناه (أو الضغط
+          لاختيارها من جهازك) ليتم قراءتها وتحديث الرابط الخارجي وجميع الأجهزة فوراً!
         </p>
 
         <!-- Drag & Drop Excel Files Zone -->
-        <div
-          id="excelDropZone"
+        <div id="excelDropZone"
           style="border: 3px dashed var(--q-bronze); background: var(--q-bronze-light); border-radius: 14px; padding: 28px 20px; text-align: center; cursor: pointer; margin-bottom: 18px; transition: all 0.2s;"
           onclick="document.getElementById('excelFileInput').click()"
           ondragover="event.preventDefault(); this.style.background='#eadbc8'; this.style.borderColor='#745736';"
           ondragleave="this.style.background='var(--q-bronze-light)'; this.style.borderColor='var(--q-bronze)';"
-          ondrop="handleExcelFilesDrop(event)"
-        >
-          <input type="file" id="excelFileInput" multiple accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleExcelFilesSelect(this.files)" />
+          ondrop="handleExcelFilesDrop(event)">
+          <input type="file" id="excelFileInput" multiple accept=".xlsx,.xls,.csv" style="display:none;"
+            onchange="handleExcelFilesSelect(this.files)" />
           <div style="font-size: 2.5rem; margin-bottom: 8px;">📂📥</div>
           <h3 style="color: var(--q-onyx); font-size: 1.05rem; margin-bottom: 4px;">
             اسحب وأفلت ملفات الإكسل هنا للتحديث الفوري (Drag &amp; Drop Excel Files Here)
           </h3>
           <p style="font-size: 0.82rem; color: var(--q-charcoal); font-weight: 600;">
-            أو اضغط هنا لاختيار ملف واحد أو أكثر: <code style="background:#fff; padding:2px 6px; border-radius:4px;">Bin Contents</code> • <code style="background:#fff; padding:2px 6px; border-radius:4px;">Item Variant Inv</code> • <code style="background:#fff; padding:2px 6px; border-radius:4px;">Transfer Line</code> • <code style="background:#fff; padding:2px 6px; border-radius:4px;">Retail Item List</code> • <code style="background:#fff; padding:2px 6px; border-radius:4px;">Variant Registration</code>
+            أو اضغط هنا لاختيار ملف واحد أو أكثر: <code
+              style="background:#fff; padding:2px 6px; border-radius:4px;">Bin Contents</code> • <code
+              style="background:#fff; padding:2px 6px; border-radius:4px;">Item Variant Inv</code> • <code
+              style="background:#fff; padding:2px 6px; border-radius:4px;">Transfer Line</code> • <code
+              style="background:#fff; padding:2px 6px; border-radius:4px;">Retail Item List</code> • <code
+              style="background:#fff; padding:2px 6px; border-radius:4px;">Variant Registration</code>
           </p>
-          <div id="dropUploadStatus" style="margin-top: 10px; font-weight: 800; font-size: 0.88rem; color: var(--q-success);"></div>
+          <div id="dropUploadStatus"
+            style="margin-top: 10px; font-weight: 800; font-size: 0.88rem; color: var(--q-success);"></div>
         </div>
 
         <div id="sheetsListContainer" class="table-wrap"></div>
@@ -1330,8 +1465,43 @@
     </div>
   </div>
 
+  <!-- ===== Mobile bottom navigation (thumb zone) ===== -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="active" data-view="scannerView" onclick="switchView('scannerView')"><span class="ic">🔍</span><span data-mi="nav_scan">فحص</span></button>
+    <button id="bnReport" data-view="reportView" onclick="switchView('reportView')"><span class="ic">📊</span><span data-mi="nav_rep">ريبورت</span></button>
+    <button id="bnData" data-view="dataView" onclick="switchView('dataView')"><span class="ic">🔄</span><span data-mi="nav_data">تحديث</span></button>
+    <button id="bnUsers" data-view="usersView" onclick="switchView('usersView')"><span class="ic">👥</span><span data-mi="nav_users">اليوزرات</span></button>
+    <button onclick="openSheet()"><span class="ic">☰</span><span data-mi="nav_more">المزيد</span></button>
+  </nav>
+
+  <!-- ===== Mobile account / settings sheet ===== -->
+  <div class="sheet-backdrop" id="sheetBackdrop" onclick="closeSheet()"></div>
+  <div class="sheet" id="accountSheet">
+    <h3 id="sheetUserLine">—</h3>
+    <div class="row">
+      <span data-mi="sh_sync">آخر تحديث للبيانات</span>
+      <b id="sheetSync" style="font-family:Roboto; font-size:.82rem; color:#16794b;">—</b>
+    </div>
+    <div class="row" style="cursor:pointer;" onclick="refreshRemoteCloudData(true); closeSheet();">
+      <span>🔄 <span data-mi="sh_refresh">تحديث الداتا الآن</span></span><span>›</span>
+    </div>
+    <div class="row" style="cursor:pointer;" onclick="toggleLanguage(); closeSheet();">
+      <span>🌐 <span data-mi="sh_lang">اللغة: عربي / English</span></span><span>›</span>
+    </div>
+    <div class="row" style="cursor:pointer;" onclick="closeSheet(); openLoginModal();">
+      <span>🔐 <span data-mi="sh_login">تسجيل دخول بحساب آخر</span></span><span>›</span>
+    </div>
+    <h3 style="margin-top:14px;" data-mi="sh_quick">تبديل سريع للحساب (للتجربة)</h3>
+    <div class="acc">
+      <button data-u="admin" onclick="quickSwitchUser('admin','1234'); closeSheet();">👑 Admin</button>
+      <button data-u="supervisor" onclick="quickSwitchUser('supervisor','1234'); closeSheet();">🛡️ Supervisor</button>
+      <button data-u="wh_user" onclick="quickSwitchUser('wh_user','1234'); closeSheet();">🏭 WH User</button>
+      <button data-u="store_user" onclick="quickSwitchUser('store_user','1234'); closeSheet();">🏬 Store User</button>
+    </div>
+    <button class="btn btn-outline" style="width:100%;" onclick="closeSheet()" data-mi="sh_close">إغلاق</button>
+  </div>
+
   <script>
-    // ==================== STATE & I18N ====================
     let currentLang = 'ar';
     let currentUser = {
       username: 'admin',
@@ -1446,6 +1616,7 @@
       });
       if (lastScanResponse) renderScanResponse(lastScanResponse);
       if (currentReportData) renderReportTables();
+      applyMobileI18n();
     }
 
     // ==================== PERMISSIONS & NAVIGATION ====================
@@ -1461,12 +1632,22 @@
       document.getElementById('navDataTab').style.display = p.manage_data ? 'flex' : 'none';
       document.getElementById('navUsersTab').style.display = p.manage_users ? 'flex' : 'none';
 
+      // Mobile bottom-nav + header chip follow the same permissions
+      const bnR = document.getElementById('bnReport'), bnD = document.getElementById('bnData'), bnU = document.getElementById('bnUsers');
+      if (bnR) bnR.style.display = p.generate_reports ? 'flex' : 'none';
+      if (bnD) bnD.style.display = p.manage_data ? 'flex' : 'none';
+      if (bnU) bnU.style.display = p.manage_users ? 'flex' : 'none';
+      const ms = document.getElementById('menuUserShort');
+      if (ms) ms.textContent = (currentUser.display_name || '').split('(')[0].trim().slice(0, 14) || currentUser.username;
+
       // Homepage 3 check modes availability
       const modes = ['wh_only', 'stores_only', 'wh_stores'];
       modes.forEach(m => {
         const card = document.getElementById('modeCard_' + m);
         const allowed = !!p['mode_' + m];
         card.classList.toggle('disabled', !allowed);
+        const sg = document.getElementById('mSeg_' + m);
+        if (sg) sg.classList.toggle('disabled', !allowed);
       });
 
       // Ensure currentCheckMode is allowed; otherwise fallback to first allowed mode
@@ -1476,7 +1657,10 @@
       }
       modes.forEach(m => {
         document.getElementById('modeCard_' + m).classList.toggle('active', m === currentCheckMode);
+        const sg = document.getElementById('mSeg_' + m);
+        if (sg) sg.classList.toggle('active', m === currentCheckMode);
       });
+      applyMobileI18n();
 
       // Bin sample chips visibility
       document.getElementById('sampleBinChip1').style.display = p.scan_bin ? 'inline-block' : 'none';
@@ -1502,6 +1686,8 @@
       currentCheckMode = mode;
       ['wh_only', 'stores_only', 'wh_stores'].forEach(m => {
         document.getElementById('modeCard_' + m).classList.toggle('active', m === mode);
+        const sg = document.getElementById('mSeg_' + m);
+        if (sg) sg.classList.toggle('active', m === mode);
       });
       if (lastScanResponse) renderScanResponse(lastScanResponse);
     }
@@ -1512,6 +1698,10 @@
       document.querySelectorAll('.nav-tab').forEach(t => {
         t.classList.toggle('active', t.getAttribute('data-view') === viewId);
       });
+      document.querySelectorAll('#bottomNav button[data-view]').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-view') === viewId);
+      });
+      window.scrollTo({ top: 0 });
       if (viewId === 'reportView' && !currentReportData) loadDistributionReport();
       if (viewId === 'dataView') loadSheetsMetadata();
       if (viewId === 'usersView') loadUsersList();
@@ -1919,7 +2109,7 @@
               return;
             }
           }
-        } catch (e) {}
+        } catch (e) { }
       }
       // Fallback / 4G Cloud Users check
       if (!cloudUsers) await refreshRemoteCloudData(false);
@@ -2425,6 +2615,118 @@
       `;
     }
 
+    // ==================== MOBILE / PDA CARD RENDERING ====================
+    // Same data as the desktop tables, laid out as one card per barcode.
+    const MI18N = {
+      ar: { seg_wh:'مستودع', seg_st:'محلات', seg_both:'الاثنان', nav_scan:'فحص', nav_rep:'ريبورت', nav_data:'تحديث', nav_users:'اليوزرات', nav_more:'المزيد',
+            sh_sync:'آخر تحديث للبيانات', sh_refresh:'تحديث الداتا الآن', sh_lang:'اللغة: عربي / English', sh_login:'تسجيل دخول بحساب آخر', sh_quick:'تبديل سريع للحساب (للتجربة)', sh_close:'إغلاق',
+            wh:'المستودع', transit:'بالطريق', stores:'المحلات', bins:'الأرفف (Bin)', nobin:'غير موجود بأي رف', send:'أرسل إلى', hold:'يبقى بالمستودع', none:'لا إجراء',
+            barcodes:'باركود', total:'الإجمالي', inwh:'في المستودع', instores:'في المحلات', pcs:'قطعة', moreitems:'كل باركودات الآيتم', exp:'تحميل إكسل', items:'أصناف', skus:'باركود', to:'أمر نقل' },
+      en: { seg_wh:'Warehouse', seg_st:'Stores', seg_both:'Both', nav_scan:'Scan', nav_rep:'Report', nav_data:'Update', nav_users:'Users', nav_more:'More',
+            sh_sync:'Data last updated', sh_refresh:'Refresh data now', sh_lang:'Language: English / عربي', sh_login:'Sign in as another user', sh_quick:'Quick account switch (testing)', sh_close:'Close',
+            wh:'Warehouse', transit:'In transit', stores:'Stores', bins:'Bins', nobin:'Not in any bin', send:'Send to', hold:'Keep in warehouse', none:'No action',
+            barcodes:'barcodes', total:'Total', inwh:'In warehouse', instores:'In stores', pcs:'pcs', moreitems:'All barcodes of this item', exp:'Download Excel', items:'items', skus:'barcodes', to:'Transfer order' }
+    };
+    function mt(k) { return (MI18N[currentLang] || MI18N.ar)[k] || k; }
+
+    function applyMobileI18n() {
+      document.querySelectorAll('[data-mi]').forEach(el => { el.textContent = mt(el.getAttribute('data-mi')); });
+    }
+
+    function openSheet() {
+      const u = currentUser || {};
+      document.getElementById('sheetUserLine').textContent = `${u.display_name || ''}  •  ${String(u.role || '').toUpperCase()}`;
+      document.getElementById('sheetSync').textContent = (cloudBundle && cloudBundle.updated_at) ? cloudBundle.updated_at : '—';
+      document.querySelectorAll('#accountSheet .acc button').forEach(b => b.classList.toggle('active', b.getAttribute('data-u') === u.username));
+      document.getElementById('sheetBackdrop').classList.add('open');
+      document.getElementById('accountSheet').classList.add('open');
+    }
+    function closeSheet() {
+      document.getElementById('sheetBackdrop').classList.remove('open');
+      document.getElementById('accountSheet').classList.remove('open');
+    }
+
+    function storeShort(code) { const s = STORE_COLUMNS.find(x => x.code === code); return s ? s.short : code; }
+
+    // One card per barcode. opts: {showWH, showStores, showEligible}
+    function buildCardHtml(r, opts) {
+      const { showWH, showStores, showEligible } = opts;
+      const bins = (r.all_bins && r.all_bins.length) ? r.all_bins : [];
+      const whQty = Number(r.wh_oh || 0);
+      const stOH = r.oh_stores || {};
+      const storeChips = showStores
+        ? STORE_COLUMNS.filter(s => Number(stOH[s.code] || 0) > 0).map(s => {
+            const win = showEligible && r.winner_store === s.code && (r.eligible_mode === 'wh' || r.eligible_mode === 'transfer');
+            const tr = Number((r.tr_added_stores || {})[s.code] || 0);
+            return `<span class="chip ${win ? 'good' : ''}">${s.short} <b>${stOH[s.code]}</b>${tr > 0 ? `<small style="color:#b86b11">(+${tr})</small>` : ''}</span>`;
+          }).join('')
+        : '';
+      const inTr = Number(r.in_transit || 0);
+
+      let starHtml = '';
+      if (showEligible) {
+        const m = r.eligible_mode;
+        if (m === 'wh') starHtml = `<div class="rc-star">⭐ ${mt('send')}: ${r.eligible_summary}</div>`;
+        else if (m === 'transfer') starHtml = `<div class="rc-star transfer">${r.eligible_summary}</div>`;
+        else if (m === 'wh_full') starHtml = `<div class="rc-star none">${r.eligible_summary}</div>`;
+      }
+
+      const sizeTxt = (r.color_size || '').trim();
+      return `
+        <div class="rc ${showEligible && r.eligible_mode === 'wh' ? 'star' : (whQty > 0 ? 'has-wh' : '')}">
+          <div class="rc-top">
+            <div style="min-width:0">
+              <div class="rc-title">${r.description || r.serial}</div>
+              <div class="rc-sub">${[r.brand, r.dept, r.art_no].filter(Boolean).join(' • ')}</div>
+              <div class="rc-sub rc-code" style="color:#0c5489;cursor:pointer" onclick="executeLookup('${r.barcode}')">${r.barcode}</div>
+            </div>
+            ${sizeTxt ? `<div class="rc-size">${sizeTxt}</div>` : ''}
+          </div>
+          ${showWH ? `
+            <div class="rc-row">
+              <span class="chip wh">🏭 ${mt('wh')} <b>${whQty}</b></span>
+              ${inTr > 0 ? `<span class="chip warn">🚚 ${mt('transit')} <b>${inTr}</b></span>` : ''}
+            </div>
+            ${bins.length ? `<div class="rc-label">${mt('bins')}</div><div class="rc-row" style="margin-top:0">${bins.map(b => `<span class="chip bin" onclick="executeLookup('${b.bin_code}')">📍 ${b.bin_code} <b>${b.qty}</b></span>`).join('')}</div>`
+                          : `<div class="rc-label">${mt('bins')}: ${mt('nobin')}</div>`}
+          ` : ''}
+          ${showStores ? `
+            ${storeChips ? `<div class="rc-label">${mt('stores')}</div><div class="rc-row" style="margin-top:0">${storeChips}</div>` : ''}
+            ${(!showWH && inTr > 0) ? `<div class="rc-row"><span class="chip warn">🚚 ${mt('transit')} <b>${inTr}</b></span></div>` : ''}
+            ${(r.transfers && r.transfers.length) ? `<div class="rc-row">${r.transfers.map(t => `<span class="chip" style="cursor:pointer" onclick="executeLookup('${t.to_number}')">📄 ${t.to_number} <small>${t.from_code}➔${storeShort(t.to_code)}:${t.qty}</small></span>`).join('')}</div>` : ''}
+          ` : ''}
+          ${starHtml}
+        </div>`;
+    }
+
+    function buildCardsList(rows, opts) {
+      if (!rows.length) return `<div class="rc rc-sub" style="text-align:center">—</div>`;
+      // Barcodes that exist somewhere first (WH stock / bins / stores), empties last
+      const score = r => (Number(r.wh_oh || 0) > 0 ? 3 : 0) + ((r.all_bins || []).length ? 2 : 0) + (Object.values(r.oh_stores || {}).some(v => v > 0) ? 1 : 0);
+      const sorted = rows.slice().sort((a, b) => score(b) - score(a));
+      return sorted.map(r => buildCardHtml(r, opts)).join('');
+    }
+
+    function buildMobileSummary(title, subtitle, rows, opts) {
+      const totWh = rows.reduce((a, r) => a + Number(r.wh_oh || 0), 0);
+      const totSt = rows.reduce((a, r) => a + Object.values(r.oh_stores || {}).reduce((x, y) => x + Math.max(0, Number(y) || 0), 0), 0);
+      return `
+        <div class="m-summary">
+          <div class="t">${title}</div>
+          <div class="s">${subtitle}</div>
+          <div class="m-kpis">
+            <div class="m-kpi"><b>${rows.length}</b><span>${mt('skus')}</span></div>
+            <div class="m-kpi"><b>${totWh}</b><span>${mt('inwh')}</span></div>
+            <div class="m-kpi"><b>${totSt}</b><span>${mt('instores')}</span></div>
+          </div>
+        </div>`;
+    }
+
+    // Wrap an existing desktop block + its mobile twin. CSS decides which one is visible.
+    function dualView(desktopHtml, mobileHtml) {
+      return `<div class="d-only">${desktopHtml}</div><div class="m-only">${mobileHtml}</div>`;
+    }
+
     function renderScanResponse(data) {
       const area = document.getElementById('scanResultsArea');
       const p = currentUser.permissions || {};
@@ -2527,7 +2829,21 @@
                 <span>Bin: <strong style="color:var(--q-bronze); font-family:Roboto;">${data.bin_code}</strong> (${data.sku_count} باركود | إجمالي ${data.total_qty} قطعة)</span>
               </div>
             </div>
-            ${buildWarehousePerBinTableHtml(binRows)}
+            ${dualView(
+              buildWarehousePerBinTableHtml(binRows),
+              binRows.map(r => `
+                <div class="rc has-wh">
+                  <div class="rc-top">
+                    <div style="min-width:0">
+                      <div class="rc-title">${r.description || r.serial}</div>
+                      <div class="rc-sub">${[r.brand, r.dept, r.art_no].filter(Boolean).join(' • ')}</div>
+                      <div class="rc-sub rc-code" style="color:#0c5489;cursor:pointer" onclick="executeLookup('${r.barcode}')">${r.barcode}</div>
+                    </div>
+                    <div class="rc-size">× ${r.wh_qty}</div>
+                  </div>
+                  <div class="rc-row"><span class="chip" style="cursor:pointer" onclick="executeLookup('${r.serial}')">👕 ${r.serial}</span></div>
+                </div>`).join(')
+            )}
           </div>
         `;
         return;
@@ -2554,8 +2870,10 @@
                 </button>
               ` : ''}
             </div>
-            ${buildWarehousePerBinTableHtml(perBinRows)}
-            ${buildTransfersTabHtml(data.scan_type === 'item_all_barcodes' ? (alloc.item_transfers || []) : ((targetVars[0] && targetVars[0].transfers) || []))}
+            ${dualView(
+              buildWarehousePerBinTableHtml(perBinRows) + buildTransfersTabHtml(data.scan_type === 'item_all_barcodes' ? (alloc.item_transfers || []) : ((targetVars[0] && targetVars[0].transfers) || [])),
+              buildCardsList(targetVars.map(v => variantToAPRow(alloc, v)), { showWH: true, showStores: false, showEligible: false })
+            )}
           </div>
         `;
         return;
@@ -2577,8 +2895,11 @@
                 </button>
               ` : ''}
             </div>
-            ${buildCleanAPTableHtml(rows, showWH, showStores, showEligible, adminModeToggle, data.item_all_bins || [])}
-            ${showStores ? buildTransfersTabHtml(alloc.item_transfers || []) : ''}
+            ${dualView(
+              buildCleanAPTableHtml(rows, showWH, showStores, showEligible, adminModeToggle, data.item_all_bins || []) + (showStores ? buildTransfersTabHtml(alloc.item_transfers || []) : ''),
+              buildMobileSummary(alloc.description || alloc.item_no, `${alloc.item_no} • ${alloc.section || ''} • ${alloc.brand_name || ''}`, rows, { showWH, showStores, showEligible }) +
+              buildCardsList(rows, { showWH, showStores, showEligible })
+            )}
           </div>
         `;
         return;
@@ -2598,8 +2919,10 @@
               👕 عرض كل باركودات هذا الآيتم (${alloc.item_no})
             </button>
           </div>
-          ${buildCleanAPTableHtml(singleRow, showWH, showStores, showEligible, adminModeToggle, data.barcode_bins || [])}
-          ${(showStores && sv) ? buildTransfersTabHtml(sv.transfers || []) : ''}
+          ${dualView(
+            buildCleanAPTableHtml(singleRow, showWH, showStores, showEligible, adminModeToggle, data.barcode_bins || []) + ((showStores && sv) ? buildTransfersTabHtml(sv.transfers || []) : ''),
+            buildCardsList(singleRow, { showWH, showStores, showEligible })
+          )}
         </div>
       `;
     }
