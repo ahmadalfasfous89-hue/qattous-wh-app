@@ -1213,7 +1213,8 @@
         display: none;
       }
 
-      .header-controls #btnMenu {
+      .header-controls #btnMenu,
+      .header-controls #btnMobileRefresh {
         display: inline-flex !important;
         padding: 6px 10px;
         font-size: .78rem;
@@ -1629,6 +1630,7 @@
       </div>
 
       <div class="header-controls">
+        <button class="btn btn-bronze btn-sm" id="btnMobileRefresh" style="display:none;" onclick="refreshRemoteCloudData(true)" aria-label="refresh">🔄</button>
         <button class="btn btn-charcoal btn-sm" id="btnMenu" style="display:none;" onclick="openSheet()"
           aria-label="menu">☰ <span id="menuUserShort">Admin</span></button>
         <button class="btn btn-bronze btn-sm" onclick="refreshRemoteCloudData(true)" id="btnRemoteRefresh"
@@ -2238,17 +2240,33 @@
     let cloudUsers = null;
     let isStaticCloudHost = location.hostname.includes('github.io');
 
+    function showToast(msg, isError = false) {
+      let el = document.getElementById('qattousToast');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'qattousToast';
+        el.style.cssText = 'position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:9999; padding:12px 20px; border-radius:12px; font-weight:800; font-size:0.9rem; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,0.28); max-width:92vw; text-align:center; transition:opacity 0.25s;';
+        document.body.appendChild(el);
+      }
+      el.style.background = isError ? '#c0292b' : '#16794b';
+      el.textContent = msg;
+      el.style.opacity = '1';
+      el.style.display = 'block';
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.style.display = 'none', 260); }, 3200);
+    }
+
     async function refreshRemoteCloudData(showAlert = false) {
       const btn = document.getElementById('btnRemoteRefresh');
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '⏳ جاري التحديث...';
-      }
+      const mBtn = document.getElementById('btnMobileRefresh');
+      if (btn) { btn.disabled = true; btn.innerHTML = '⏳ جاري التحديث...'; }
+      if (mBtn) { mBtn.disabled = true; mBtn.textContent = '⏳'; }
       try {
         const ts = Date.now();
+        const fetchOpts = { cache: 'no-store' };
         const [bRes, uRes] = await Promise.all([
-          fetch(`./data_bundle.json?t=${ts}`),
-          fetch(`./users_bundle.json?t=${ts}`)
+          fetch(`./data_bundle.json?t=${ts}`, fetchOpts),
+          fetch(`./users_bundle.json?t=${ts}`, fetchOpts)
         ]);
         if (bRes.ok) {
           cloudBundle = await bRes.json();
@@ -2256,31 +2274,35 @@
           if (badge && cloudBundle.updated_at) {
             badge.textContent = `• آخر تحديث: ${cloudBundle.updated_at}`;
           }
+          const shSync = document.getElementById('sheetSync');
+          if (shSync && cloudBundle.updated_at) {
+            shSync.textContent = cloudBundle.updated_at;
+          }
         }
         if (uRes.ok) {
           const uData = await uRes.json();
           cloudUsers = uData.users || [];
           // Refresh current user permissions from remote users_bundle
-          const matchU = cloudUsers.find(x => x.username.toLowerCase() === currentUser.username.toLowerCase());
-          if (matchU) {
-            currentUser = { ...matchU };
-            applyUserPermissionsUI();
+          if (currentUser && currentUser.username) {
+            const matchU = cloudUsers.find(x => x.username.toLowerCase() === currentUser.username.toLowerCase());
+            if (matchU) {
+              currentUser = { ...matchU };
+              applyUserPermissionsUI();
+            }
           }
         }
         if (lastScanResponse && lastScanResponse.queried_code) {
           await executeLookup(lastScanResponse.queried_code);
         }
         if (showAlert) {
-          alert(`✅ تم تحديث البيانات والأرصدة واللوكيشنات بنجاح! (${cloudBundle ? cloudBundle.updated_at : 'الآن'})`);
+          showToast(`✅ تم تحديث البيانات بنجاح! (${cloudBundle ? cloudBundle.updated_at : 'الآن'})`);
         }
       } catch (e) {
         console.warn('Cloud bundle fetch info:', e);
-        if (showAlert) alert('⚠️ تعذر سحب التحديث: تأكد من اتصال الإنترنت (4G / Wi-Fi)');
+        if (showAlert) showToast('⚠️ تعذر سحب التحديث: تأكد من اتصال الإنترنت (4G / Wi-Fi)', true);
       } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = '🔄 تحديث الداتا (Refresh)';
-        }
+        if (btn) { btn.disabled = false; btn.innerHTML = '🔄 تحديث الداتا (Refresh)'; }
+        if (mBtn) { mBtn.disabled = false; mBtn.textContent = '🔄'; }
       }
     }
 
