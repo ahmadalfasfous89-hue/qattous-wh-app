@@ -1,0 +1,73 @@
+{
+  "updated_at": "2026-11-24 21:15:23",
+  "users": [
+    {
+      "username": "admin",
+      "password": "1234",
+      "display_name": "أحمد فسفوس (Admin)",
+      "role": "admin",
+      "active": true,
+      "permissions": {
+        "mode_wh_only": true,
+        "mode_stores_only": true,
+        "mode_wh_stores": true,
+        "scan_bin": true,
+        "view_eligible_store": true,
+        "generate_reports": true,
+        "manage_data": true,
+        "manage_users": true
+      }
+    },
+    {
+      "username": "supervisor",
+      "password": "1234",
+      "display_name": "مشرف المستودع (Supervisor)",
+      "role": "supervisor",
+      "active": true,
+      "permissions": {
+        "mode_wh_only": true,
+        "mode_stores_only": true,
+        "mode_wh_stores": true,
+        "scan_bin": true,
+        "view_eligible_store": true,
+        "generate_reports": true,
+        "manage_data": false,
+        "manage_users": false
+      }
+    },
+    {
+      "username": "wh_user",
+      "password": "1234",
+      "display_name": "موظف مستودع (Warehouse Only)",
+      "role": "user",
+      "active": true,
+      "permissions": {
+        "mode_wh_only": true,
+        "mode_stores_only": false,
+        "mode_wh_stores": false,
+        "scan_bin": true,
+        "view_eligible_store": false,
+        "generate_reports": false,
+        "manage_data": false,
+        "manage_users": false
+      }
+    },
+    {
+      "username": "store_user",
+      "password": "1234",
+      "display_name": "موظف محلات (Stores & WH)",
+      "role": "user",
+      "active": true,
+      "permissions": {
+        "mode_wh_only": true,
+        "mode_stores_only": true,
+        "mode_wh_stores": true,
+        "scan_bin": true,
+        "view_eligible_store": false,
+        "generate_reports": false,
+        "manage_data": false,
+        "manage_users": false
+      }
+    }
+  ]
+}

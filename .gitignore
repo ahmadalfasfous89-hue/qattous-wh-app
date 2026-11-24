@@ -1,0 +1,6 @@
+*.xlsx
+*.xls
+*.db
+*.db-journal
+__pycache__/
+~$*

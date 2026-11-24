@@ -1,0 +1,15 @@
+{
+  "name": "Qattous Group - Warehouse & Series System",
+  "short_name": "Qattous WH",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF8F5",
+  "theme_color": "#906f49",
+  "icons": [
+    {
+      "src": "/qattous_logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

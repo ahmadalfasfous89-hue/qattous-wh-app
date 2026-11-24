@@ -1,0 +1,3076 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Qattous Group | نظام المستودعات وتوزيع السيري</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./qattous_logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      /* Official Qattous Group Brand Tokens from qattousgroup.com */
+      --q-bronze: #906f49;
+      --q-bronze-dark: #745736;
+      --q-bronze-light: #f5efe8;
+      --q-bronze-border: #d8c6b0;
+      --q-charcoal: #3d3d3d;
+      --q-onyx: #151515;
+      --q-muted: #787878;
+      --q-bg: #f7f5f2;
+      --q-surface: #ffffff;
+      --q-navy: #0F1D34;
+      --q-success: #16794b;
+      --q-success-bg: #e7f6ee;
+      --q-warning: #b86b11;
+      --q-warning-bg: #fef4e6;
+      --q-danger: #c0292b;
+      --q-danger-bg: #fdeaea;
+      --q-info: #0c5489;
+      --q-info-bg: #e8f3fb;
+      --radius: 12px;
+      --shadow: 0 4px 16px rgba(21, 21, 21, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Cairo', 'Roboto', sans-serif;
+      background-color: var(--q-bg);
+      color: var(--q-onyx);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    html[dir="ltr"] body {
+      font-family: 'Roboto', 'Cairo', sans-serif;
+    }
+
+    /* Top Brand Header */
+    .top-header {
+      background: var(--q-surface);
+      border-bottom: 3px solid var(--q-bronze);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .brand-divider {
+      width: 2px;
+      height: 32px;
+      background: var(--q-bronze-border);
+    }
+
+    .brand-titles h1 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--q-charcoal);
+      line-height: 1.2;
+    }
+
+    .brand-titles p {
+      font-size: 0.76rem;
+      color: var(--q-bronze);
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--q-bronze-light);
+      border: 1px solid var(--q-bronze-border);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--q-charcoal);
+    }
+
+    .role-badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: var(--q-bronze);
+      color: #fff;
+    }
+
+    .role-badge.supervisor {
+      background: var(--q-navy);
+    }
+
+    .role-badge.user {
+      background: var(--q-charcoal);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.18s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-bronze {
+      background: var(--q-bronze);
+      color: #fff;
+    }
+
+    .btn-bronze:hover {
+      background: var(--q-bronze-dark);
+    }
+
+    .btn-charcoal {
+      background: var(--q-charcoal);
+      color: #fff;
+    }
+
+    .btn-charcoal:hover {
+      background: var(--q-onyx);
+    }
+
+    .btn-outline {
+      background: var(--q-surface);
+      color: var(--q-charcoal);
+      border-color: var(--q-bronze-border);
+    }
+
+    .btn-outline:hover {
+      background: var(--q-bronze-light);
+      border-color: var(--q-bronze);
+    }
+
+    .btn-success {
+      background: var(--q-success);
+      color: #fff;
+    }
+
+    .btn-success:hover {
+      opacity: 0.92;
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.78rem;
+    }
+
+    /* Quick Prototype Role Switcher Bar */
+    .proto-bar {
+      background: var(--q-onyx);
+      color: #eee;
+      font-size: 0.78rem;
+      padding: 6px 16px;
+    }
+
+    .proto-bar-inner {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .proto-accounts {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .proto-chip {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .proto-chip:hover,
+    .proto-chip.active {
+      background: var(--q-bronze);
+      border-color: var(--q-bronze);
+    }
+
+    /* Navigation Tabs */
+    .main-nav {
+      background: var(--q-surface);
+      border-bottom: 1px solid #e5e0d8;
+    }
+
+    .nav-inner {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+    }
+
+    .nav-tab {
+      padding: 12px 18px;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--q-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .nav-tab:hover {
+      color: var(--q-charcoal);
+      background: var(--q-bronze-light);
+    }
+
+    .nav-tab.active {
+      color: var(--q-bronze);
+      border-bottom-color: var(--q-bronze);
+      background: rgba(144, 111, 73, 0.06);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1360px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 18px 16px 60px;
+      flex: 1;
+    }
+
+    .card {
+      background: var(--q-surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid #ebe5dc;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f0ebe3;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--q-charcoal);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Check Mode Selector (The 3 Homepage Modes) */
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .mode-card {
+      border: 2px solid #e6dfd5;
+      background: var(--q-surface);
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: start;
+      font-family: inherit;
+    }
+
+    .mode-card:hover:not(.disabled) {
+      border-color: var(--q-bronze);
+      background: var(--q-bronze-light);
+    }
+
+    .mode-card.active {
+      border-color: var(--q-bronze);
+      background: var(--q-bronze-light);
+      box-shadow: 0 0 0 3px rgba(144, 111, 73, 0.18);
+    }
+
+    .mode-card.disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      background: #f2f2f2;
+    }
+
+    .mode-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--q-bronze);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+
+    .mode-info h3 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--q-onyx);
+      margin-bottom: 2px;
+    }
+
+    .mode-info p {
+      font-size: 0.76rem;
+      color: var(--q-muted);
+      line-height: 1.3;
+    }
+
+    /* Scanner & Manual Input Bar */
+    .scanner-box {
+      background: linear-gradient(135deg, #3d3d3d 0%, #1c1c1c 100%);
+      border-radius: var(--radius);
+      padding: 18px;
+      color: #fff;
+      margin-bottom: 16px;
+      border-bottom: 4px solid var(--q-bronze);
+      position: relative;
+    }
+
+    .scanner-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .scanner-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #f0dfca;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2ecc71;
+      box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.25);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.2);
+      }
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .scan-input-wrap {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
+
+    .scan-input {
+      width: 100%;
+      padding: 13px 16px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: 'Roboto', 'Cairo', monospace;
+      border-radius: 8px;
+      border: 2px solid var(--q-bronze);
+      background: #fff;
+      color: var(--q-onyx);
+      outline: none;
+    }
+
+    .scan-input:focus {
+      box-shadow: 0 0 0 4px rgba(144, 111, 73, 0.35);
+    }
+
+    /* Autocomplete Dropdown */
+    .suggest-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      color: var(--q-onyx);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+      border: 1px solid var(--q-bronze-border);
+      max-height: 320px;
+      overflow-y: auto;
+      z-index: 90;
+      display: none;
+    }
+
+    .suggest-dropdown.open {
+      display: block;
+    }
+
+    .suggest-item {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f1ece4;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .suggest-item:hover {
+      background: var(--q-bronze-light);
+    }
+
+    .suggest-code {
+      font-family: 'Roboto', monospace;
+      font-weight: 800;
+      color: var(--q-bronze-dark);
+      font-size: 0.92rem;
+    }
+
+    .suggest-sub {
+      font-size: 0.78rem;
+      color: var(--q-muted);
+    }
+
+    .suggest-type {
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: var(--q-bronze-light);
+      color: var(--q-bronze-dark);
+    }
+
+    .suggest-type.bin {
+      background: var(--q-info-bg);
+      color: var(--q-info);
+    }
+
+    .quick-samples {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .quick-label {
+      font-size: 0.76rem;
+      color: #ccc;
+    }
+
+    .sample-chip {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-family: 'Roboto', 'Cairo', sans-serif;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .sample-chip:hover {
+      background: var(--q-bronze);
+      border-color: var(--q-bronze);
+    }
+
+    /* Camera Viewport */
+    .camera-box {
+      display: none;
+      margin-top: 14px;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      max-width: 480px;
+      margin-inline: auto;
+      border: 2px solid var(--q-bronze);
+    }
+
+    .camera-box.open {
+      display: block;
+    }
+
+    .camera-video {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .laser-line {
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: #ff3b30;
+      box-shadow: 0 0 8px #ff3b30;
+      animation: scanline 2s infinite ease-in-out;
+    }
+
+    @keyframes scanline {
+
+      0%,
+      100% {
+        top: 25%;
+      }
+
+      50% {
+        top: 75%;
+      }
+    }
+
+    /* Stats & Metadata Badges */
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat-box {
+      background: var(--q-bronze-light);
+      border: 1px solid var(--q-bronze-border);
+      border-radius: 10px;
+      padding: 10px 14px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--q-muted);
+      font-weight: 700;
+    }
+
+    .stat-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--q-onyx);
+      margin-top: 2px;
+    }
+
+    /* Decision Banner (Admin Most Eligible Store) */
+    .decision-banner {
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      border: 2px solid var(--q-success);
+      background: var(--q-success-bg);
+    }
+
+    .decision-banner.hold {
+      border-color: var(--q-warning);
+      background: var(--q-warning-bg);
+    }
+
+    .decision-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--q-onyx);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .decision-sub {
+      font-size: 0.88rem;
+      color: var(--q-charcoal);
+      font-weight: 600;
+    }
+
+    /* Variant Selector Pills */
+    .variant-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .var-pill {
+      padding: 5px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--q-bronze-border);
+      background: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Roboto', 'Cairo', sans-serif;
+    }
+
+    .var-pill.active {
+      background: var(--q-bronze);
+      color: #fff;
+      border-color: var(--q-bronze);
+    }
+
+    /* Tables */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid #e6dfd5;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th {
+      background: var(--q-charcoal);
+      color: #fff;
+      font-weight: 700;
+      padding: 10px 12px;
+      text-align: start;
+      white-space: nowrap;
+    }
+
+    th.priority-col {
+      background: var(--q-bronze);
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee8df;
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: #fdfaf6;
+    }
+
+    /* Excel-Exact Table Style (matching series_distribution.py) */
+    .excel-table th,
+    .excel-table td {
+      border: 1px solid #bfbfbf;
+      padding: 7px 10px;
+      text-align: center;
+      font-family: 'Roboto', 'Cairo', sans-serif;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .excel-table th {
+      background-color: #efefef !important;
+      color: #151515 !important;
+      font-weight: 800;
+    }
+
+    .xl-blue {
+      background-color: #BDE3F5 !important;
+      color: #000 !important;
+    }
+
+    .xl-yellow {
+      background-color: #FFFF00 !important;
+      color: #000 !important;
+      font-weight: 800 !important;
+    }
+
+    .xl-grey {
+      background-color: #F2F2F2 !important;
+      color: #000 !important;
+    }
+
+    .xl-left {
+      text-align: start !important;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tag-green {
+      background: var(--q-success-bg);
+      color: var(--q-success);
+    }
+
+    .tag-amber {
+      background: var(--q-warning-bg);
+      color: var(--q-warning);
+    }
+
+    .tag-red {
+      background: var(--q-danger-bg);
+      color: var(--q-danger);
+    }
+
+    .tag-blue {
+      background: var(--q-info-bg);
+      color: var(--q-info);
+    }
+
+    .tag-bronze {
+      background: var(--q-bronze-light);
+      color: var(--q-bronze-dark);
+    }
+
+    /* Progress Bar */
+    .prog-bar {
+      width: 100%;
+      min-width: 80px;
+      height: 8px;
+      background: #e9e4dc;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .prog-fill {
+      height: 100%;
+      background: var(--q-bronze);
+      border-radius: 99px;
+    }
+
+    .prog-fill.high {
+      background: var(--q-success);
+    }
+
+    .prog-fill.low {
+      background: var(--q-danger);
+    }
+
+    /* Forms & Filters */
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+      align-items: end;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--q-charcoal);
+      margin-bottom: 5px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--q-bronze-border);
+      font-family: inherit;
+      font-size: 0.88rem;
+      background: #fff;
+    }
+
+    /* Permission Switches */
+    .perm-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 8px;
+    }
+
+    .perm-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--q-bronze-light);
+      border: 1px solid var(--q-bronze-border);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .perm-label input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--q-bronze);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--q-surface);
+      border-radius: 14px;
+      max-width: 560px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      border-top: 5px solid var(--q-bronze);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .brand-logo {
+        height: 34px;
+      }
+
+      .header-inner {
+        padding: 8px 12px;
+      }
+
+      .scan-input {
+        font-size: 0.95rem;
+        padding: 11px 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Prototype Quick Role Switcher Bar for Immediate Testing -->
+  <div class="proto-bar">
+    <div class="proto-bar-inner">
+      <span>⚡ <strong data-i18n="proto_switcher">تبديل سريع لتجربة الحسابات والصلاحيات (Prototype
+          Switcher):</strong></span>
+      <div class="proto-accounts">
+        <button class="proto-chip active" onclick="quickSwitchUser('admin', '1234')">👑 Admin (كامل الصلاحيات +
+          الريبورت)</button>
+        <button class="proto-chip" onclick="quickSwitchUser('supervisor', '1234')">🛡️ Supervisor (مشرف)</button>
+        <button class="proto-chip" onclick="quickSwitchUser('wh_user', '1234')">🏭 WH User (مستودع وBins فقط)</button>
+        <button class="proto-chip" onclick="quickSwitchUser('store_user', '1234')">🏬 Store User (محلات
+          ومستودع)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Official Qattous Group Header -->
+  <header class="top-header">
+    <div class="header-inner">
+      <div class="brand-box">
+        <img src="./qattous_logo.png" alt="Qattous Group" class="brand-logo" />
+        <div class="brand-divider"></div>
+        <div class="brand-titles">
+          <h1 data-i18n="app_title">نظام المستودعات وتوزيع السيري الذكي</h1>
+          <p>QATTOUS GROUP • LA FAMILIA &amp; WAREHOUSE PDA SYSTEM <span id="lastSyncBadge" style="color:#16794b; margin-inline-start:6px;"></span></p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <button class="btn btn-bronze btn-sm" onclick="refreshRemoteCloudData(true)" id="btnRemoteRefresh" title="سحب أحدث أرقام ولوكيشنات من السحابة عبر 4G / Wi-Fi">
+          🔄 <span data-i18n="btn_remote_refresh">تحديث الداتا (Refresh)</span>
+        </button>
+        <div class="user-pill">
+          <span id="currentUserDisplay">أحمد فسفوس (Admin)</span>
+          <span id="currentUserRoleBadge" class="role-badge">ADMIN</span>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="openLoginModal()" data-i18n="btn_login_switch">🔐 تسجيل
+          حساب</button>
+        <button class="btn btn-charcoal btn-sm" onclick="toggleLanguage()" id="langBtn">English (EN)</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Bar (Tabs filtered dynamically by User Permissions) -->
+  <nav class="main-nav">
+    <div class="nav-inner">
+      <button class="nav-tab active" data-view="scannerView" onclick="switchView('scannerView')">
+        <span>🔍</span> <span data-i18n="nav_scanner">الفحص والمسح (Scanner &amp; Manual)</span>
+      </button>
+      <button class="nav-tab" id="navReportTab" data-view="reportView" onclick="switchView('reportView')">
+        <span>📊</span> <span data-i18n="nav_report">ريبورت توزيع السيري والإكسل</span>
+      </button>
+      <button class="nav-tab" id="navDataTab" data-view="dataView" onclick="switchView('dataView')">
+        <span>🔄</span> <span data-i18n="nav_data">تحديث شيتات الإكسل (Data Sync)</span>
+      </button>
+      <button class="nav-tab" id="navUsersTab" data-view="usersView" onclick="switchView('usersView')">
+        <span>👥</span> <span data-i18n="nav_users">إدارة اليوزرات والصلاحيات</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+
+    <!-- ==================== VIEW 1: SCANNER & INQUIRY ==================== -->
+    <section id="scannerView" class="view-section active">
+
+      <!-- 3 Check Modes on Homepage -->
+      <div class="mode-grid">
+        <button class="mode-card" id="modeCard_wh_only" onclick="selectCheckMode('wh_only')">
+          <div class="mode-icon">🏭</div>
+          <div class="mode-info">
+            <h3 data-i18n="mode_wh_only_title">تشييك ويرهاوس فقط</h3>
+            <p data-i18n="mode_wh_only_desc">فحص أرصدة المستودع W0001 ومواقع الـ Bins وعددها فقط</p>
+          </div>
+        </button>
+
+        <button class="mode-card" id="modeCard_stores_only" onclick="selectCheckMode('stores_only')">
+          <div class="mode-icon">🏬</div>
+          <div class="mode-info">
+            <h3 data-i18n="mode_stores_only_title">تشييك محلات فقط</h3>
+            <p data-i18n="mode_stores_only_desc">فحص كميات الصنف في الفروع (S0001..S0012) والترانزيت فقط</p>
+          </div>
+        </button>
+
+        <button class="mode-card active" id="modeCard_wh_stores" onclick="selectCheckMode('wh_stores')">
+          <div class="mode-icon">🔄</div>
+          <div class="mode-info">
+            <h3 data-i18n="mode_wh_stores_title">تشييك مستودع ومحلات</h3>
+            <p data-i18n="mode_wh_stores_desc">عرض شامل لمواقع الـ Bins في المستودع + أرصدة كافة المحلات</p>
+          </div>
+        </button>
+      </div>
+
+      <!-- PDA Laser + Camera + Manual Input Box -->
+      <div class="scanner-box">
+        <div class="scanner-top">
+          <div class="scanner-status">
+            <span class="pulse-dot"></span>
+            <span data-i18n="scanner_ready">جاهز لمسح ليزر الـ PDA أو الكاميرا أو الإدخال اليدوي (باركود / كود آيتم I...
+              / كود Bin)</span>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <label style="font-size:0.78rem; display:flex; align-items:center; gap:5px; cursor:pointer;">
+              <input type="checkbox" id="pdaAutoFocusToggle" checked />
+              <span data-i18n="pda_mode_label">تركيز تلقائي لليزر الـ PDA</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="scan-input-wrap">
+            <input type="text" id="scanInput" class="scan-input"
+              placeholder="امسح الباركود أو اكتب يدوياً: Barcode / Item No (I...) / Bin Code (B-21-...)"
+              autocomplete="off" />
+            <div id="suggestDropdown" class="suggest-dropdown"></div>
+          </div>
+          <button class="btn btn-bronze" onclick="triggerScanFromInput()">
+            <span>🔍</span> <span data-i18n="btn_manual_search">فحص / بحث يدوي</span>
+          </button>
+          <button class="btn btn-outline" style="background:#2b2b2b; color:#fff; border-color:#555;"
+            onclick="toggleCameraScanner()">
+            <span>📷</span> <span data-i18n="btn_camera">مسح بالكاميرا</span>
+          </button>
+          <button class="btn btn-outline" style="background:#2b2b2b; color:#fff; border-color:#555;"
+            onclick="clearScanInput()">
+            <span>✖</span>
+          </button>
+        </div>
+
+        <!-- Quick Samples for Testing -->
+        <div class="quick-samples">
+          <span class="quick-label" data-i18n="quick_samples_label">أمثلة سريعة للتجربة بضغطة زر:</span>
+          <button class="sample-chip" onclick="executeLookup('226201379690346')">📦 باركود: 226201379690346</button>
+          <button class="sample-chip" onclick="executeLookup('212221512519999')">📦 باركود في 3 Bins:
+            212221512519999</button>
+          <button class="sample-chip" onclick="executeLookup('612610400640102')">📦 باركود محل/توزيع:
+            612610400640102</button>
+          <button class="sample-chip" onclick="executeLookup('I61261040064')">👕 آيتم كود (كل باركوداته):
+            I61261040064</button>
+          <button class="sample-chip" id="sampleBinChip1" onclick="executeLookup('D-21-07-B-00')">🗄️ Bin:
+            D-21-07-B-00</button>
+          <button class="sample-chip" id="sampleBinChip2" onclick="executeLookup('B-21-05-A-00')">🗄️ Bin:
+            B-21-05-A-00</button>
+        </div>
+
+        <!-- Live Camera Box -->
+        <div id="cameraBox" class="camera-box">
+          <video id="cameraVideo" class="camera-video" playsinline muted></video>
+          <div class="laser-line"></div>
+          <div style="padding:8px; text-align:center; background:#111; font-size:0.78rem;">
+            <span data-i18n="camera_hint">وجّه الكاميرا نحو الباركود ليتم التقاطه تلقائياً</span>
+            <button class="btn btn-sm btn-bronze" style="margin-inline-start:10px;" onclick="stopCameraScanner()">إغلاق
+              الكاميرا</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Scan Results Container -->
+      <div id="scanResultsArea">
+        <div class="card" style="text-align:center; padding:36px 20px; color:var(--q-muted);">
+          <div style="font-size:2.6rem; margin-bottom:10px;">📦</div>
+          <h3 style="color:var(--q-charcoal); margin-bottom:6px;" data-i18n="empty_state_title">امسح الباركود أو كود
+            الرف (Bin) أو اكتب الكود يدوياً للبدء</h3>
+          <p style="font-size:0.85rem;" data-i18n="empty_state_desc">يعمل البحث في أقل من 0.01 ثانية عبر قاعدة البيانات
+            المحلية المفهرسة</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== VIEW 2: ADMIN SERIES REPORT & EXCEL ==================== -->
+    <section id="reportView" class="view-section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>📊</span>
+            <span data-i18n="report_title">ريبورت توزيع السيري والأولويات (La Familia - سيزن 2026)</span>
+          </div>
+          <button class="btn btn-success" onclick="exportReportExcel()">
+            <span>📥</span> <span data-i18n="btn_export_excel">تصدير وتحميل ملف الإكسل (.xlsx)</span>
+          </button>
+        </div>
+
+        <div class="filter-grid">
+          <div class="form-group">
+            <label data-i18n="lbl_dist_mode">نوع التوزيع (Distribution Mode):</label>
+            <select id="repDistMode" class="form-control" onchange="loadDistributionReport()">
+              <option value="wh_to_stores">من المستودع للمحلات (Warehouse ➔ Stores)</option>
+              <option value="stores_to_stores">من المحلات للمحلات حسب الـ Availability (Stores ➔ Stores)</option>
+              <option value="combined">شامل (المستودع للمحلات + المحلات للمحلات)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="lbl_rep_scope">نطاق الريبورت (Scope):</label>
+            <select id="repScopeType" class="form-control" onchange="onRepScopeTypeChange()">
+              <option value="all">كل بضاعة لافاميليا (All La Familia 2026)</option>
+              <option value="section">سكشن معين (Women / Men / Kids)</option>
+              <option value="item">آيتم كود معين يبدأ بـ I (يعطي الريبورت بالباركودات)</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="repSectionGroup" style="display:none;">
+            <label data-i18n="lbl_select_section">اختر السكشن (Section):</label>
+            <select id="repSectionVal" class="form-control" onchange="loadDistributionReport()">
+              <option value="Women">Women (نسائي)</option>
+              <option value="Men">Men (رجالي)</option>
+              <option value="Kids">Kids / Teens (أطفال)</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="repItemGroup" style="display:none;">
+            <label data-i18n="lbl_input_item">أدخل كود الآيتم (يبدأ بـ I مثل I61261040064):</label>
+            <div style="display:flex; gap:6px;">
+              <input type="text" id="repItemVal" class="form-control" placeholder="مثال: I61261040064"
+                value="I61261040064" />
+              <button class="btn btn-bronze" onclick="loadDistributionReport()">عرض</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="lbl_filter_orders_only">فلتر العرض في الجدول:</label>
+            <select id="repRowFilter" class="form-control" onchange="renderReportTables()">
+              <option value="orders_only">عرض الباركودات المطلوب توزيعها فقط (Order &gt; 0)</option>
+              <option value="all_rows">عرض جميع الباركودات (شامل Order = 0)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Sub-tabs inside Report -->
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+          <button class="btn btn-bronze btn-sm" id="repSubBtn_dist" onclick="switchReportSubTab('dist')">📋 جدول
+            الريبورت (بنفس تصميم الإكسل)</button>
+          <button class="btn btn-outline btn-sm" id="repSubBtn_summary" onclick="switchReportSubTab('summary')">📈 ملخص
+            الأقسام (Summary)</button>
+          <button class="btn btn-outline btn-sm" id="repSubBtn_transfers" onclick="switchReportSubTab('transfers')">🔄
+            ترانسفير محل لمحل (<span id="stTransfersCountBadge">0</span>)</button>
+        </div>
+
+        <div id="reportContentArea">
+          <div style="padding:24px; text-align:center; color:var(--q-muted);">جاري تحميل الريبورت...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: SELECTIVE DATA SHEETS UPDATER ==================== -->
+    <section id="dataView" class="view-section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>🔄</span>
+            <span data-i18n="data_sync_title">تحديث شيتات الإكسل الانتقائي والرفع للرابط الخارجي (4G Cloud Sync)</span>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-bronze" onclick="runSelectedSheetsUpdate(false)" id="btnRunSheetsUpdate">
+              <span>⚡</span> <span data-i18n="btn_update_selected">تحديث محلي للشيتات المحددة</span>
+            </button>
+            <button class="btn btn-success" onclick="runSelectedSheetsUpdate(true)" id="btnPushCloudUpdate">
+              <span>☁️</span> <span>تحديث الشيتات + رفعها للرابط الخارجي (GitHub 4G)</span>
+            </button>
+          </div>
+        </div>
+        <p style="font-size:0.86rem; color:var(--q-muted); margin-bottom:14px;" data-i18n="data_sync_desc">
+          حدد فقط الشيتات التي قمت بتحديثها في المجلد (مثلاً: Bin Contents و Inventory By Location للتحديث اليومي السريع
+          خلال ثانيتين، بينما تبقى الشيتات التعريفية الأخرى محفوظة دون إعادة قراءتها).
+        </p>
+
+        <div id="sheetsListContainer" class="table-wrap"></div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: USERS & GRANULAR PERMISSIONS ==================== -->
+    <section id="usersView" class="view-section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>👥</span>
+            <span data-i18n="users_mgmt_title">إدارة الحسابات والصلاحيات (Admin / Supervisor / User)</span>
+          </div>
+          <button class="btn btn-bronze" onclick="openUserEditorModal(null)">
+            <span>➕</span> <span data-i18n="btn_add_user">إضافة حساب جديد</span>
+          </button>
+        </div>
+
+        <div id="usersListContainer"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODAL: LOGIN ==================== -->
+  <div id="loginModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width:420px;">
+      <div class="card-header">
+        <div class="card-title">🔐 تسجيل الدخول وتبديل الحساب</div>
+        <button class="btn btn-outline btn-sm" onclick="closeLoginModal()">✖</button>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>اسم المستخدم (Username):</label>
+        <input type="text" id="loginUsername" class="form-control"
+          placeholder="admin / supervisor / wh_user / store_user" value="admin" />
+      </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label>كلمة المرور (Password):</label>
+        <input type="password" id="loginPassword" class="form-control" placeholder="1234" value="1234" />
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn btn-outline" onclick="closeLoginModal()">إلغاء</button>
+        <button class="btn btn-bronze" onclick="submitLogin()">دخول</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ADD/EDIT USER & PERMISSIONS ==================== -->
+  <div id="userEditorModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="card-header">
+        <div class="card-title" id="userModalTitle">➕ إضافة / تعديل حساب وصلاحياته</div>
+        <button class="btn btn-outline btn-sm" onclick="closeUserEditorModal()">✖</button>
+      </div>
+
+      <div class="filter-grid">
+        <div class="form-group">
+          <label>اسم الدخول (Username):</label>
+          <input type="text" id="editUserUsername" class="form-control" placeholder="مثال: ahmad_wh" />
+        </div>
+        <div class="form-group">
+          <label>الاسم الظاهر (Display Name):</label>
+          <input type="text" id="editUserDisplay" class="form-control" placeholder="مثال: أحمد - موظف مستودع" />
+        </div>
+        <div class="form-group">
+          <label>نوع الحساب (Role):</label>
+          <select id="editUserRole" class="form-control" onchange="applyRolePresetPermissions()">
+            <option value="user">User (يوزر)</option>
+            <option value="supervisor">Supervisor (سوبرفايزر)</option>
+            <option value="admin">Admin (أدمن)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور (Password):</label>
+          <input type="text" id="editUserPassword" class="form-control" placeholder="1234" value="1234" />
+        </div>
+      </div>
+
+      <div style="margin:12px 0;">
+        <label
+          style="font-weight:800; font-size:0.86rem; display:block; margin-bottom:8px; color:var(--q-bronze-dark);">
+          الصلاحيات المسموحة لهذا الحساب (تحكم كامل بالتفعيل والإلغاء):
+        </label>
+        <div class="perm-grid" id="modalPermCheckboxes"></div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
+        <label style="display:flex; align-items:center; gap:6px; font-weight:700; font-size:0.85rem;">
+          <input type="checkbox" id="editUserActive" checked /> الحساب فعّال (Active)
+        </label>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-outline" onclick="closeUserEditorModal()">إلغاء</button>
+          <button class="btn btn-bronze" onclick="saveUserFromModal()">💾 حفظ الحساب والصلاحيات</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== STATE & I18N ====================
+    let currentLang = 'ar';
+    let currentUser = {
+      username: 'admin',
+      display_name: 'أحمد فسفوس (Admin)',
+      role: 'admin',
+      active: true,
+      permissions: {
+        mode_wh_only: true,
+        mode_stores_only: true,
+        mode_wh_stores: true,
+        scan_bin: true,
+        view_eligible_store: true,
+        generate_reports: true,
+        manage_data: true,
+        manage_users: true
+      }
+    };
+    let currentCheckMode = 'wh_stores'; // 'wh_only' | 'stores_only' | 'wh_stores'
+    let lastScanResponse = null;
+    let currentReportData = null;
+    let currentReportSubTab = 'summary';
+    let allUsersCache = [];
+    let cameraStream = null;
+    let cameraInterval = null;
+
+    const PERMISSION_LABELS = {
+      mode_wh_only: { ar: '🏭 تشييك ويرهاوس فقط', en: '🏭 Check Warehouse Only' },
+      mode_stores_only: { ar: '🏬 تشييك محلات فقط', en: '🏬 Check Stores Only' },
+      mode_wh_stores: { ar: '🔄 تشييك مستودع ومحلات', en: '🔄 Check Warehouse & Stores' },
+      scan_bin: { ar: '🗄️ سكان البين ومحتوياته', en: '🗄️ Scan Bin Contents' },
+      view_eligible_store: { ar: '⭐ معرفة المحل الأحق للآيتم', en: '⭐ View Eligible Store Priority' },
+      generate_reports: { ar: '📊 كبسة الريبورت وتصدير إكسل', en: '📊 Distribution Report & Excel' },
+      manage_data: { ar: '🔄 تحديث شيتات الإكسل', en: '🔄 Update Excel Data Sheets' },
+      manage_users: { ar: '👥 إدارة اليوزرات والصلاحيات', en: '👥 Manage Users & Permissions' }
+    };
+
+    const ROLE_PRESETS = {
+      admin: { mode_wh_only: true, mode_stores_only: true, mode_wh_stores: true, scan_bin: true, view_eligible_store: true, generate_reports: true, manage_data: true, manage_users: true },
+      supervisor: { mode_wh_only: true, mode_stores_only: true, mode_wh_stores: true, scan_bin: true, view_eligible_store: true, generate_reports: true, manage_data: false, manage_users: false },
+      user: { mode_wh_only: true, mode_stores_only: false, mode_wh_stores: true, scan_bin: true, view_eligible_store: false, generate_reports: false, manage_data: false, manage_users: false }
+    };
+
+    const I18N = {
+      ar: {
+        app_title: 'نظام المستودعات وتوزيع السيري الذكي',
+        proto_switcher: 'تبديل سريع لتجربة الحسابات والصلاحيات:',
+        btn_login_switch: '🔐 تبديل الحساب',
+        nav_scanner: 'الفحص والمسح (Scanner & Manual)',
+        nav_report: 'ريبورت توزيع السيري والإكسل',
+        nav_data: 'تحديث شيتات الإكسل (Data Sync)',
+        nav_users: 'إدارة اليوزرات والصلاحيات',
+        mode_wh_only_title: 'تشييك ويرهاوس فقط',
+        mode_wh_only_desc: 'فحص أرصدة المستودع W0001 ومواقع الـ Bins وعددها فقط',
+        mode_stores_only_title: 'تشييك محلات فقط',
+        mode_stores_only_desc: 'فحص كميات الصنف في الفروع (S0001..S0012) والترانزيت فقط',
+        mode_wh_stores_title: 'تشييك مستودع ومحلات',
+        mode_wh_stores_desc: 'عرض شامل لمواقع الـ Bins في المستودع + أرصدة كافة المحلات',
+        scanner_ready: 'جاهز لمسح ليزر الـ PDA أو الكاميرا أو الإدخال اليدوي (باركود / كود آيتم I... / كود Bin)',
+        pda_mode_label: 'تركيز تلقائي لليزر الـ PDA',
+        btn_manual_search: 'فحص / بحث يدوي',
+        btn_camera: 'مسح بالكاميرا',
+        quick_samples_label: 'أمثلة سريعة للتجربة بضغطة زر:',
+        empty_state_title: 'امسح الباركود أو كود الرف (Bin) أو اكتب الكود يدوياً للبدء',
+        empty_state_desc: 'يعمل البحث في أقل من 0.01 ثانية عبر قاعدة البيانات المحلية المفهرسة',
+        report_title: 'ريبورت توزيع السيري والأولويات (La Familia - سيزن 2026)',
+        btn_export_excel: 'تصدير وتحميل ملف الإكسل (.xlsx)',
+        data_sync_title: 'تحديث شيتات الإكسل الانتقائي (Selective Sheets Updater)',
+        btn_update_selected: 'تحديث الشيتات المحددة الآن',
+        users_mgmt_title: 'إدارة الحسابات والصلاحيات (Admin / Supervisor / User)',
+        btn_add_user: 'إضافة حساب جديد'
+      },
+      en: {
+        app_title: 'Smart Warehouse & Series Distribution System',
+        proto_switcher: 'Quick Account & Role Switcher (Prototype Test):',
+        btn_login_switch: '🔐 Switch Account',
+        nav_scanner: 'Scanner & Manual Inquiry',
+        nav_report: 'Series Distribution Report & Excel',
+        nav_data: 'Selective Excel Data Sync',
+        nav_users: 'Users & Permissions Management',
+        mode_wh_only_title: 'Check Warehouse Only',
+        mode_wh_only_desc: 'Check W0001 stock, Bin locations & bin count only',
+        mode_stores_only_title: 'Check Stores Only',
+        mode_stores_only_desc: 'Check store quantities (S0001..S0012) & In-Transit only',
+        mode_wh_stores_title: 'Check Warehouse & Stores',
+        mode_wh_stores_desc: 'Combined view of Warehouse Bins + All Store inventories',
+        scanner_ready: 'Ready for PDA Laser, Camera, or Manual Input (Barcode / Item I... / Bin Code)',
+        pda_mode_label: 'PDA Laser Auto-Focus',
+        btn_manual_search: 'Search / Check',
+        btn_camera: 'Camera Scan',
+        quick_samples_label: 'Quick 1-Click Test Samples:',
+        empty_state_title: 'Scan a Barcode or Bin Code, or type manually above to begin',
+        empty_state_desc: 'Instant < 0.01s lookup powered by local indexed SQLite database',
+        report_title: 'Series Distribution & Priority Report (La Familia - Season 2026)',
+        btn_export_excel: 'Export & Download Excel (.xlsx)',
+        data_sync_title: 'Selective Excel Sheets Updater',
+        btn_update_selected: 'Update Selected Sheets Now',
+        users_mgmt_title: 'Users & Granular Permissions (Admin / Supervisor / User)',
+        btn_add_user: 'Add New User'
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      document.getElementById('langBtn').textContent = currentLang === 'ar' ? 'English (EN)' : 'العربية (AR)';
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (I18N[currentLang][key]) {
+          el.textContent = I18N[currentLang][key];
+        }
+      });
+      if (lastScanResponse) renderScanResponse(lastScanResponse);
+      if (currentReportData) renderReportTables();
+    }
+
+    // ==================== PERMISSIONS & NAVIGATION ====================
+    function applyUserPermissionsUI() {
+      const p = currentUser.permissions || {};
+      document.getElementById('currentUserDisplay').textContent = currentUser.display_name;
+      const badge = document.getElementById('currentUserRoleBadge');
+      badge.textContent = currentUser.role.toUpperCase();
+      badge.className = 'role-badge ' + currentUser.role;
+
+      // Top nav visibility
+      document.getElementById('navReportTab').style.display = p.generate_reports ? 'flex' : 'none';
+      document.getElementById('navDataTab').style.display = p.manage_data ? 'flex' : 'none';
+      document.getElementById('navUsersTab').style.display = p.manage_users ? 'flex' : 'none';
+
+      // Homepage 3 check modes availability
+      const modes = ['wh_only', 'stores_only', 'wh_stores'];
+      modes.forEach(m => {
+        const card = document.getElementById('modeCard_' + m);
+        const allowed = !!p['mode_' + m];
+        card.classList.toggle('disabled', !allowed);
+      });
+
+      // Ensure currentCheckMode is allowed; otherwise fallback to first allowed mode
+      if (!p['mode_' + currentCheckMode]) {
+        const firstAllowed = modes.find(m => !!p['mode_' + m]) || 'wh_only';
+        currentCheckMode = firstAllowed;
+      }
+      modes.forEach(m => {
+        document.getElementById('modeCard_' + m).classList.toggle('active', m === currentCheckMode);
+      });
+
+      // Bin sample chips visibility
+      document.getElementById('sampleBinChip1').style.display = p.scan_bin ? 'inline-block' : 'none';
+      document.getElementById('sampleBinChip2').style.display = p.scan_bin ? 'inline-block' : 'none';
+
+      // If currently on a hidden view, return to scannerView
+      const activeView = document.querySelector('.view-section.active');
+      if (activeView) {
+        if (activeView.id === 'reportView' && !p.generate_reports) switchView('scannerView');
+        if (activeView.id === 'dataView' && !p.manage_data) switchView('scannerView');
+        if (activeView.id === 'usersView' && !p.manage_users) switchView('scannerView');
+      }
+
+      if (lastScanResponse) renderScanResponse(lastScanResponse);
+    }
+
+    function selectCheckMode(mode) {
+      const p = currentUser.permissions || {};
+      if (!p['mode_' + mode]) {
+        alert(currentLang === 'ar' ? '⚠️ ليس لديك صلاحية لهذا الوضع. يحدد الأدمن الصلاحيات المسموحة لحسابك.' : '⚠️ You do not have permission for this check mode.');
+        return;
+      }
+      currentCheckMode = mode;
+      ['wh_only', 'stores_only', 'wh_stores'].forEach(m => {
+        document.getElementById('modeCard_' + m).classList.toggle('active', m === mode);
+      });
+      if (lastScanResponse) renderScanResponse(lastScanResponse);
+    }
+
+    function switchView(viewId) {
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+      document.querySelectorAll('.nav-tab').forEach(t => {
+        t.classList.toggle('active', t.getAttribute('data-view') === viewId);
+      });
+      if (viewId === 'reportView' && !currentReportData) loadDistributionReport();
+      if (viewId === 'dataView') loadSheetsMetadata();
+      if (viewId === 'usersView') loadUsersList();
+    }
+
+    // ==================== 4G CLOUD BUNDLE ENGINE (STANDALONE GITHUB PAGES + LOCAL HYBRID) ====================
+    let cloudBundle = null;
+    let cloudUsers = null;
+    let isStaticCloudHost = location.hostname.includes('github.io');
+
+    async function refreshRemoteCloudData(showAlert = false) {
+      const btn = document.getElementById('btnRemoteRefresh');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '⏳ جاري التحديث...';
+      }
+      try {
+        const ts = Date.now();
+        const [bRes, uRes] = await Promise.all([
+          fetch(`./data_bundle.json?t=${ts}`),
+          fetch(`./users_bundle.json?t=${ts}`)
+        ]);
+        if (bRes.ok) {
+          cloudBundle = await bRes.json();
+          const badge = document.getElementById('lastSyncBadge');
+          if (badge && cloudBundle.updated_at) {
+            badge.textContent = `• آخر تحديث: ${cloudBundle.updated_at}`;
+          }
+        }
+        if (uRes.ok) {
+          const uData = await uRes.json();
+          cloudUsers = uData.users || [];
+          // Refresh current user permissions from remote users_bundle
+          const matchU = cloudUsers.find(x => x.username.toLowerCase() === currentUser.username.toLowerCase());
+          if (matchU) {
+            currentUser = { ...matchU };
+            applyUserPermissionsUI();
+          }
+        }
+        if (lastScanResponse && lastScanResponse.queried_code) {
+          await executeLookup(lastScanResponse.queried_code);
+        }
+        if (showAlert) {
+          alert(`✅ تم تحديث البيانات والأرصدة واللوكيشنات بنجاح! (${cloudBundle ? cloudBundle.updated_at : 'الآن'})`);
+        }
+      } catch (e) {
+        console.warn('Cloud bundle fetch info:', e);
+        if (showAlert) alert('⚠️ تعذر سحب التحديث: تأكد من اتصال الإنترنت (4G / Wi-Fi)');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '🔄 تحديث الداتا (Refresh)';
+        }
+      }
+    }
+
+    function seriesUnitsJS(section, n) {
+      if (n <= 0) return [];
+      if (section === 'Women') {
+        const base = [1, 2, 2, 1, 1];
+        return base.slice(0, n).concat(Array(Math.max(0, n - 5)).fill(1));
+      }
+      if (section === 'Men') {
+        if (n <= 4) return Array(n).fill(1);
+        return [1, 1].concat(Array(n - 4).fill(2)).concat([1, 1]);
+      }
+      return Array(n).fill(1);
+    }
+
+    function computeAllocationFromBundle(itemNo, targetBarcode = null) {
+      const b = cloudBundle;
+      const im = (b.items_meta && b.items_meta[itemNo]) || ['', 'La Familia', 'Unknown', '', '', '', ''];
+      const [itemDesc, brandName, sectionRaw, subSection, vendorItemNo, seasonCode, modelNo] = im;
+      const section = sectionRaw === 'Teens' ? 'Kids' : (sectionRaw || 'Unknown');
+      const whOnly = false;
+      const bcs = (b.variants_by_item && b.variants_by_item[itemNo]) || (targetBarcode ? [targetBarcode] : []);
+
+      const lfStores = [
+        ['S0001', 'Avenue Mall', 3],
+        ['S0011', 'Mecca Mall', 3],
+        ['S0002', 'Khalda', 2],
+        ['S0003', 'Tabarbour', 2],
+        ['S0004', 'Marj Al Hamam', 2],
+        ['S0010', 'Irbid', 2],
+        ['S0012', 'Bawabat Al Amadina', 2]
+      ];
+      const storeCodes = lfStores.map(x => x[0]);
+      const seriesOf = Object.fromEntries(lfStores.map(x => [x[0], x[2]]));
+
+      const variants = [];
+      const itemAllTransfers = [];
+      const byColor = {};
+
+      bcs.forEach(bc => {
+        const regInfo = (b.reg_by_bc && b.reg_by_bc[bc]) || [itemNo, '', ''];
+        const cs = regInfo[1] || '';
+        const varCode = regInfo[2] || '';
+        const colorPart = cs.includes('/') ? cs.split('/')[0] : cs;
+        const sizePart = cs.includes('/') ? cs.split('/').slice(-1)[0] : '';
+        const colorKey = bc.length > 4 ? bc.slice(0, -2) : bc;
+        const sizeCode = parseInt(bc.slice(-2), 10) || 0;
+
+        const baseLocs = (b.inv_by_bc && b.inv_by_bc[bc]) || {};
+        const rawBins = (b.bins_by_bc && b.bins_by_bc[bc]) || [];
+        const binsObjs = rawBins.map(x => ({ bin_code: x[0], qty: x[1], avail_qty: x[2], uom: 'PCS' }));
+        const binTotal = binsObjs.reduce((s, x) => s + Number(x.qty || 0), 0);
+
+        const rawTrs = (b.tr_by_bc && b.tr_by_bc[bc]) || [];
+        const trAddedByStore = {};
+        const bcTrs = rawTrs.map(t => {
+          const [docNo, fromC, toC, qVal, stVal, shipDt] = t;
+          if (stVal === 'Released' && qVal > 0) {
+            trAddedByStore[toC] = (trAddedByStore[toC] || 0) + qVal;
+          }
+          const stObj = STORE_COLUMNS.find(sc => sc.code === toC);
+          const toName = stObj ? stObj.en : toC;
+          const obj = { to_number: docNo, barcode: bc, qty: qVal, from_code: fromC, to_code: toC, to_name: toName, status: stVal, ship_date: shipDt };
+          itemAllTransfers.push(obj);
+          return obj;
+        });
+
+        const storesQty = {};
+        const storesBaseQty = {};
+        const storesTrAdded = {};
+        STORE_COLUMNS.forEach(sc => {
+          const baseQ = Number(baseLocs[sc.code] || 0);
+          const addQ = Number(trAddedByStore[sc.code] || 0);
+          storesBaseQty[sc.code] = baseQ;
+          storesTrAdded[sc.code] = addQ;
+          storesQty[sc.code] = baseQ + addQ;
+        });
+
+        const whQ = Number(baseLocs['W0001'] || 0);
+        const inTrQ = Number(baseLocs['IN-TRANSIT'] || 0);
+        const stSum = storeCodes.reduce((acc, sc) => acc + Math.max(0, storesQty[sc] || 0), 0);
+
+        const vObj = {
+          barcode: bc,
+          item_no: itemNo,
+          variant: varCode,
+          color_size: cs,
+          color: colorPart,
+          size: sizePart,
+          color_key: colorKey,
+          size_code: sizeCode,
+          wh_qty: whQ,
+          bin_qty: binTotal,
+          bins: binsObjs,
+          bins_count: binsObjs.length,
+          bins_total_qty: binTotal,
+          in_transit_qty: inTrQ,
+          stores_qty: storesQty,
+          stores_base_qty: storesBaseQty,
+          stores_tr_added: storesTrAdded,
+          transfers: bcTrs,
+          to_numbers_str: bcTrs.map(t => `${t.to_number} (${t.from_code}➔${t.to_name}:${t.qty})`).join(' | '),
+          total_network_qty: Math.max(0, whQ) + Math.max(0, inTrQ) + stSum
+        };
+        variants.push(vObj);
+        (byColor[colorKey] = byColor[colorKey] || []).push(vObj);
+      });
+
+      const colorPlans = {};
+      Object.entries(byColor).forEach(([ck, vlist]) => {
+        vlist.sort((a, b) => (a.size_code - b.size_code) || a.barcode.localeCompare(b.barcode));
+        const avail = vlist.filter(v => v.total_network_qty > 0);
+        const units = seriesUnitsJS(section, avail.length);
+        const availMap = Object.fromEntries(avail.map((v, i) => [v.barcode, units[i]]));
+        vlist.forEach(v => { v.units_per_series = availMap[v.barcode] || 0; });
+
+        const seriesPieces = units.reduce((a, b) => a + b, 0);
+        const whColorTotal = vlist.reduce((a, v) => a + Math.max(0, v.wh_qty || v.bin_qty || 0), 0);
+        const whLow = (whColorTotal < seriesPieces) && (seriesPieces > 0);
+
+        const leftByBc = Object.fromEntries(vlist.map(v => [v.barcode, Math.max(0, v.wh_qty > 0 ? v.wh_qty : v.bin_qty)]));
+        vlist.forEach(v => {
+          v.order_by_store = Object.fromEntries(storeCodes.map(s => [s, 0]));
+          v.st_transfer_from = null;
+          v.st_transfer_to = null;
+        });
+
+        storeCodes.forEach(s => {
+          const stColorTot = vlist.reduce((a, v) => a + Math.max(0, v.stores_qty[s] || 0), 0);
+          const rawGives = {};
+          vlist.forEach(v => {
+            const ups = v.units_per_series;
+            const target = ups * seriesOf[s];
+            const shownQ = Math.max(0, v.stores_qty[s] || 0);
+            const need = Math.max(0, target - shownQ);
+            let give = 0;
+            if (whLow) {
+              if (stColorTot > 0 && shownQ === 0 && leftByBc[v.barcode] > 0) {
+                give = Math.min(1, need, leftByBc[v.barcode]);
+              }
+            } else {
+              give = Math.min(need, leftByBc[v.barcode]);
+            }
+            rawGives[v.barcode] = give;
+          });
+          const have1st = vlist.reduce((a, v) => a + Math.min(Math.max(0, v.stores_qty[s] || 0) + rawGives[v.barcode], v.units_per_series), 0);
+          const comp = seriesPieces > 0 ? (have1st / seriesPieces) : 0;
+          const ok = (comp >= 0.5999) || (whLow && stColorTot > 0);
+          vlist.forEach(v => {
+            const fg = ok ? rawGives[v.barcode] : 0;
+            v.order_by_store[s] = fg;
+            leftByBc[v.barcode] -= fg;
+          });
+        });
+
+        if (!whLow) {
+          storeCodes.forEach(s => {
+            const haveCurr = vlist.reduce((a, v) => a + Math.min(Math.max(0, v.stores_qty[s] || 0) + v.order_by_store[s], v.units_per_series), 0);
+            const comp = seriesPieces > 0 ? (haveCurr / seriesPieces) : 0;
+            if (comp < 0.5999) return;
+            vlist.forEach(v => {
+              if (leftByBc[v.barcode] <= 0) return;
+              const fullT = v.units_per_series * (seriesOf[s] + 1);
+              const curr = Math.max(0, v.stores_qty[s] || 0) + v.order_by_store[s];
+              const exNeed = Math.max(0, fullT - curr);
+              const exGive = Math.min(exNeed, leftByBc[v.barcode]);
+              if (exGive > 0) {
+                v.order_by_store[s] += exGive;
+                leftByBc[v.barcode] -= exGive;
+              }
+            });
+          });
+        }
+
+        // Store color status & Store-to-Store transfer when WH == 0
+        const stColorStatus = {};
+        lfStores.forEach(([s, sname, sSr], idx) => {
+          const cQty = vlist.reduce((a, v) => a + Math.max(0, v.stores_qty[s] || 0), 0);
+          const c1st = vlist.reduce((a, v) => a + Math.min(Math.max(0, v.stores_qty[s] || 0), v.units_per_series), 0);
+          const cComp = seriesPieces > 0 ? Math.round((c1st / seriesPieces) * 1000) / 10 : 0;
+          stColorStatus[s] = { carries_color: cQty > 0, is_dead_color: cQty > 0 && cComp < 60, priority_rank: idx + 1 };
+        });
+
+        vlist.forEach(v => {
+          const effWh = Math.max(0, v.wh_qty > 0 ? v.wh_qty : v.bin_qty);
+          v.total_order = Object.values(v.order_by_store).reduce((a, b) => a + b, 0);
+          v.wh_left = Math.max(0, effWh - v.total_order);
+
+          if (effWh <= 0 && v.units_per_series > 0) {
+            let recS = null;
+            let recLyr = 99;
+            lfStores.forEach(([s, _, sSr]) => {
+              const sm = stColorStatus[s];
+              if (!sm.carries_color || sm.is_dead_color) return;
+              const ohQ = Math.max(0, v.stores_qty[s] || 0);
+              if (ohQ < v.units_per_series * sSr) {
+                const lyr = ohQ < v.units_per_series ? 1 : (ohQ < v.units_per_series * 2 ? 2 : 3);
+                if (lyr < recLyr) { recLyr = lyr; recS = s; }
+              }
+            });
+            if (recS) {
+              const recRank = stColorStatus[recS].priority_rank;
+              for (let i = lfStores.length - 1; i >= 0; i--) {
+                const [donS, _, donSr] = lfStores[i];
+                if (donS === recS) continue;
+                const ohQ = Math.max(0, v.stores_qty[donS] || 0);
+                if (ohQ <= 0) continue;
+                const fullT = v.units_per_series * (donSr + 1);
+                const sm = stColorStatus[donS];
+                if (ohQ > fullT || (donS !== 'S0001' && donS !== 'S0011' && sm.is_dead_color && sm.priority_rank > recRank)) {
+                  v.st_transfer_from = donS;
+                  v.st_transfer_to = recS;
+                  break;
+                }
+              }
+            }
+          }
+
+          const orderedStores = Object.entries(v.order_by_store).filter(([_, q]) => q > 0);
+          if (effWh > 0 && orderedStores.length > 0) {
+            v.eligible_store_code = orderedStores[0][0];
+            v.eligible_mode = 'wh';
+            v.eligible_summary = orderedStores.map(([s, q]) => `${STORE_COLUMNS.find(x => x.code === s).en} (+${q})`).join(' + ');
+          } else if (effWh > 0) {
+            v.eligible_store_code = null;
+            v.eligible_mode = 'wh_full';
+            v.eligible_summary = whLow ? 'أقل من سيري بالمستودع (يُحفظ للريبلنشمنت)' : 'مكتمل بالمحلات (يبقى بالمستودع)';
+          } else if (v.st_transfer_from && v.st_transfer_to) {
+            v.eligible_store_code = v.st_transfer_to;
+            v.eligible_mode = 'transfer';
+            const frN = STORE_COLUMNS.find(x => x.code === v.st_transfer_from).en;
+            const toN = STORE_COLUMNS.find(x => x.code === v.st_transfer_to).en;
+            v.eligible_summary = `🔄 نقل (1) من ${frN} ⬅ إلى ${toN}`;
+          } else {
+            v.eligible_store_code = null;
+            v.eligible_mode = 'none';
+            v.eligible_summary = '-';
+          }
+        });
+
+        colorPlans[ck] = { wh_low: whLow, series_pieces: seriesPieces };
+      });
+
+      return {
+        item_no: itemNo,
+        description: itemDesc,
+        vendor_item_no: vendorItemNo,
+        section: section,
+        sub_section: subSection,
+        brand_name: brandName,
+        season_code: seasonCode,
+        variants: variants,
+        item_transfers: itemAllTransfers,
+        color_plans: colorPlans
+      };
+    }
+
+    function lookupInCloudBundle(code) {
+      const b = cloudBundle;
+      const q = code.trim();
+      const qUp = q.toUpperCase();
+
+      // 1. Check Bin Code
+      const binMatchKey = Object.keys(b.bins_by_code || {}).find(k => k.toUpperCase() === qUp);
+      if (binMatchKey) {
+        const rawList = b.bins_by_code[binMatchKey];
+        let totQ = 0;
+        const items = rawList.map(entry => {
+          const [bc, ino, qVal, avVal, bDesc] = entry;
+          totQ += Number(qVal || 0);
+          const im = (b.items_meta && b.items_meta[ino]) || [bDesc, 'La Familia', '', '', '', '', ''];
+          const reg = (b.reg_by_bc && b.reg_by_bc[bc]) || [ino, '', ''];
+          return {
+            barcode: bc, item_no: ino, serial: ino,
+            description: im[0] || bDesc, brand: im[1], section: im[2], dept: im[2], art_no: im[4],
+            color_size: reg[1], variant: reg[2], qty: qVal, avail_qty: avVal, uom: 'PCS', bin_code: binMatchKey
+          };
+        });
+        return { ok: true, scan_type: 'bin', bin_code: binMatchKey, sku_count: items.length, total_qty: totQ, items };
+      }
+
+      // 2. Check TO Number
+      const toMatchKey = Object.keys(b.tr_by_doc || {}).find(k => k.toUpperCase() === qUp);
+      if (toMatchKey) {
+        const rawList = b.tr_by_doc[toMatchKey];
+        let totQ = 0;
+        const items = rawList.map(entry => {
+          const [bc, ino, fromC, toC, qVal, stVal, shipDt] = entry;
+          totQ += Number(qVal || 0);
+          const im = (b.items_meta && b.items_meta[ino]) || ['', 'La Familia', '', '', '', '', ''];
+          const reg = (b.reg_by_bc && b.reg_by_bc[bc]) || [ino, '', ''];
+          const stObj = STORE_COLUMNS.find(sc => sc.code === toC);
+          return {
+            to_number: toMatchKey, barcode: bc, serial: ino, item_no: ino,
+            description: im[0], brand: im[1], dept: im[2], art_no: im[4], color_size: reg[1],
+            qty: qVal, from_code: fromC, to_code: toC, to_name: stObj ? stObj.en : toC, status: stVal, ship_date: shipDt
+          };
+        });
+        return { ok: true, scan_type: 'to_number', to_number: toMatchKey, lines_count: items.length, total_qty: totQ, items };
+      }
+
+      // 3. Check Item Code (Serial starting with I)
+      const itemMatchKey = Object.keys(b.items_meta || {}).find(k => k.toUpperCase() === qUp)
+        || Object.keys(b.variants_by_item || {}).find(k => k.toUpperCase() === qUp);
+      if (itemMatchKey) {
+        const alloc = computeAllocationFromBundle(itemMatchKey, null);
+        const itemAllBins = [];
+        alloc.variants.forEach(v => (v.bins || []).forEach(bo => itemAllBins.push({ ...bo, barcode: v.barcode })));
+        return {
+          ok: true, scan_type: 'item_all_barcodes', queried_code: code, item_no: itemMatchKey,
+          item_all_bins: itemAllBins, item_unique_bins_count: new Set(itemAllBins.map(x => x.bin_code)).size,
+          allocation: alloc
+        };
+      }
+
+      // 4. Check Barcode
+      const regEntry = b.reg_by_bc && b.reg_by_bc[q];
+      if (regEntry) {
+        const ino = regEntry[0];
+        const alloc = computeAllocationFromBundle(ino, q);
+        const sv = alloc.variants.find(v => v.barcode === q) || alloc.variants[0];
+        const bcBins = sv ? (sv.bins || []) : [];
+        return {
+          ok: true, scan_type: 'barcode', queried_code: code, target_barcode: q, item_no: ino,
+          scanned_variant: sv, barcode_bins: bcBins, barcode_bins_count: bcBins.length,
+          barcode_bins_total_qty: bcBins.reduce((s, x) => s + Number(x.qty || 0), 0),
+          item_all_bins: bcBins, item_unique_bins_count: bcBins.length, allocation: alloc
+        };
+      }
+
+      return { ok: false, error: `لم يتم العثور على باركود أو آيتم كود أو رف (Bin) أو TO بالكود: ${code}` };
+    }
+
+    // ==================== QUICK ACCOUNT SWITCHER & LOGIN ====================
+    async function quickSwitchUser(username, password) {
+      if (!isStaticCloudHost) {
+        try {
+          const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.ok) {
+              currentUser = data.user;
+              document.querySelectorAll('.proto-chip').forEach(c => {
+                c.classList.toggle('active', c.getAttribute('onclick').includes(`'${username}'`));
+              });
+              applyUserPermissionsUI();
+              return;
+            }
+          }
+        } catch (e) {}
+      }
+      // Fallback / 4G Cloud Users check
+      if (!cloudUsers) await refreshRemoteCloudData(false);
+      const uList = cloudUsers || [];
+      const found = uList.find(x => x.username.toLowerCase() === username.toLowerCase() && x.password === password);
+      if (found) {
+        currentUser = { ...found };
+        document.querySelectorAll('.proto-chip').forEach(c => {
+          c.classList.toggle('active', c.getAttribute('onclick').includes(`'${username}'`));
+        });
+        applyUserPermissionsUI();
+      } else {
+        alert('اسم المستخدم أو كلمة المرور غير صحيحة');
+      }
+    }
+
+    function openLoginModal() {
+      document.getElementById('loginModal').classList.add('open');
+    }
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.remove('open');
+    }
+    async function submitLogin() {
+      const u = document.getElementById('loginUsername').value.trim();
+      const p = document.getElementById('loginPassword').value.trim();
+      await quickSwitchUser(u, p);
+      closeLoginModal();
+    }
+
+    // ==================== SCANNER, PDA WEDGE & MANUAL AUTOCOMPLETE ====================
+    const scanInput = document.getElementById('scanInput');
+    const suggestDropdown = document.getElementById('suggestDropdown');
+    let suggestTimer = null;
+
+    scanInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        suggestDropdown.classList.remove('open');
+        triggerScanFromInput();
+      }
+    });
+
+    scanInput.addEventListener('input', () => {
+      clearTimeout(suggestTimer);
+      const q = scanInput.value.trim();
+      if (q.length < 2) {
+        suggestDropdown.classList.remove('open');
+        return;
+      }
+      suggestTimer = setTimeout(() => fetchSuggestions(q), 160);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.scan-input-wrap')) {
+        suggestDropdown.classList.remove('open');
+      }
+    });
+
+    async function fetchSuggestions(q) {
+      try {
+        let suggestions = [];
+        if (!isStaticCloudHost) {
+          try {
+            const res = await fetch(`/api/suggest?q=${encodeURIComponent(q)}`);
+            if (res.ok) {
+              const data = await res.json();
+              if (data.ok) suggestions = data.suggestions || [];
+            }
+          } catch (e) { isStaticCloudHost = true; }
+        }
+        if (isStaticCloudHost && cloudBundle) {
+          const qUp = q.toUpperCase();
+          // Bin suggestions
+          Object.keys(cloudBundle.bins_by_code || {}).forEach(bcode => {
+            if (suggestions.length < 5 && bcode.toUpperCase().includes(qUp)) {
+              const arr = cloudBundle.bins_by_code[bcode];
+              suggestions.push({ type: 'bin', code: bcode, label: `رف مستودع (Bin): ${bcode}`, sub: `${arr.length} SKUs` });
+            }
+          });
+          // Item code suggestions
+          Object.keys(cloudBundle.items_meta || {}).forEach(ino => {
+            if (suggestions.length < 10 && ino.toUpperCase().includes(qUp)) {
+              const im = cloudBundle.items_meta[ino];
+              const bcCnt = ((cloudBundle.variants_by_item || {})[ino] || []).length;
+              suggestions.push({ type: 'item_code', code: ino, label: im[0], sub: `عرض كل باركودات الموديل (${bcCnt} باركود)` });
+            }
+          });
+          // Barcode suggestions
+          Object.keys(cloudBundle.reg_by_bc || {}).forEach(bc => {
+            if (suggestions.length < 15 && bc.includes(q)) {
+              const [ino, cs] = cloudBundle.reg_by_bc[bc];
+              const im = (cloudBundle.items_meta || {})[ino] || [''];
+              suggestions.push({ type: 'barcode', code: bc, label: im[0], sub: `${ino} | ${cs}` });
+            }
+          });
+        }
+        const p = currentUser.permissions || {};
+        const filtered = suggestions.filter(s => s.type !== 'bin' || p.scan_bin);
+        if (!filtered.length) {
+          suggestDropdown.classList.remove('open');
+          return;
+        }
+        suggestDropdown.innerHTML = filtered.map(s => `
+          <div class="suggest-item" onclick="executeLookup('${s.code}')">
+            <div>
+              <div class="suggest-code">${s.code}</div>
+              <div class="suggest-sub">${s.label || ''} — ${s.sub || ''}</div>
+            </div>
+            <span class="suggest-type ${s.type}">${s.type === 'bin' ? '🗄️ BIN' : (s.type === 'item_code' ? '👕 ITEM (كل الباركودات)' : '📦 BARCODE')}</span>
+          </div>
+        `).join('');
+        suggestDropdown.classList.add('open');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function clearScanInput() {
+      scanInput.value = '';
+      suggestDropdown.classList.remove('open');
+      scanInput.focus();
+    }
+
+    function triggerScanFromInput() {
+      const code = scanInput.value.trim();
+      if (!code) return;
+      executeLookup(code);
+    }
+
+    async function executeLookup(code) {
+      scanInput.value = code;
+      suggestDropdown.classList.remove('open');
+      const area = document.getElementById('scanResultsArea');
+      area.innerHTML = `<div class="card" style="text-align:center; padding:24px;">⏳ جاري الفحص الفوري للكود <strong>${code}</strong> ...</div>`;
+      try {
+        const t0 = performance.now();
+        let data = null;
+        if (!isStaticCloudHost) {
+          try {
+            const res = await fetch(`/api/scan?code=${encodeURIComponent(code)}`);
+            if (res.ok) data = await res.json();
+            else isStaticCloudHost = true;
+          } catch (e) {
+            isStaticCloudHost = true;
+          }
+        }
+        if (!data) {
+          if (!cloudBundle) await refreshRemoteCloudData(false);
+          data = lookupInCloudBundle(code);
+        }
+        data._elapsedMs = Math.max(1, Math.round(performance.now() - t0));
+        if (!data.ok) {
+          area.innerHTML = `
+            <div class="card" style="border-color:var(--q-danger); background:var(--q-danger-bg); color:var(--q-danger);">
+              <h3>❌ ${data.error}</h3>
+            </div>
+          `;
+          return;
+        }
+        if (data.scan_type === 'bin' && !(currentUser.permissions && currentUser.permissions.scan_bin)) {
+          area.innerHTML = `
+            <div class="card" style="border-color:var(--q-warning); background:var(--q-warning-bg);">
+              <h3>🔒 ليس لديك صلاحية فحص محتويات الـ Bin (اطلب تفعيلها من الأدمن)</h3>
+            </div>
+          `;
+          return;
+        }
+        lastScanResponse = data;
+        renderScanResponse(data);
+        if (document.getElementById('pdaAutoFocusToggle').checked) {
+          scanInput.select();
+        }
+      } catch (e) {
+        area.innerHTML = `<div class="card">خطأ في الاتصال: ${e.message}</div>`;
+      }
+    }
+
+    // ==================== RENDER SCAN RESULTS (DYNAMIC AVAILABILITY TABLE) ====================
+    let adminTableValMode = 'onhand'; // Default to showing actual availability where item exists ('onhand' | 'order')
+    let hideZeroLocations = true;     // Only show stores & locations where the item actually exists (> 0)
+
+    const STORE_COLUMNS = [
+      { code: 'S0001', short: 'Avenue', en: 'Avenue Mall', ar: 'أفنيو مول', sr: 3, prio: true },
+      { code: 'S0011', short: 'Mecca', en: 'Mecca Mall', ar: 'مكة مول', sr: 3, prio: true },
+      { code: 'S0002', short: 'Khalda', en: 'Khalda', ar: 'خلدا', sr: 2, prio: true },
+      { code: 'S0003', short: 'Tabarbour', en: 'Tabarbour', ar: 'طبربور', sr: 2, prio: false },
+      { code: 'S0004', short: 'Marj', en: 'Marj Al Hamam', ar: 'مرج الحمام', sr: 2, prio: false },
+      { code: 'S0010', short: 'Irbid', en: 'Irbid', ar: 'إربد', sr: 2, prio: false },
+      { code: 'S0012', short: 'Zarqa', en: 'Bawabat Al Amadina', ar: 'بوابة المدينة', sr: 2, prio: false },
+      { code: 'S0005', short: 'Istiklal', en: 'Istiklal Mall', ar: 'استقلال مول', sr: 0, prio: false },
+      { code: 'S0006', short: 'Online', en: 'Online Store', ar: 'أونلاين', sr: 0, prio: false },
+      { code: 'S0007', short: 'Ohana Av.', en: 'Ohana Avenue', ar: 'أوهانا أفنيو', sr: 0, prio: false },
+      { code: 'S0008', short: 'Ohana Kh.', en: 'Ohana Khalda', ar: 'أوهانا خلدا', sr: 0, prio: false },
+      { code: 'S0009', short: 'LaVenta', en: 'LaVenta Avenue', ar: 'لافينتا أفنيو', sr: 0, prio: false }
+    ];
+
+    function setAdminTableValMode(m) {
+      adminTableValMode = m;
+      if (lastScanResponse) renderScanResponse(lastScanResponse);
+      if (currentReportData) renderReportTables();
+    }
+
+    function toggleHideZeroLocations(val) {
+      hideZeroLocations = val;
+      if (lastScanResponse) renderScanResponse(lastScanResponse);
+      if (currentReportData) renderReportTables();
+    }
+
+    function buildWarehousePerBinTableHtml(binRows) {
+      const hasTO = binRows.some(r => r.transfers && r.transfers.length > 0);
+      return `
+        <div class="table-wrap">
+          <table class="excel-table" dir="ltr">
+            <thead>
+              <tr style="background:#efefef;">
+                <th class="xl-left">Serial</th>
+                <th class="xl-left">Barcode</th>
+                <th class="xl-left">Description</th>
+                <th class="xl-left">Brand</th>
+                <th class="xl-left">DEPT</th>
+                <th class="xl-left">ART NO..</th>
+                <th>Wh Qty</th>
+                <th class="xl-left">Bin</th>
+                ${hasTO ? `<th class="xl-yellow xl-left">TO Number (من ⬅ إلى)</th>` : ''}
+              </tr>
+            </thead>
+            <tbody>
+              ${binRows.length ? binRows.map(r => `
+                <tr>
+                  <td class="xl-left" style="font-weight:700; cursor:pointer; color:#745736;" onclick="executeLookup('${r.serial}')">${r.serial}</td>
+                  <td class="xl-left" style="font-weight:700; cursor:pointer; color:#0c5489;" onclick="executeLookup('${r.barcode}')">${r.barcode}</td>
+                  <td class="xl-left">${r.description || ''}</td>
+                  <td class="xl-left">${r.brand || ''}</td>
+                  <td class="xl-left">${r.dept || ''}</td>
+                  <td class="xl-left">${r.art_no || ''}</td>
+                  <td style="font-weight:800;">${r.wh_qty}</td>
+                  <td class="xl-left" style="font-weight:700; cursor:pointer; color:#745736;" onclick="if('${r.bin}') executeLookup('${r.bin}')">${r.bin || '-'}</td>
+                  ${hasTO ? `
+                    <td class="xl-left" style="font-weight:700; background:#fffdf0; color:#745736;">
+                      ${(r.transfers && r.transfers.length)
+                        ? r.transfers.map(t => `<span style="cursor:pointer; text-decoration:underline; margin-inline-end:6px;" onclick="executeLookup('${t.to_number}')">📄 ${t.to_number} (${t.from_code}➔${t.to_name}:${t.qty})</span>`).join(' ')
+                        : '-'}
+                    </td>
+                  ` : ''}
+                </tr>
+              `).join('') : `<tr><td colspan="9" style="padding:18px; text-align:center;">غير موجود في أي Bin داخل المستودع حالياً (0)</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function variantsToPerBinRows(alloc, variantsList) {
+      const outRows = [];
+      variantsList.forEach(v => {
+        const bins = v.bins || [];
+        if (bins.length > 0) {
+          bins.forEach(b => {
+            outRows.push({
+              serial: alloc.item_no,
+              barcode: v.barcode,
+              description: alloc.description || b.description || '',
+              brand: alloc.brand_name || '',
+              dept: alloc.section || '',
+              art_no: alloc.vendor_item_no || '',
+              wh_qty: b.qty,
+              bin: b.bin_code,
+              transfers: v.transfers || []
+            });
+          });
+        } else {
+          outRows.push({
+            serial: alloc.item_no,
+            barcode: v.barcode,
+            description: alloc.description || '',
+            brand: alloc.brand_name || '',
+            dept: alloc.section || '',
+            art_no: alloc.vendor_item_no || '',
+            wh_qty: v.wh_qty || 0,
+            bin: '-',
+            transfers: v.transfers || []
+          });
+        }
+      });
+      return outRows;
+    }
+
+    function buildCleanAPTableHtml(rows, showWH, showStores, showEligible, modeToggleHtml = '', allItemBinsSummary = []) {
+      const useOrder = showEligible && (adminTableValMode === 'order');
+
+      // 1. Expand rows so if a barcode exists in multiple Bins, it repeats the row for each Bin!
+      const expandedRows = [];
+      rows.forEach(r => {
+        const bins = (r.all_bins && r.all_bins.length)
+          ? r.all_bins
+          : [r.location1, r.location2, r.location3].filter(Boolean).map(c => ({ bin_code: c, qty: r.wh_oh || 0 }));
+        if (showWH && bins.length > 0) {
+          bins.forEach(b => {
+            expandedRows.push({
+              ...r,
+              row_wh_qty: (b.qty !== null && b.qty !== undefined) ? b.qty : (r.wh_oh || 0),
+              row_bin: b.bin_code
+            });
+          });
+        } else {
+          expandedRows.push({
+            ...r,
+            row_wh_qty: r.wh_oh || 0,
+            row_bin: ''
+          });
+        }
+      });
+
+      // Sort expanded rows so rows that HAVE a Bin (row_bin !== '') appear at the very top!
+      expandedRows.sort((a, b) => {
+        const aHasBin = a.row_bin ? 1 : 0;
+        const bHasBin = b.row_bin ? 1 : 0;
+        if (aHasBin !== bHasBin) return bHasBin - aHasBin;
+        if (b.row_wh_qty !== a.row_wh_qty) return b.row_wh_qty - a.row_wh_qty;
+        return String(a.barcode).localeCompare(String(b.barcode));
+      });
+
+      // 2. Filter store columns dynamically: only show stores where at least one row has qty > 0
+      let activeStores = [];
+      if (showStores) {
+        if (hideZeroLocations) {
+          activeStores = STORE_COLUMNS.filter(s =>
+            expandedRows.some(r => {
+              const v = useOrder ? Number((r.or_stores || {})[s.code] || 0) : Number((r.oh_stores || {})[s.code] || 0);
+              return v > 0 || (useOrder && r.winner_store === s.code);
+            })
+          );
+        } else {
+          activeStores = STORE_COLUMNS.slice(0, 7);
+        }
+      }
+
+      const hasInTransit = showStores && expandedRows.some(r => Number(r.in_transit || 0) > 0 || (r.to_numbers_str && r.to_numbers_str.length > 0));
+
+      // Summary banner of all unique Bins where this item exists
+      let binsSummaryHtml = '';
+      if (showWH && allItemBinsSummary && allItemBinsSummary.length > 0) {
+        const totalInBins = allItemBinsSummary.reduce((acc, b) => acc + Number(b.qty || 0), 0);
+        binsSummaryHtml = `
+          <div style="background:#f5efe8; border:1px solid #d8c6b0; border-radius:8px; padding:10px 14px; margin-bottom:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <strong style="color:#745736; font-size:0.84rem;">🗄️ كل اللوكيشنات المتوفر فيها الآيتم بالمستودع (${allItemBinsSummary.length} لوكيشن | إجمالي ${totalInBins} قطعة):</strong>
+            ${allItemBinsSummary.map(b => `
+              <span class="tag tag-bronze" style="font-family:Roboto; font-size:0.82rem; cursor:pointer; border:1px solid #906f49;" onclick="executeLookup('${b.bin_code}')">
+                📍 ${b.bin_code} (${b.qty})
+              </span>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      return `
+        ${modeToggleHtml}
+        ${binsSummaryHtml}
+        <div class="table-wrap">
+          <table class="excel-table" dir="ltr">
+            <thead>
+              <tr style="background:#efefef;">
+                <th class="xl-left">Serial</th>
+                <th class="xl-left">Barcode</th>
+                <th class="xl-left">Description</th>
+                <th class="xl-left">Brand</th>
+                <th class="xl-left">DEPT</th>
+                <th class="xl-left">ART NO..</th>
+                <th class="xl-left">Color/Size</th>
+                ${activeStores.map(s => `<th>${s.short}</th>`).join('')}
+                ${hasInTransit ? `<th class="xl-yellow">In-Transit</th><th class="xl-yellow xl-left">TO Number (من ⬅ إلى)</th>` : ''}
+                ${showWH ? `<th class="xl-blue">Wh Qty</th><th class="xl-left">Bin (Location)</th>` : ''}
+                ${showEligible ? `<th class="xl-yellow">⭐ المحل الأحق</th>` : ''}
+              </tr>
+            </thead>
+            <tbody>
+              ${expandedRows.length ? expandedRows.map(r => {
+                const winStoreObj = r.winner_store ? STORE_COLUMNS.find(x => x.code === r.winner_store) : null;
+        return `
+                  <tr style="${r.row_bin ? 'background:#fffdf9;' : ''}">
+                    <td class="xl-left" style="font-weight:700; cursor:pointer; color:#745736;" onclick="executeLookup('${r.serial}')">${r.serial}</td>
+                    <td class="xl-left" style="font-weight:700; cursor:pointer; color:#0c5489;" onclick="executeLookup('${r.barcode}')">${r.barcode}</td>
+                    <td class="xl-left">${r.description || ''}</td>
+                    <td class="xl-left">${r.brand || 'La Familia'}</td>
+                    <td class="xl-left">${r.dept || ''}</td>
+                    <td class="xl-left">${r.art_no || ''}</td>
+                    <td class="xl-left" style="font-weight:700;">${r.color_size || '-'}</td>
+                    ${activeStores.map(s => {
+          const val = useOrder ? Number((r.or_stores || {})[s.code] || 0) : Number((r.oh_stores || {})[s.code] || 0);
+          const trAdd = !useOrder ? Number((r.tr_added_stores || {})[s.code] || 0) : 0;
+          const getsWhOrder = showEligible && Number((r.or_stores || {})[s.code] || 0) > 0 && Number(r.wh_oh || 0) > 0;
+          const isTransferRec = showEligible && r.st_transfer_to === s.code;
+          const isTransferDon = showEligible && r.st_transfer_from === s.code;
+          let cellStyle = val > 0 ? 'font-weight:800; color:#000;' : 'color:#bbb;';
+          if (getsWhOrder || isTransferRec) {
+            cellStyle = 'background:#d4edda; color:#155724; font-weight:900;';
+          } else if (isTransferDon) {
+            cellStyle = 'background:#fff3cd; color:#856404; font-weight:900;';
+          }
+          const trTag = trAdd > 0 ? ` <small style="color:#b86b11; font-weight:800;" title="شامل +${trAdd} من الـ Transfer Line">(+${trAdd} TO)</small>` : '';
+          return `<td style="${cellStyle}">${val}${trTag}</td>`;
+        }).join('')}
+                    ${hasInTransit ? `
+                      <td style="font-weight:800; background:#fff9db;">${r.in_transit || 0}</td>
+                      <td class="xl-left" style="font-weight:700; background:#fffdf0; color:#745736;">
+                        ${(r.transfers && r.transfers.length)
+                          ? r.transfers.map(t => `<span style="cursor:pointer; text-decoration:underline; margin-inline-end:6px;" onclick="executeLookup('${t.to_number}')">📄 ${t.to_number} (${t.from_code}➔${t.to_name}:${t.qty})</span>`).join(' ')
+                          : '-'}
+                      </td>
+                    ` : ''}
+                    ${showWH ? `
+                      <td style="font-weight:800; background:${r.row_wh_qty > 0 ? '#e8f3fb' : 'transparent'}; color:${r.row_wh_qty > 0 ? '#0c5489' : '#bbb'};">${r.row_wh_qty}</td>
+                      <td class="xl-left" style="font-weight:800; color:#745736; cursor:pointer;" onclick="if('${r.row_bin}') executeLookup('${r.row_bin}')">${r.row_bin || '-'}</td>
+                    ` : ''}
+                    ${showEligible ? `
+                      <td style="font-weight:800; background:${r.eligible_mode === 'wh' ? '#e7f6ee' : (r.eligible_mode === 'transfer' ? '#fff9db' : 'transparent')}; color:${r.eligible_mode === 'wh' ? '#16794b' : (r.eligible_mode === 'transfer' ? '#b86b11' : '#777')};">
+                        ${r.eligible_mode === 'wh' ? '⭐ ' + r.eligible_summary : (r.eligible_summary || '-')}
+                      </td>
+                    ` : ''}
+                  </tr>
+                `;
+      }).join('') : `<tr><td colspan="20" style="padding:18px; text-align:center;">لا توجد بيانات</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function variantToAPRow(alloc, v) {
+      const bins = v.bins || [];
+      const or_st = {};
+      const oh_st = {};
+      const tr_st = {};
+      STORE_COLUMNS.forEach(s => {
+        oh_st[s.code] = Number((v.stores_qty || {})[s.code] || 0);
+        or_st[s.code] = Number((v.order_by_store || {})[s.code] || 0);
+        tr_st[s.code] = Number((v.stores_tr_added || {})[s.code] || 0);
+      });
+      const effWhQty = Number(v.wh_qty || 0) > 0 ? Number(v.wh_qty) : Number(v.bins_total_qty || 0);
+      return {
+        barcode: v.barcode,
+        serial: alloc.item_no,
+        description: alloc.description || '',
+        brand: alloc.brand_name || 'La Familia',
+        dept: alloc.section || '',
+        art_no: alloc.vendor_item_no || '',
+        color_size: v.color_size || '',
+        wh_oh: effWhQty,
+        in_transit: Number(v.in_transit_qty || 0),
+        transfers: v.transfers || [],
+        to_numbers_str: v.to_numbers_str || '',
+        oh_stores: oh_st,
+        or_stores: or_st,
+        tr_added_stores: tr_st,
+        winner_store: v.eligible_store_code || null,
+        eligible_mode: v.eligible_mode || 'none',
+        eligible_summary: v.eligible_summary || '-',
+        st_transfer_from: v.st_transfer_from || null,
+        st_transfer_to: v.st_transfer_to || null,
+        all_bins: bins.map(b => ({ bin_code: b.bin_code, qty: b.qty })),
+        location1: bins[0] ? bins[0].bin_code : '',
+        location2: bins[1] ? bins[1].bin_code : '',
+        location3: bins[2] ? bins[2].bin_code : ''
+      };
+    }
+
+    function buildTransfersTabHtml(transfersList) {
+      if (!transfersList || !transfersList.length) return '';
+      return `
+        <details open style="margin-top:12px; background:#fffdf7; border:1px solid #e6d5b8; border-radius:10px; padding:10px 14px;">
+          <summary style="cursor:pointer; font-weight:800; font-size:0.86rem; color:#745736;">
+            🚚 تابة تفاصيل الـ In-Transit وأرقام الـ TO Number (${transfersList.length} حركة نقل مضافة على أرصدة المحلات)
+          </summary>
+          <div class="table-wrap" style="margin-top:8px;">
+            <table class="excel-table" dir="ltr">
+              <thead>
+                <tr style="background:#fff3cd;">
+                  <th class="xl-left">TO Number (Document No.)</th>
+                  <th class="xl-left">Barcode</th>
+                  <th class="xl-left">From Location</th>
+                  <th class="xl-left">To Store (المحل المستلم)</th>
+                  <th>Qty (المضافة للمحل)</th>
+                  <th>Status</th>
+                  <th class="xl-left">Shipment Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${transfersList.map(t => `
+                  <tr>
+                    <td class="xl-left" style="font-weight:800; color:#745736; cursor:pointer; text-decoration:underline;" onclick="executeLookup('${t.to_number}')">📄 ${t.to_number}</td>
+                    <td class="xl-left" style="font-weight:700; color:#0c5489; cursor:pointer;" onclick="executeLookup('${t.barcode}')">${t.barcode}</td>
+                    <td class="xl-left" style="font-weight:700;">${t.from_code}</td>
+                    <td class="xl-left" style="font-weight:800; color:#16794b;">⬅ ${t.to_code} (${t.to_name})</td>
+                    <td style="font-weight:900;">+${t.qty}</td>
+                    <td><span class="tag ${t.status === 'Released' ? 'tag-green' : 'tag-amber'}">${t.status}</span></td>
+                    <td class="xl-left">${t.ship_date || '-'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      `;
+    }
+
+    function renderScanResponse(data) {
+      const area = document.getElementById('scanResultsArea');
+      const p = currentUser.permissions || {};
+      const showWH = (currentCheckMode === 'wh_only' || currentCheckMode === 'wh_stores') && (p.mode_wh_only || p.mode_wh_stores);
+      const showStores = (currentCheckMode === 'stores_only' || currentCheckMode === 'wh_stores') && (p.mode_stores_only || p.mode_wh_stores);
+      const showEligible = !!p.view_eligible_store;
+
+      const adminModeToggle = showStores ? `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            ${showEligible ? `
+              <button class="btn btn-sm ${adminTableValMode === 'onhand' ? 'btn-bronze' : 'btn-outline'}" onclick="setAdminTableValMode('onhand')">
+                🏬 الكميات الموجودة بالمحلات (Availability / On-Hand)
+              </button>
+              <button class="btn btn-sm ${adminTableValMode === 'order' ? 'btn-bronze' : 'btn-outline'}" onclick="setAdminTableValMode('order')">
+                👑 التوزيع للمحل الأحق (0 / 1)
+              </button>
+            ` : ''}
+            <label style="font-size:0.8rem; font-weight:700; display:flex; align-items:center; gap:5px; cursor:pointer; background:#f5efe8; padding:5px 10px; border-radius:6px; border:1px solid #d8c6b0;">
+              <input type="checkbox" ${hideZeroLocations ? 'checked' : ''} onchange="toggleHideZeroLocations(this.checked)" />
+              <span>إظهار المحلات والمواقع الموجود فيها الآيتم فقط (Availability &gt; 0)</span>
+            </label>
+          </div>
+          ${showEligible ? `<span style="font-size:0.78rem; color:var(--q-muted);">💡 المحل الملون بالأخضر هو المحل الأحق بالقطعة</span>` : ''}
+        </div>
+      ` : '';
+
+      // CASE 0: TO NUMBER SCAN (محتويات أمر النقل Transfer Order)
+      if (data.scan_type === 'to_number') {
+        area.innerHTML = `
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>📄</span>
+                <span>تفاصيل أمر النقل (TO Number): <strong style="color:var(--q-bronze-dark); font-family:Roboto;">${data.to_number}</strong> (${data.lines_count} أسطر | إجمالي ${data.total_qty} قطعة)</span>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="excel-table" dir="ltr">
+                <thead>
+                  <tr style="background:#efefef;">
+                    <th class="xl-left">TO Number</th>
+                    <th class="xl-left">Serial</th>
+                    <th class="xl-left">Barcode</th>
+                    <th class="xl-left">Description</th>
+                    <th class="xl-left">Brand</th>
+                    <th class="xl-left">DEPT</th>
+                    <th class="xl-left">ART NO..</th>
+                    <th class="xl-left">Color/Size</th>
+                    <th class="xl-left">From</th>
+                    <th class="xl-left">To Store</th>
+                    <th>Qty</th>
+                    <th>Status</th>
+                    <th class="xl-left">Shipment Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${data.items.map(it => `
+                    <tr>
+                      <td class="xl-left" style="font-weight:800; color:#745736;">${it.to_number}</td>
+                      <td class="xl-left" style="font-weight:700; cursor:pointer; color:#745736;" onclick="executeLookup('${it.serial}')">${it.serial}</td>
+                      <td class="xl-left" style="font-weight:700; cursor:pointer; color:#0c5489;" onclick="executeLookup('${it.barcode}')">${it.barcode}</td>
+                      <td class="xl-left">${it.description}</td>
+                      <td class="xl-left">${it.brand}</td>
+                      <td class="xl-left">${it.dept}</td>
+                      <td class="xl-left">${it.art_no}</td>
+                      <td class="xl-left" style="font-weight:700;">${it.color_size}</td>
+                      <td class="xl-left" style="font-weight:700;">${it.from_code}</td>
+                      <td class="xl-left" style="font-weight:800; color:#16794b;">⬅ ${it.to_code} (${it.to_name})</td>
+                      <td style="font-weight:900;">${it.qty}</td>
+                      <td><span class="tag tag-green">${it.status}</span></td>
+                      <td class="xl-left">${it.ship_date}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // CASE 1: BIN SCAN (Always shows the clean Warehouse Per-Bin Table: Serial | Barcode | Description | Brand | DEPT | ART NO.. | Wh Qty | Bin)
+      if (data.scan_type === 'bin') {
+        const binRows = (data.items || []).map(it => ({
+          serial: it.item_no,
+          barcode: it.barcode,
+          description: it.description || '',
+          brand: it.brand || '',
+          dept: it.section || '',
+          art_no: it.art_no || '',
+          wh_qty: it.qty,
+          bin: data.bin_code
+        }));
+        area.innerHTML = `
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>🗄️</span>
+                <span>Bin: <strong style="color:var(--q-bronze); font-family:Roboto;">${data.bin_code}</strong> (${data.sku_count} باركود | إجمالي ${data.total_qty} قطعة)</span>
+              </div>
+            </div>
+            ${buildWarehousePerBinTableHtml(binRows)}
+          </div>
+        `;
+        return;
+      }
+
+      const alloc = data.allocation;
+
+      // If in "Warehouse Only" (تشييك ويرهاوس فقط) mode: render the exact Per-Bin table (1 row per Bin with Wh Qty & Bin)
+      if (currentCheckMode === 'wh_only' || (showWH && !showStores)) {
+        const targetVars = (data.scan_type === 'item_all_barcodes')
+          ? (alloc.variants || [])
+          : [data.scanned_variant || (alloc.variants && alloc.variants[0])].filter(Boolean);
+        const perBinRows = variantsToPerBinRows(alloc, targetVars);
+        area.innerHTML = `
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>🏭</span>
+                <span>تشييك المستودع والـ Bins: <strong style="font-family:Roboto; color:var(--q-bronze-dark);">${data.scan_type === 'item_all_barcodes' ? alloc.item_no : data.target_barcode}</strong></span>
+              </div>
+              ${data.scan_type !== 'item_all_barcodes' ? `
+                <button class="btn btn-outline btn-sm" onclick="executeLookup('${alloc.item_no}')">
+                  👕 عرض كل باركودات هذا الآيتم (${alloc.item_no})
+                </button>
+              ` : ''}
+            </div>
+            ${buildWarehousePerBinTableHtml(perBinRows)}
+            ${buildTransfersTabHtml(data.scan_type === 'item_all_barcodes' ? (alloc.item_transfers || []) : ((targetVars[0] && targetVars[0].transfers) || []))}
+          </div>
+        `;
+        return;
+      }
+
+      // CASE 2: ITEM CODE MANUAL ENTRY (كل باركودات الآيتم كود)
+      if (data.scan_type === 'item_all_barcodes') {
+        const rows = (alloc.variants || []).map(v => variantToAPRow(alloc, v));
+        area.innerHTML = `
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>👕</span>
+                <span>كل باركودات الآيتم: <strong style="font-family:Roboto; color:var(--q-bronze-dark);">${alloc.item_no}</strong> (${rows.length} باركود)</span>
+              </div>
+              ${p.generate_reports ? `
+                <button class="btn btn-success btn-sm" onclick="window.location.href='/api/report?scope_type=item&scope_value=${encodeURIComponent(alloc.item_no)}&dist_mode=wh_to_stores&export=1'">
+                  📥 تحميل إكسل (${alloc.item_no})
+                </button>
+              ` : ''}
+            </div>
+            ${buildCleanAPTableHtml(rows, showWH, showStores, showEligible, adminModeToggle, data.item_all_bins || [])}
+            ${showStores ? buildTransfersTabHtml(alloc.item_transfers || []) : ''}
+          </div>
+        `;
+        return;
+      }
+
+      // CASE 3: SINGLE BARCODE SCAN (سطر الباركود الممسوح ويتكرر لكل Bin موجود فيه)
+      const sv = data.scanned_variant || (alloc.variants && alloc.variants[0]);
+      const singleRow = sv ? [variantToAPRow(alloc, sv)] : [];
+      area.innerHTML = `
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>📦</span>
+              <span>نتيجة الباركود: <strong style="font-family:Roboto; color:#0c5489;">${data.target_barcode}</strong></span>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="executeLookup('${alloc.item_no}')">
+              👕 عرض كل باركودات هذا الآيتم (${alloc.item_no})
+            </button>
+          </div>
+          ${buildCleanAPTableHtml(singleRow, showWH, showStores, showEligible, adminModeToggle, data.barcode_bins || [])}
+          ${(showStores && sv) ? buildTransfersTabHtml(sv.transfers || []) : ''}
+        </div>
+      `;
+    }
+
+    // ==================== ADMIN REPORT & EXCEL EXPORT ====================
+    function onRepScopeTypeChange() {
+      const st = document.getElementById('repScopeType').value;
+      document.getElementById('repSectionGroup').style.display = st === 'section' ? 'block' : 'none';
+      document.getElementById('repItemGroup').style.display = st === 'item' ? 'block' : 'none';
+      loadDistributionReport();
+    }
+
+    function openItemInReport(itemNo) {
+      switchView('reportView');
+      document.getElementById('repScopeType').value = 'item';
+      document.getElementById('repSectionGroup').style.display = 'none';
+      document.getElementById('repItemGroup').style.display = 'block';
+      document.getElementById('repItemVal').value = itemNo;
+      document.getElementById('repRowFilter').value = 'all_rows';
+      switchReportSubTab('dist');
+      loadDistributionReport();
+    }
+
+    function getReportQueryParams() {
+      const scopeType = document.getElementById('repScopeType').value;
+      const distMode = document.getElementById('repDistMode').value;
+      let scopeValue = '';
+      if (scopeType === 'section') scopeValue = document.getElementById('repSectionVal').value;
+      if (scopeType === 'item') scopeValue = document.getElementById('repItemVal').value.trim();
+      return { scopeType, scopeValue, distMode };
+    }
+
+    async function loadDistributionReport() {
+      const { scopeType, scopeValue, distMode } = getReportQueryParams();
+      const area = document.getElementById('reportContentArea');
+      area.innerHTML = `<div style="padding:30px; text-align:center;">⏳ جاري حساب معادلة السيري والأولويات والـ Bins ...</div>`;
+      try {
+        const url = `/api/report?scope_type=${encodeURIComponent(scopeType)}&scope_value=${encodeURIComponent(scopeValue)}&dist_mode=${encodeURIComponent(distMode)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (!data.ok) {
+          area.innerHTML = `<div style="padding:20px; color:var(--q-danger);">❌ ${data.error}</div>`;
+          return;
+        }
+        currentReportData = data;
+        document.getElementById('stTransfersCountBadge').textContent = (data.store_transfers || []).length;
+        renderReportTables();
+      } catch (e) {
+        area.innerHTML = `<div style="padding:20px; color:var(--q-danger);">خطأ: ${e.message}</div>`;
+      }
+    }
+
+    function exportReportExcel() {
+      const { scopeType, scopeValue, distMode } = getReportQueryParams();
+      const url = `/api/report?scope_type=${encodeURIComponent(scopeType)}&scope_value=${encodeURIComponent(scopeValue)}&dist_mode=${encodeURIComponent(distMode)}&export=1`;
+      window.location.href = url;
+    }
+
+    function switchReportSubTab(tab) {
+      currentReportSubTab = tab;
+      ['summary', 'dist', 'transfers', 'plan'].forEach(t => {
+        const btn = document.getElementById('repSubBtn_' + t);
+        btn.className = 'btn btn-sm ' + (t === tab ? 'btn-bronze' : 'btn-outline');
+      });
+      renderReportTables();
+    }
+
+    function renderReportTables() {
+      if (!currentReportData) return;
+      const area = document.getElementById('reportContentArea');
+      const stores = ['S0001', 'S0011', 'S0002', 'S0003', 'S0004', 'S0010', 'S0012'];
+      const storeNames = {
+        S0001: 'Avenue (3sr)', S0011: 'Mecca (3sr)', S0002: 'Khalda (2sr)',
+        S0003: 'Tabarbour (2sr)', S0004: 'Marj (2sr)', S0010: 'Irbid (2sr)', S0012: 'Bawabat (2sr)'
+      };
+
+      if (currentReportSubTab === 'summary') {
+        const sumRows = currentReportData.summary || [];
+        area.innerHTML = `
+          <div class="badge-grid">
+            <div class="stat-box">
+              <div class="stat-label">إجمالي الباركودات المفحوصة</div>
+              <div class="stat-value">${currentReportData.total_rows_count.toLocaleString()}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">باركودات عليها أوامر توزيع (Order &gt; 0)</div>
+              <div class="stat-value" style="color:var(--q-success);">${currentReportData.active_order_rows_count.toLocaleString()}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">حركات ترانسفير مقترحة بين المحلات</div>
+              <div class="stat-value" style="color:var(--q-bronze-dark);">${(currentReportData.store_transfers || []).length.toLocaleString()}</div>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>القسم (Section)</th>
+                  <th>رصيد المستودع (WH On Hand)</th>
+                  <th>إجمالي التوزيع (Total Order)</th>
+                  <th>المتبقي بالمستودع (WH Left)</th>
+                  ${stores.map((s, i) => `<th class="${i < 3 ? 'priority-col' : ''}">Order ${s}<br/><small>${storeNames[s]}</small></th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${sumRows.map(r => `
+                  <tr style="${r.section === 'TOTAL' ? 'font-weight:800; background:var(--q-bronze-light);' : ''}">
+                    <td><strong>${r.section}</strong></td>
+                    <td>${r.wh_on_hand.toLocaleString()}</td>
+                    <td style="color:var(--q-success); font-weight:800;">${r.total_order.toLocaleString()}</td>
+                    <td>${r.wh_left.toLocaleString()}</td>
+                    ${stores.map(s => `<td><strong>${(r.stores_order[s] || 0).toLocaleString()}</strong> <small style="color:var(--q-muted);">(OH:${r.stores_oh[s] || 0})</small></td>`).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+        return;
+      }
+
+      if (currentReportSubTab === 'dist') {
+        const rowFilter = document.getElementById('repRowFilter').value;
+        let rows = currentReportData.rows || [];
+        if (rowFilter === 'orders_only') {
+          rows = rows.filter(r => r.total_order > 0);
+        }
+        const toggleHtml = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-sm ${adminTableValMode === 'order' ? 'btn-bronze' : 'btn-outline'}" onclick="setAdminTableValMode('order')">
+                👑 عرض كميات التوزيع للمحلات (Order - كما في الصورة)
+              </button>
+              <button class="btn btn-sm ${adminTableValMode === 'onhand' ? 'btn-bronze' : 'btn-outline'}" onclick="setAdminTableValMode('onhand')">
+                🏬 عرض الكميات الفعلية بالمحلات (On-Hand)
+              </button>
+            </div>
+            <span style="font-size:0.78rem; color:var(--q-muted);">إجمالي الأسطر المعروضة: ${rows.length}</span>
+          </div>
+        `;
+        area.innerHTML = buildCleanAPTableHtml(rows, true, true, true, toggleHtml);
+        return;
+      }
+
+      if (currentReportSubTab === 'transfers') {
+        const trs = currentReportData.store_transfers || [];
+        area.innerHTML = `
+          <div style="margin-bottom:8px; font-size:0.82rem; color:var(--q-charcoal);">
+            🔄 <strong>مقترحات النقل من محل لمحل (Store-to-Store Transfers):</strong> تتم فقط للباركودات التي رصيدها في المستودع = <strong>0</strong>، من المحلات الأقل أولوية (من الفائض أو الألوان الضعيفة تحت 60% اكتمال) إلى المحلات الأعلى أولوية التي تحمل نفس اللون (Availability &gt; 0):
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Item No.</th>
+                  <th>Section</th>
+                  <th>Description</th>
+                  <th>Barcode</th>
+                  <th>Color/Size</th>
+                  <th>من محل (From Store)</th>
+                  <th>إلى محل الأحق (To Store)</th>
+                  <th>الكمية (Qty)</th>
+                  <th>سبب النقل (Reason)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${trs.length ? trs.map((t, i) => `
+                  <tr>
+                    <td>${i + 1}</td>
+                    <td style="font-family:Roboto; font-weight:700;">${t.item_no}</td>
+                    <td>${t.section}</td>
+                    <td>${t.description}</td>
+                    <td style="font-family:Roboto; font-weight:700;">${t.barcode}</td>
+                    <td><strong>${t.color_size}</strong></td>
+                    <td><span class="tag tag-amber">${t.from_store} - ${t.from_store_name}</span></td>
+                    <td><span class="tag tag-green">⬅ ${t.to_store} - ${t.to_store_name}</span></td>
+                    <td><strong>${t.qty} PCS</strong></td>
+                    <td><span class="tag tag-bronze">${t.reason}</span></td>
+                  </tr>
+                `).join('') : `
+                  <tr>
+                    <td colspan="10" style="text-align:center; padding:24px;">
+                      لعرض حركات النقل بين المحلات، اختر نوع التوزيع بالأعلى: <strong>"من المحلات للمحلات (Stores ➔ Stores)"</strong> أو <strong>"شامل"</strong>.
+                    </td>
+                  </tr>
+                `}
+              </tbody>
+            </table>
+          </div>
+        `;
+        return;
+      }
+
+      if (currentReportSubTab === 'plan') {
+        const plans = currentReportData.plan_rows || [];
+        area.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Item No.</th>
+                  <th>Item + Color Key</th>
+                  <th>Section</th>
+                  <th>Color</th>
+                  <th>توزيع السيري الواحدة (Size : Qty)</th>
+                  <th>إجمالي قطع السيري الواحدة</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${plans.map(p => `
+                  <tr>
+                    <td style="font-family:Roboto; font-weight:700;">${p.item_no}</td>
+                    <td style="font-family:Roboto;">${p.color_key}</td>
+                    <td><span class="tag tag-bronze">${p.section}</span></td>
+                    <td><strong>${p.color}</strong></td>
+                    <td style="font-family:Roboto; font-weight:700;">${p.plan}</td>
+                    <td><strong>${p.pieces} PCS</strong></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+    }
+
+    // ==================== SELECTIVE DATA SHEETS UPDATER ====================
+    async function loadSheetsMetadata() {
+      const container = document.getElementById('sheetsListContainer');
+      container.innerHTML = '<div style="padding:16px;">⏳ جاري قراءة حالة الشيتات...</div>';
+      try {
+        const res = await fetch('/api/meta');
+        const data = await res.json();
+        if (!data.ok) return;
+        container.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>تحديد للتحديث</th>
+                <th>اسم الشيت (Sheet Type)</th>
+                <th>دورية التحديث</th>
+                <th>أحدث ملف موجود بالمجلد</th>
+                <th>عدد الأسطر المفهرسة</th>
+                <th>تاريخ آخر تحديث في التطبيق</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.sheets.map(s => {
+          const defaultChecked = (s.key === 'bin' || s.key === 'inv') ? 'checked' : '';
+          return `
+                  <tr>
+                    <td>
+                      <input type="checkbox" class="sheet-update-cb" value="${s.key}" ${defaultChecked} style="width:18px; height:18px; accent-color:var(--q-bronze);" />
+                    </td>
+                    <td><strong>${currentLang === 'ar' ? s.title_ar : s.title_en}</strong></td>
+                    <td><span class="tag ${s.key === 'bin' || s.key === 'inv' ? 'tag-green' : 'tag-bronze'}">${s.freq}</span></td>
+                    <td style="font-family:Roboto; font-weight:700;">${s.disk_file || '<span style="color:#aaa;">غير موجود (اختياري)</span>'}</td>
+                    <td><strong>${(s.row_count || 0).toLocaleString()}</strong> سطر</td>
+                    <td style="font-family:Roboto;">${s.last_updated || '-'}</td>
+                  </tr>
+                `;
+        }).join('')}
+            </tbody>
+          </table>
+        `;
+      } catch (e) {
+        container.innerHTML = `<div style="padding:16px;">خطأ: ${e.message}</div>`;
+      }
+    }
+
+    async function runSelectedSheetsUpdate(pushCloud = false) {
+      const keys = Array.from(document.querySelectorAll('.sheet-update-cb:checked')).map(cb => cb.value);
+      if (!keys.length) {
+        alert('يرجى تحديد شيت واحدة على الأقل لتحديثها');
+        return;
+      }
+      const btn = document.getElementById(pushCloud ? 'btnPushCloudUpdate' : 'btnRunSheetsUpdate');
+      btn.disabled = true;
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = pushCloud ? '⏳ جاري تحديث الشيتات ورفعها لـ GitHub 4G...' : '⏳ جاري تحديث وفهرسة الشيتات المحددة...';
+      try {
+        const res = await fetch('/api/sheets/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keys, push_cloud: pushCloud })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          await loadSheetsMetadata();
+          await refreshRemoteCloudData(false);
+          alert(pushCloud ? '✅ تم تحديث الشيتات ورفعها للرابط الخارجي (GitHub 4G) بنجاح!' : '✅ تم تحديث وفهرسة الشيتات المحددة بنجاح!');
+        } else {
+          alert('❌ ' + data.error);
+        }
+      } catch (e) {
+        alert('خطأ: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
+    }
+
+    // ==================== USERS & PERMISSIONS MANAGEMENT ====================
+    async function loadUsersList() {
+      const container = document.getElementById('usersListContainer');
+      container.innerHTML = '<div style="padding:16px;">⏳ جاري تحميل قائمة الحسابات...</div>';
+      try {
+        const res = await fetch('/api/users');
+        const data = await res.json();
+        if (!data.ok) return;
+        allUsersCache = data.users;
+        container.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>اسم الدخول</th>
+                  <th>الاسم</th>
+                  <th>الرتبة (Role)</th>
+                  <th>الحالة</th>
+                  <th>الصلاحيات المفعلة للحساب (اضغط لتعديلها)</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.users.map(u => `
+                  <tr>
+                    <td style="font-family:Roboto; font-weight:800;">${u.username}</td>
+                    <td><strong>${u.display_name}</strong></td>
+                    <td><span class="role-badge ${u.role}">${u.role.toUpperCase()}</span></td>
+                    <td>${u.active ? '<span class="tag tag-green">فعّال</span>' : '<span class="tag tag-red">موقوف</span>'}</td>
+                    <td>
+                      <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                        ${Object.keys(PERMISSION_LABELS).map(pk => u.permissions[pk] ? `<span class="tag tag-bronze">${PERMISSION_LABELS[pk][currentLang]}</span>` : '').join('')}
+                      </div>
+                    </td>
+                    <td>
+                      <div style="display:flex; gap:6px;">
+                        <button class="btn btn-outline btn-sm" onclick="openUserEditorModal('${u.username}')">✏️ تعديل الصلاحيات</button>
+                        ${u.username !== 'admin' ? `<button class="btn btn-outline btn-sm" style="color:var(--q-danger);" onclick="deleteUserAccount('${u.username}')">🗑️</button>` : ''}
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } catch (e) {
+        container.innerHTML = `<div style="padding:16px;">خطأ: ${e.message}</div>`;
+      }
+    }
+
+    function openUserEditorModal(username) {
+      const modal = document.getElementById('userEditorModal');
+      const u = username ? allUsersCache.find(x => x.username === username) : null;
+      document.getElementById('editUserUsername').value = u ? u.username : '';
+      document.getElementById('editUserUsername').disabled = !!u;
+      document.getElementById('editUserDisplay').value = u ? u.display_name : '';
+      document.getElementById('editUserRole').value = u ? u.role : 'user';
+      document.getElementById('editUserPassword').value = '1234';
+      document.getElementById('editUserActive').checked = u ? u.active : true;
+
+      const perms = u ? u.permissions : ROLE_PRESETS.user;
+      renderModalPermissionCheckboxes(perms);
+      modal.classList.add('open');
+    }
+
+    function closeUserEditorModal() {
+      document.getElementById('userEditorModal').classList.remove('open');
+    }
+
+    function applyRolePresetPermissions() {
+      const role = document.getElementById('editUserRole').value;
+      renderModalPermissionCheckboxes(ROLE_PRESETS[role] || ROLE_PRESETS.user);
+    }
+
+    function renderModalPermissionCheckboxes(perms) {
+      const box = document.getElementById('modalPermCheckboxes');
+      box.innerHTML = Object.keys(PERMISSION_LABELS).map(pk => `
+        <label class="perm-label">
+          <input type="checkbox" class="modal-perm-cb" value="${pk}" ${perms[pk] ? 'checked' : ''} />
+          <span>${PERMISSION_LABELS[pk][currentLang]}</span>
+        </label>
+      `).join('');
+    }
+
+    async function saveUserFromModal() {
+      const username = document.getElementById('editUserUsername').value.trim();
+      const display_name = document.getElementById('editUserDisplay').value.trim();
+      const role = document.getElementById('editUserRole').value;
+      const password = document.getElementById('editUserPassword').value.trim();
+      const active = document.getElementById('editUserActive').checked;
+
+      if (!username) {
+        alert('يرجى إدخال اسم المستخدم');
+        return;
+      }
+      const permissions = {};
+      document.querySelectorAll('.modal-perm-cb').forEach(cb => {
+        permissions[cb.value] = cb.checked;
+      });
+
+      const res = await fetch('/api/users/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, display_name, role, password, active, permissions })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        closeUserEditorModal();
+        await loadUsersList();
+        if (currentUser.username === username.toLowerCase()) {
+          currentUser.permissions = permissions;
+          currentUser.role = role;
+          currentUser.display_name = display_name || username;
+          applyUserPermissionsUI();
+        }
+      } else {
+        alert(data.error);
+      }
+    }
+
+    async function deleteUserAccount(username) {
+      if (!confirm(`هل أنت متأكد من حذف الحساب ${username}؟`)) return;
+      const res = await fetch('/api/users/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      });
+      const data = await res.json();
+      if (data.ok) loadUsersList();
+      else alert(data.error);
+    }
+
+    // ==================== CAMERA BARCODE SCANNER ====================
+    async function toggleCameraScanner() {
+      const box = document.getElementById('cameraBox');
+      if (box.classList.contains('open')) {
+        stopCameraScanner();
+        return;
+      }
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' }
+        });
+        const video = document.getElementById('cameraVideo');
+        video.srcObject = cameraStream;
+        await video.play();
+        box.classList.add('open');
+
+        if ('BarcodeDetector' in window) {
+          const detector = new BarcodeDetector();
+          cameraInterval = setInterval(async () => {
+            try {
+              const barcodes = await detector.detect(video);
+              if (barcodes.length > 0) {
+                const raw = barcodes[0].rawValue;
+                stopCameraScanner();
+                executeLookup(raw);
+              }
+            } catch (err) { }
+          }, 300);
+        }
+      } catch (e) {
+        alert('تعذر فتح الكاميرا على هذا الجهاز (تأكد من إعطاء صلاحية الكاميرا أو استخدم الإدخال اليدوي / ليزر الـ PDA): ' + e.message);
+      }
+    }
+
+    function stopCameraScanner() {
+      const box = document.getElementById('cameraBox');
+      box.classList.remove('open');
+      if (cameraInterval) clearInterval(cameraInterval);
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(t => t.stop());
+        cameraStream = null;
+      }
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', async () => {
+      applyUserPermissionsUI();
+      scanInput.focus();
+      await refreshRemoteCloudData(false);
+      // Auto-load a sample item so the user immediately sees a rich live screen on first open
+      executeLookup('I62261160119');
+    });
+  </script>
+</body>
+
+</html>
