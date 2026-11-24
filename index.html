@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Brands Stock Stores/WH | Qattous Group</title>
+  <title>Qattous Stock Management App | Qattous Group</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./qattous_logo.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1502,20 +1502,21 @@
         flex: 1;
         border: none;
         background: none;
-        padding: 8px 2px 7px;
+        padding: 5px 2px 4px;
         font-family: inherit;
-        font-size: .7rem;
+        font-size: .64rem;
         font-weight: 800;
         color: var(--q-muted);
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 2px;
-        min-height: 58px;
+        gap: 1px;
+        min-height: 44px;
       }
 
       .bottom-nav button .ic {
-        font-size: 1.35rem;
+        font-size: .95rem;
+        line-height: 1.1;
       }
 
       .bottom-nav button.active {
@@ -1623,7 +1624,7 @@
         <img src="./qattous_logo.png" alt="Qattous Group" class="brand-logo" />
         <div class="brand-divider"></div>
         <div class="brand-titles">
-          <h1 data-i18n="app_title">Brands Stock Stores/WH</h1>
+          <h1 data-i18n="app_title">Qattous SM</h1>
           <p>QATTOUS GROUP <span id="lastSyncBadge" style="color:#16794b; margin-inline-start:6px;"></span></p>
         </div>
       </div>
@@ -1927,7 +1928,7 @@
   <div id="loginModal" class="modal-backdrop" style="background:rgba(21,21,21,0.92); backdrop-filter:blur(6px);">
     <div class="modal-card" style="max-width:410px; text-align:center;">
       <img src="./qattous_logo.png" alt="Qattous Group" style="height:48px; margin-bottom:10px; object-fit:contain;" />
-      <h2 style="font-size:1.1rem; color:var(--q-charcoal); margin-bottom:4px;">Brands Stock Stores/WH</h2>
+      <h2 style="font-size:1.1rem; color:var(--q-charcoal); margin-bottom:4px;">Qattous SM</h2>
       <p style="font-size:0.78rem; color:var(--q-bronze); font-weight:700; margin-bottom:18px;">QATTOUS GROUP</p>
       <div class="form-group" style="margin-bottom:12px; text-align:start;">
         <label>اسم المستخدم (Username):</label>
@@ -2024,6 +2025,11 @@
     <div class="row" style="cursor:pointer;" onclick="refreshRemoteCloudData(true); closeSheet();">
       <span>🔄 <span data-mi="sh_refresh">تحديث الداتا الآن</span></span><span>›</span>
     </div>
+    <div class="row" style="cursor:pointer;" onclick="checkAppUpdate()">
+      <span>⬇️ <span data-mi="sh_update">فحص تحديث التطبيق</span> <small id="sheetAppVer" style="color:var(--q-muted); font-family:Roboto; font-weight:700;"></small></span>
+      <span id="sheetUpdateBadge">›</span>
+    </div>
+    <div id="appUpdateBox" style="display:none; background:#f5efe8; border:1px solid var(--q-bronze); border-radius:10px; padding:10px 12px; margin:6px 0; font-size:0.82rem;"></div>
     <div class="row" style="cursor:pointer;" onclick="toggleLanguage(); closeSheet();">
       <span>🌐 <span data-mi="sh_lang">اللغة: عربي / English</span></span><span>›</span>
     </div>
@@ -2079,13 +2085,9 @@
 
     const I18N = {
       ar: {
-        app_title: 'نظام المستودعات وتوزيع السيري الذكي',
+        app_title: 'Qattous SM',
         proto_switcher: 'تبديل سريع لتجربة الحسابات والصلاحيات:',
         btn_login_switch: '🔐 تبديل الحساب',
-        nav_scanner: 'الفحص والمسح (Scanner & Manual)',
-        nav_report: 'ريبورت توزيع السيري والإكسل',
-        nav_data: 'تحديث شيتات الإكسل (Data Sync)',
-        nav_users: 'إدارة اليوزرات والصلاحيات',
         mode_wh_only_title: 'تشييك ويرهاوس فقط',
         mode_wh_only_desc: 'فحص أرصدة المستودع W0001 ومواقع الـ Bins وعددها فقط',
         mode_stores_only_title: 'تشييك محلات فقط',
@@ -2113,7 +2115,7 @@
         btn_add_user: 'يوزر جديد'
       },
       en: {
-        app_title: 'Brands Stock Stores/WH',
+        app_title: 'Qattous SM',
         btn_remote_refresh: 'Refresh',
         btn_logout: '🚪 Logout',
         auto_enter_label: '⚡ Auto-Enter',
@@ -2936,9 +2938,109 @@
       if (currentReportData) renderReportTables();
     }
 
+    function buildTableExportBar(prefix, label = '') {
+      return `
+        <div class="table-export-bar" style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
+          <span style="font-size:0.78rem; color:var(--q-muted); font-weight:700;">${label}</span>
+          <button type="button" class="btn btn-success btn-sm" onclick="exportTableToExcel(this, '${prefix}')">📥 إكسل</button>
+        </div>
+      `;
+    }
+
+    function saveWorkbookSmart(wb, filename) {
+      if (window.AndroidBridge && typeof window.AndroidBridge.saveBase64File === 'function') {
+        const b64 = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+        window.AndroidBridge.saveBase64File(b64, filename, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        if (typeof showToast === 'function') showToast('✅ تم حفظ الإكسل في التنزيلات: ' + filename);
+      } else {
+        XLSX.writeFile(wb, filename);
+        if (typeof showToast === 'function') showToast('✅ تم تحميل ملف الإكسل: ' + filename);
+      }
+    }
+
+    function exportTableToExcel(btn, prefix = 'Qattous_SM') {
+      if (typeof XLSX === 'undefined') {
+        alert('مكتبة الإكسل غير جاهزة حالياً، تأكد من اتصال الإنترنت.');
+        return;
+      }
+      let table = null;
+      if (btn && btn.parentElement) {
+        let sib = btn.parentElement.nextElementSibling;
+        while (sib && !table) {
+          table = sib.tagName === 'TABLE' ? sib : sib.querySelector('table');
+          sib = sib.nextElementSibling;
+        }
+        if (!table) {
+          const card = btn.closest('.card, details, section, #scanResultsArea, #reportContentArea');
+          if (card) table = card.querySelector('table');
+        }
+      }
+      if (!table) {
+        table = document.querySelector('#scanResultsArea table') || document.querySelector('#reportContentArea table');
+      }
+      if (!table) {
+        if (typeof showToast === 'function') showToast('لا يوجد جدول لتصديره');
+        return;
+      }
+      const wb = XLSX.utils.table_to_book(table, { sheet: 'Data', raw: true });
+      const ts = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+      saveWorkbookSmart(wb, `${prefix}_${ts}.xlsx`);
+    }
+
+    const INSTALLED_APK_VER = (new URLSearchParams(window.location.search).get('apk_ver')) || '2.0.0';
+
+    function openExternalUpdateUrl(url) {
+      if (window.AndroidBridge && typeof window.AndroidBridge.openExternalUrl === 'function') {
+        window.AndroidBridge.openExternalUrl(url);
+      } else {
+        window.open(url, '_blank');
+      }
+    }
+
+    async function checkAppUpdate() {
+      const box = document.getElementById('appUpdateBox');
+      const badge = document.getElementById('sheetUpdateBadge');
+      if (!box) return;
+      box.style.display = 'block';
+      box.innerHTML = '⏳ جاري فحص آخر إصدار من GitHub...';
+      try {
+        const urls = [
+          'https://raw.githubusercontent.com/ahmadalfasfous89-hue/qattous-wh-app/main/version.json?t=' + Date.now(),
+          './version.json?t=' + Date.now()
+        ];
+        let info = null;
+        for (const u of urls) {
+          try {
+            const r = await fetch(u, { cache: 'no-store' });
+            if (r.ok) { info = await r.json(); break; }
+          } catch (_) {}
+        }
+        if (!info || !info.version) throw new Error('تعذر قراءة ملف الإصدار');
+        const remoteVer = String(info.version).trim();
+        const apkUrl = info.apk_url || 'https://ahmadalfasfous89-hue.github.io/qattous-wh-app/Qattous_Stock_Management_App.apk';
+        if (remoteVer !== INSTALLED_APK_VER) {
+          if (badge) badge.innerHTML = '<span style="color:#16794b; font-weight:900;">جديد!</span>';
+          box.innerHTML = `
+            <div style="font-weight:800; color:#16794b; margin-bottom:6px;">🎉 يتوفر تحديث جديد للتطبيق: v${remoteVer} (الحالي: v${INSTALLED_APK_VER})</div>
+            <button type="button" class="btn btn-success btn-sm" style="width:100%;" onclick="openExternalUpdateUrl('${apkUrl}')">⬇️ تحميل وتثبيت التحديث الجديد</button>
+          `;
+        } else {
+          if (badge) badge.textContent = '✅';
+          box.innerHTML = `
+            <div style="font-weight:800; color:#16794b; margin-bottom:6px;">✅ التطبيق محدّث على آخر إصدار (v${INSTALLED_APK_VER})</div>
+            <div style="font-size:0.75rem; color:var(--q-muted); margin-bottom:6px;">البيانات والواجهات تتحدث تلقائياً عبر زر 🔄 بدون إعادة تثبيت.</div>
+            <button type="button" class="btn btn-outline btn-sm" style="width:100%;" onclick="openExternalUpdateUrl('${apkUrl}')">⬇️ إعادة تحميل APK</button>
+          `;
+        }
+      } catch (e) {
+        box.innerHTML = `<span style="color:var(--q-danger);">❌ تعذر التحقق من التحديث (تأكد من الإنترنت)</span>`;
+      }
+    }
+
     function buildWarehousePerBinTableHtml(binRows) {
       const hasTO = binRows.some(r => r.transfers && r.transfers.length > 0);
       return `
+        ${buildTableExportBar('Qattous_SM_WH_Bins')}
         <div class="table-wrap">
           <table class="excel-table" dir="ltr">
             <thead>
@@ -3086,6 +3188,7 @@
       return `
         ${modeToggleHtml}
         ${binsSummaryHtml}
+        ${buildTableExportBar('Qattous_SM_Stock')}
         <div class="table-wrap">
           <table class="excel-table" dir="ltr">
             <thead>
@@ -3201,7 +3304,8 @@
           <summary style="cursor:pointer; font-weight:800; font-size:0.86rem; color:#745736;">
             🚚 تابة تفاصيل الـ In-Transit وأرقام الـ TO Number (${transfersList.length} حركة نقل مضافة على أرصدة المحلات)
           </summary>
-          <div class="table-wrap" style="margin-top:8px;">
+          <div style="margin-top:8px;">${buildTableExportBar('Qattous_SM_Transfers')}</div>
+          <div class="table-wrap" style="margin-top:4px;">
             <table class="excel-table" dir="ltr">
               <thead>
                 <tr style="background:#fff3cd;">
@@ -3238,13 +3342,13 @@
     const MI18N = {
       ar: {
         seg_wh: 'مستودع', seg_st: 'محلات', seg_both: 'الاثنان', nav_scan: 'فحص', nav_rep: 'ريبورت', nav_data: 'تحديث', nav_users: 'اليوزرات', nav_more: 'المزيد',
-        sh_sync: 'آخر تحديث للبيانات', sh_refresh: 'تحديث الداتا الآن', sh_lang: 'اللغة: عربي / English', sh_login: 'تسجيل دخول بحساب آخر', sh_quick: 'تبديل سريع للحساب (للتجربة)', sh_close: 'إغلاق',
+        sh_sync: 'آخر تحديث للبيانات', sh_refresh: 'تحديث الداتا الآن', sh_update: 'فحص تحديث التطبيق', sh_lang: 'اللغة: عربي / English', sh_login: 'تسجيل دخول بحساب آخر', sh_quick: 'تبديل سريع للحساب (للتجربة)', sh_close: 'إغلاق',
         wh: 'المستودع', transit: 'بالطريق', stores: 'المحلات', bins: 'الأرفف (Bin)', nobin: 'غير موجود بأي رف', send: 'أرسل إلى', hold: 'يبقى بالمستودع', none: 'لا إجراء',
         barcodes: 'باركود', total: 'الإجمالي', inwh: 'في المستودع', instores: 'في المحلات', pcs: 'قطعة', moreitems: 'كل باركودات الآيتم', exp: 'تحميل إكسل', items: 'أصناف', skus: 'باركود', to: 'أمر نقل'
       },
       en: {
         seg_wh: 'Warehouse', seg_st: 'Stores', seg_both: 'Both', nav_scan: 'Scan', nav_rep: 'Report', nav_data: 'Update', nav_users: 'Users', nav_more: 'More',
-        sh_sync: 'Data last updated', sh_refresh: 'Refresh data now', sh_lang: 'Language: English / عربي', sh_login: 'Sign in as another user', sh_quick: 'Quick account switch (testing)', sh_close: 'Close',
+        sh_sync: 'Data last updated', sh_refresh: 'Refresh data now', sh_update: 'Check App Update', sh_lang: 'Language: English / عربي', sh_login: 'Sign in as another user', sh_quick: 'Quick account switch (testing)', sh_close: 'Close',
         wh: 'Warehouse', transit: 'In transit', stores: 'Stores', bins: 'Bins', nobin: 'Not in any bin', send: 'Send to', hold: 'Keep in warehouse', none: 'No action',
         barcodes: 'barcodes', total: 'Total', inwh: 'In warehouse', instores: 'In stores', pcs: 'pcs', moreitems: 'All barcodes of this item', exp: 'Download Excel', items: 'items', skus: 'barcodes', to: 'Transfer order'
       }
@@ -3259,6 +3363,8 @@
       const u = currentUser || {};
       document.getElementById('sheetUserLine').textContent = `${u.display_name || ''}  •  ${String(u.role || '').toUpperCase()}`;
       document.getElementById('sheetSync').textContent = (cloudBundle && cloudBundle.updated_at) ? cloudBundle.updated_at : '—';
+      const vEl = document.getElementById('sheetAppVer');
+      if (vEl) vEl.textContent = '(v' + INSTALLED_APK_VER + ')';
       document.querySelectorAll('#accountSheet .acc button').forEach(b => b.classList.toggle('active', b.getAttribute('data-u') === u.username));
       document.getElementById('sheetBackdrop').classList.add('open');
       document.getElementById('accountSheet').classList.add('open');
@@ -3334,8 +3440,13 @@
       const totSt = rows.reduce((a, r) => a + Object.values(r.oh_stores || {}).reduce((x, y) => x + Math.max(0, Number(y) || 0), 0), 0);
       return `
         <div class="m-summary">
-          <div class="t">${title}</div>
-          <div class="s">${subtitle}</div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+            <div style="min-width:0;">
+              <div class="t">${title}</div>
+              <div class="s">${subtitle}</div>
+            </div>
+            <button type="button" class="btn btn-success btn-sm" style="flex-shrink:0;" onclick="exportTableToExcel(this, 'Qattous_SM_Scan')">📥 إكسل</button>
+          </div>
           <div class="m-kpis">
             <div class="m-kpi"><b>${rows.length}</b><span>${mt('skus')}</span></div>
             <div class="m-kpi"><b>${totWh}</b><span>${mt('inwh')}</span></div>
@@ -3385,6 +3496,7 @@
                 <span>📄</span>
                 <span>تفاصيل أمر النقل (TO Number): <strong style="color:var(--q-bronze-dark); font-family:Roboto;">${data.to_number}</strong> (${data.lines_count} أسطر | إجمالي ${data.total_qty} قطعة)</span>
               </div>
+              <button type="button" class="btn btn-success btn-sm" onclick="exportTableToExcel(this, 'Qattous_SM_TO_${data.to_number}')">📥 إكسل</button>
             </div>
             <div class="table-wrap">
               <table class="excel-table" dir="ltr">
@@ -3725,7 +3837,7 @@
       const ws = XLSX.utils.aoa_to_sheet(aoa);
       XLSX.utils.book_append_sheet(wb, ws, 'Distribution');
       const tag = scopeValue || scopeType;
-      XLSX.writeFile(wb, `Qattous_Series_Distribution_${tag}.xlsx`);
+      saveWorkbookSmart(wb, `Qattous_SM_Distribution_${tag}.xlsx`);
     }
 
     function switchReportSubTab(tab) {
@@ -3764,6 +3876,7 @@
             </div>
           </div>
 
+          ${buildTableExportBar('Qattous_SM_Summary')}
           <div class="table-wrap">
             <table>
               <thead>
@@ -3821,6 +3934,7 @@
           <div style="margin-bottom:8px; font-size:0.82rem; color:var(--q-charcoal);">
             🔄 <strong>مقترحات النقل من محل لمحل (Store-to-Store Transfers):</strong> تتم فقط للباركودات التي رصيدها في المستودع = <strong>0</strong>، من المحلات الأقل أولوية (من الفائض أو الألوان الضعيفة تحت 60% اكتمال) إلى المحلات الأعلى أولوية التي تحمل نفس اللون (Availability &gt; 0):
           </div>
+          ${buildTableExportBar('Qattous_SM_Store_Transfers')}
           <div class="table-wrap">
             <table>
               <thead>

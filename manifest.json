@@ -1,6 +1,6 @@
 {
-  "name": "Brands Stock Stores/WH",
-  "short_name": "Brands Stock",
+  "name": "Qattous Stock Management App",
+  "short_name": "Qattous SM",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#FAF8F5",
