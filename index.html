@@ -1210,9 +1210,28 @@
           </div>
         </div>
         <p style="font-size:0.86rem; color:var(--q-muted); margin-bottom:14px;" data-i18n="data_sync_desc">
-          حدد فقط الشيتات التي قمت بتحديثها في المجلد (مثلاً: Bin Contents و Inventory By Location للتحديث اليومي السريع
-          خلال ثانيتين، بينما تبقى الشيتات التعريفية الأخرى محفوظة دون إعادة قراءتها).
+          يمكنك <strong>سحب وإفلات (Drag &amp; Drop)</strong> ملفات الإكسل المحدثة مباشرة في المربع أدناه (أو الضغط لاختيارها من جهازك) ليتم قراءتها وتحديث الرابط الخارجي وجميع الأجهزة فوراً!
         </p>
+
+        <!-- Drag & Drop Excel Files Zone -->
+        <div
+          id="excelDropZone"
+          style="border: 3px dashed var(--q-bronze); background: var(--q-bronze-light); border-radius: 14px; padding: 28px 20px; text-align: center; cursor: pointer; margin-bottom: 18px; transition: all 0.2s;"
+          onclick="document.getElementById('excelFileInput').click()"
+          ondragover="event.preventDefault(); this.style.background='#eadbc8'; this.style.borderColor='#745736';"
+          ondragleave="this.style.background='var(--q-bronze-light)'; this.style.borderColor='var(--q-bronze)';"
+          ondrop="handleExcelFilesDrop(event)"
+        >
+          <input type="file" id="excelFileInput" multiple accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleExcelFilesSelect(this.files)" />
+          <div style="font-size: 2.5rem; margin-bottom: 8px;">📂📥</div>
+          <h3 style="color: var(--q-onyx); font-size: 1.05rem; margin-bottom: 4px;">
+            اسحب وأفلت ملفات الإكسل هنا للتحديث الفوري (Drag &amp; Drop Excel Files Here)
+          </h3>
+          <p style="font-size: 0.82rem; color: var(--q-charcoal); font-weight: 600;">
+            أو اضغط هنا لاختيار ملف واحد أو أكثر: <code style="background:#fff; padding:2px 6px; border-radius:4px;">Bin Contents</code> • <code style="background:#fff; padding:2px 6px; border-radius:4px;">Item Variant Inv</code> • <code style="background:#fff; padding:2px 6px; border-radius:4px;">Transfer Line</code> • <code style="background:#fff; padding:2px 6px; border-radius:4px;">Retail Item List</code> • <code style="background:#fff; padding:2px 6px; border-radius:4px;">Variant Registration</code>
+          </p>
+          <div id="dropUploadStatus" style="margin-top: 10px; font-weight: 800; font-size: 0.88rem; color: var(--q-success);"></div>
+        </div>
 
         <div id="sheetsListContainer" class="table-wrap"></div>
       </div>
@@ -2141,8 +2160,8 @@
                   ${hasTO ? `
                     <td class="xl-left" style="font-weight:700; background:#fffdf0; color:#745736;">
                       ${(r.transfers && r.transfers.length)
-                        ? r.transfers.map(t => `<span style="cursor:pointer; text-decoration:underline; margin-inline-end:6px;" onclick="executeLookup('${t.to_number}')">📄 ${t.to_number} (${t.from_code}➔${t.to_name}:${t.qty})</span>`).join(' ')
-                        : '-'}
+            ? r.transfers.map(t => `<span style="cursor:pointer; text-decoration:underline; margin-inline-end:6px;" onclick="executeLookup('${t.to_number}')">📄 ${t.to_number} (${t.from_code}➔${t.to_name}:${t.qty})</span>`).join(' ')
+            : '-'}
                     </td>
                   ` : ''}
                 </tr>
@@ -2278,7 +2297,7 @@
             </thead>
             <tbody>
               ${expandedRows.length ? expandedRows.map(r => {
-                const winStoreObj = r.winner_store ? STORE_COLUMNS.find(x => x.code === r.winner_store) : null;
+        const winStoreObj = r.winner_store ? STORE_COLUMNS.find(x => x.code === r.winner_store) : null;
         return `
                   <tr style="${r.row_bin ? 'background:#fffdf9;' : ''}">
                     <td class="xl-left" style="font-weight:700; cursor:pointer; color:#745736;" onclick="executeLookup('${r.serial}')">${r.serial}</td>
@@ -2307,8 +2326,8 @@
                       <td style="font-weight:800; background:#fff9db;">${r.in_transit || 0}</td>
                       <td class="xl-left" style="font-weight:700; background:#fffdf0; color:#745736;">
                         ${(r.transfers && r.transfers.length)
-                          ? r.transfers.map(t => `<span style="cursor:pointer; text-decoration:underline; margin-inline-end:6px;" onclick="executeLookup('${t.to_number}')">📄 ${t.to_number} (${t.from_code}➔${t.to_name}:${t.qty})</span>`).join(' ')
-                          : '-'}
+              ? r.transfers.map(t => `<span style="cursor:pointer; text-decoration:underline; margin-inline-end:6px;" onclick="executeLookup('${t.to_number}')">📄 ${t.to_number} (${t.from_code}➔${t.to_name}:${t.qty})</span>`).join(' ')
+              : '-'}
                       </td>
                     ` : ''}
                     ${showWH ? `
@@ -2613,14 +2632,113 @@
       return { scopeType, scopeValue, distMode };
     }
 
+    function generateReportFromCloudBundle(scopeType, scopeValue, distMode) {
+      const b = cloudBundle;
+      if (!b) return { ok: false, error: 'لم يتم تحميل حزمة البيانات بعد' };
+      const lfStores = ['S0001', 'S0011', 'S0002', 'S0003', 'S0004', 'S0010', 'S0012'];
+      let itemKeys = Object.keys(b.items_meta || {});
+
+      if (scopeType === 'item' && scopeValue) {
+        const qUp = scopeValue.toUpperCase();
+        itemKeys = itemKeys.filter(k => k.toUpperCase().startsWith(qUp));
+      } else {
+        // Default La Familia report scope: items that exist in location_inv (season 2620)
+        const invItems = new Set();
+        Object.keys(b.inv_by_bc || {}).forEach(bc => {
+          const reg = (b.reg_by_bc || {})[bc];
+          if (reg && reg[0]) invItems.add(reg[0]);
+        });
+        if (invItems.size > 0) {
+          itemKeys = itemKeys.filter(k => invItems.has(k));
+        }
+      }
+
+      const rows = [];
+      const planRows = [];
+      const storeTransfers = [];
+      const bySec = {};
+
+      itemKeys.sort().forEach(ino => {
+        const im = b.items_meta[ino] || ['', 'La Familia', 'Unknown', '', '', '', ''];
+        const sec = im[2] === 'Teens' ? 'Kids' : (im[2] || 'Unknown');
+        if (scopeType === 'section' && scopeValue && sec.toLowerCase() !== scopeValue.toLowerCase()) return;
+
+        const alloc = computeAllocationFromBundle(ino, null);
+        alloc.variants.forEach(v => {
+          const rObj = variantToAPRow(alloc, v);
+          rObj.total_order = v.total_order || 0;
+          rObj.wh_left = v.wh_left || 0;
+          rows.push(rObj);
+
+          if (!bySec[sec]) {
+            bySec[sec] = { wh_on_hand: 0, total_order: 0, wh_left: 0, stores_order: {}, stores_oh: {} };
+            lfStores.forEach(s => { bySec[sec].stores_order[s] = 0; bySec[sec].stores_oh[s] = 0; });
+          }
+          bySec[sec].wh_on_hand += Number(v.wh_qty || 0);
+          bySec[sec].total_order += Number(v.total_order || 0);
+          bySec[sec].wh_left += Number(v.wh_left || 0);
+          lfStores.forEach(s => {
+            bySec[sec].stores_order[s] += Number((v.order_by_store || {})[s] || 0);
+            bySec[sec].stores_oh[s] += Number((v.stores_qty || {})[s] || 0);
+          });
+
+          if (v.st_transfer_from && v.st_transfer_to) {
+            storeTransfers.push({
+              item_no: ino, section: sec, description: alloc.description, barcode: v.barcode, color_size: v.color_size,
+              from_store: v.st_transfer_from, from_store_name: STORE_COLUMNS.find(x => x.code === v.st_transfer_from).ar,
+              to_store: v.st_transfer_to, to_store_name: STORE_COLUMNS.find(x => x.code === v.st_transfer_to).ar,
+              qty: 1, reason: 'ترانسفير تكميل سيري'
+            });
+          }
+        });
+      });
+
+      const summary = [];
+      const totSum = { section: 'TOTAL', wh_on_hand: 0, total_order: 0, wh_left: 0, stores_order: {}, stores_oh: {} };
+      lfStores.forEach(s => { totSum.stores_order[s] = 0; totSum.stores_oh[s] = 0; });
+      Object.entries(bySec).forEach(([sec, d]) => {
+        summary.push({ section: sec, ...d });
+        totSum.wh_on_hand += d.wh_on_hand;
+        totSum.total_order += d.total_order;
+        totSum.wh_left += d.wh_left;
+        lfStores.forEach(s => {
+          totSum.stores_order[s] += d.stores_order[s];
+          totSum.stores_oh[s] += d.stores_oh[s];
+        });
+      });
+      summary.push(totSum);
+
+      const activeOrderRows = rows.filter(r => r.total_order > 0);
+      return {
+        ok: true,
+        total_rows_count: rows.length,
+        active_order_rows_count: activeOrderRows.length,
+        rows: rows.slice(0, 500),
+        all_rows_full: rows,
+        summary,
+        plan_rows: planRows,
+        store_transfers: storeTransfers
+      };
+    }
+
     async function loadDistributionReport() {
       const { scopeType, scopeValue, distMode } = getReportQueryParams();
       const area = document.getElementById('reportContentArea');
       area.innerHTML = `<div style="padding:30px; text-align:center;">⏳ جاري حساب معادلة السيري والأولويات والـ Bins ...</div>`;
       try {
-        const url = `/api/report?scope_type=${encodeURIComponent(scopeType)}&scope_value=${encodeURIComponent(scopeValue)}&dist_mode=${encodeURIComponent(distMode)}`;
-        const res = await fetch(url);
-        const data = await res.json();
+        let data = null;
+        if (!isStaticCloudHost) {
+          try {
+            const url = `/api/report?scope_type=${encodeURIComponent(scopeType)}&scope_value=${encodeURIComponent(scopeValue)}&dist_mode=${encodeURIComponent(distMode)}`;
+            const res = await fetch(url);
+            if (res.ok) data = await res.json();
+            else isStaticCloudHost = true;
+          } catch (e) { isStaticCloudHost = true; }
+        }
+        if (!data) {
+          if (!cloudBundle) await refreshRemoteCloudData(false);
+          data = generateReportFromCloudBundle(scopeType, scopeValue, distMode);
+        }
         if (!data.ok) {
           area.innerHTML = `<div style="padding:20px; color:var(--q-danger);">❌ ${data.error}</div>`;
           return;
@@ -2635,8 +2753,34 @@
 
     function exportReportExcel() {
       const { scopeType, scopeValue, distMode } = getReportQueryParams();
-      const url = `/api/report?scope_type=${encodeURIComponent(scopeType)}&scope_value=${encodeURIComponent(scopeValue)}&dist_mode=${encodeURIComponent(distMode)}&export=1`;
-      window.location.href = url;
+      if (!isStaticCloudHost) {
+        const url = `/api/report?scope_type=${encodeURIComponent(scopeType)}&scope_value=${encodeURIComponent(scopeValue)}&dist_mode=${encodeURIComponent(distMode)}&export=1`;
+        window.location.href = url;
+        return;
+      }
+      // Client-side Excel export on 4G / GitHub Pages using SheetJS
+      if (!currentReportData || typeof XLSX === 'undefined') {
+        alert('يرجى الانتظار حتى يكتمل تحميل الريبورت أولاً');
+        return;
+      }
+      const rows = currentReportData.all_rows_full || currentReportData.rows || [];
+      const lfStores = STORE_COLUMNS.slice(0, 7);
+      const aoa = [
+        ['Serial', 'Barcode', 'Description', 'Brand', 'DEPT', 'ART NO..', 'Color/Size', ...lfStores.map(s => s.short), 'Wh Qty', 'Location', 'Location2', 'Location3']
+      ];
+      rows.forEach(r => {
+        const useOrder = adminTableValMode === 'order';
+        aoa.push([
+          r.serial, r.barcode, r.description, r.brand, r.dept, r.art_no, r.color_size || '',
+          ...lfStores.map(s => useOrder ? Number((r.or_stores || {})[s.code] || 0) : Number((r.oh_stores || {})[s.code] || 0)),
+          r.wh_oh || 0, r.location1 || '', r.location2 || '', r.location3 || ''
+        ]);
+      });
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      XLSX.utils.book_append_sheet(wb, ws, 'Distribution');
+      const tag = scopeValue || scopeType;
+      XLSX.writeFile(wb, `Qattous_Series_Distribution_${tag}.xlsx`);
     }
 
     function switchReportSubTab(tab) {
@@ -2809,14 +2953,48 @@
       }
     }
 
-    // ==================== SELECTIVE DATA SHEETS UPDATER ====================
+    // ==================== SELECTIVE DATA SHEETS UPDATER & DRAG-DROP UPLOAD ====================
+    const SHEET_INFO_MAP = {
+      bin: { title_ar: 'مواقع المستودع (Bin Contents)', title_en: 'Bin Contents', freq: 'يومي / دوري' },
+      inv: { title_ar: 'أرصدة المحلات والمستودع (Inventory By Location)', title_en: 'Item Variant Inv. By Location', freq: 'يومي / دوري' },
+      tr: { title_ar: 'حركات النقل والـ TO (Al Najma Transfer Line)', title_en: 'Al Najma Transfer Line', freq: 'يومي / دوري' },
+      items: { title_ar: 'قائمة الأصناف الرئيسية (Retail Item List)', title_en: 'Retail Item List', freq: 'كل فترة (Master)' },
+      reg: { title_ar: 'سجل باركودات الفيريانت (Variant Registration)', title_en: 'Item Variant Registration', freq: 'كل فترة (Master)' }
+    };
+
     async function loadSheetsMetadata() {
       const container = document.getElementById('sheetsListContainer');
       container.innerHTML = '<div style="padding:16px;">⏳ جاري قراءة حالة الشيتات...</div>';
       try {
-        const res = await fetch('/api/meta');
-        const data = await res.json();
-        if (!data.ok) return;
+        let sheetsList = null;
+        if (!isStaticCloudHost) {
+          try {
+            const res = await fetch('/api/meta');
+            if (res.ok) {
+              const data = await res.json();
+              if (data.ok) sheetsList = data.sheets;
+            } else {
+              isStaticCloudHost = true;
+            }
+          } catch (e) { isStaticCloudHost = true; }
+        }
+        if (!sheetsList) {
+          if (!cloudBundle) await refreshRemoteCloudData(false);
+          const smMap = {};
+          ((cloudBundle && cloudBundle.sheets_meta) || []).forEach(m => { smMap[m.sheet_key] = m; });
+          sheetsList = Object.entries(SHEET_INFO_MAP).map(([k, info]) => {
+            const m = smMap[k] || {};
+            return {
+              key: k,
+              title_ar: info.title_ar,
+              title_en: info.title_en,
+              freq: info.freq,
+              disk_file: m.file_name || null,
+              row_count: m.row_count || 0,
+              last_updated: m.last_updated || (cloudBundle ? cloudBundle.updated_at : '-')
+            };
+          });
+        }
         container.innerHTML = `
           <table>
             <thead>
@@ -2824,22 +3002,22 @@
                 <th>تحديد للتحديث</th>
                 <th>اسم الشيت (Sheet Type)</th>
                 <th>دورية التحديث</th>
-                <th>أحدث ملف موجود بالمجلد</th>
+                <th>أحدث ملف محمل</th>
                 <th>عدد الأسطر المفهرسة</th>
                 <th>تاريخ آخر تحديث في التطبيق</th>
               </tr>
             </thead>
             <tbody>
-              ${data.sheets.map(s => {
-          const defaultChecked = (s.key === 'bin' || s.key === 'inv') ? 'checked' : '';
+              ${sheetsList.map(s => {
+          const defaultChecked = (s.key === 'bin' || s.key === 'inv' || s.key === 'tr') ? 'checked' : '';
           return `
                   <tr>
                     <td>
                       <input type="checkbox" class="sheet-update-cb" value="${s.key}" ${defaultChecked} style="width:18px; height:18px; accent-color:var(--q-bronze);" />
                     </td>
                     <td><strong>${currentLang === 'ar' ? s.title_ar : s.title_en}</strong></td>
-                    <td><span class="tag ${s.key === 'bin' || s.key === 'inv' ? 'tag-green' : 'tag-bronze'}">${s.freq}</span></td>
-                    <td style="font-family:Roboto; font-weight:700;">${s.disk_file || '<span style="color:#aaa;">غير موجود (اختياري)</span>'}</td>
+                    <td><span class="tag ${s.key === 'bin' || s.key === 'inv' || s.key === 'tr' ? 'tag-green' : 'tag-bronze'}">${s.freq}</span></td>
+                    <td style="font-family:Roboto; font-weight:700;">${s.disk_file || '<span style="color:#aaa;">غير موجود</span>'}</td>
                     <td><strong>${(s.row_count || 0).toLocaleString()}</strong> سطر</td>
                     <td style="font-family:Roboto;">${s.last_updated || '-'}</td>
                   </tr>
@@ -2850,6 +3028,165 @@
         `;
       } catch (e) {
         container.innerHTML = `<div style="padding:16px;">خطأ: ${e.message}</div>`;
+      }
+    }
+
+    function handleExcelFilesDrop(event) {
+      event.preventDefault();
+      const dz = document.getElementById('excelDropZone');
+      dz.style.background = 'var(--q-bronze-light)';
+      dz.style.borderColor = 'var(--q-bronze)';
+      if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
+        handleExcelFilesSelect(event.dataTransfer.files);
+      }
+    }
+
+    function detectSheetKeyFromFile(fileName, firstRowHeaders = []) {
+      const n = fileName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (n.includes('bincontents') || firstRowHeaders.includes('Bin Code')) return 'bin';
+      if (n.includes('itemvariantinv') || (firstRowHeaders.includes('Location') && firstRowHeaders.includes('Inventory'))) return 'inv';
+      if (n.includes('transferline') || firstRowHeaders.includes('Transfer-from Code')) return 'tr';
+      if (n.includes('retailitemlist') || firstRowHeaders.includes('Item Category Description')) return 'items';
+      if (n.includes('itemvariantregistration') || firstRowHeaders.includes('Variant Dimension 1')) return 'reg';
+      return '';
+    }
+
+    async function handleExcelFilesSelect(fileList) {
+      if (!fileList || !fileList.length) return;
+      const statusEl = document.getElementById('dropUploadStatus');
+      statusEl.style.color = 'var(--q-bronze-dark)';
+      statusEl.innerHTML = `⏳ جاري قراءة ورفع (${fileList.length}) ملف إكسل...`;
+
+      // 1. Try uploading to Local PC Server (/api/sheets/upload) which saves to folder + updates SQLite + pushes to GitHub!
+      if (!isStaticCloudHost) {
+        try {
+          const payloadFiles = [];
+          for (const f of Array.from(fileList)) {
+            const buf = await f.arrayBuffer();
+            const bytes = new Uint8Array(buf);
+            let binary = '';
+            const chunkSize = 0x8000;
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+              binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+            }
+            payloadFiles.push({
+              name: f.name,
+              key: detectSheetKeyFromFile(f.name),
+              base64: btoa(binary)
+            });
+          }
+          const res = await fetch('/api/sheets/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ files: payloadFiles, push_cloud: true })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.ok) {
+              statusEl.style.color = 'var(--q-success)';
+              statusEl.innerHTML = `✅ تم حفظ الملفات (${payloadFiles.map(x => x.name).join(' ، ')}) وتحديث قاعدة البيانات والرابط الخارجي بنجاح!`;
+              await loadSheetsMetadata();
+              await refreshRemoteCloudData(false);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn('Local upload fallback to browser parser:', e);
+        }
+      }
+
+      // 2. Direct in-browser parsing via SheetJS (works even on GitHub Pages without PC server!)
+      try {
+        if (!cloudBundle) await refreshRemoteCloudData(false);
+        const updatedNames = [];
+        for (const f of Array.from(fileList)) {
+          const buf = await f.arrayBuffer();
+          const wb = XLSX.read(buf, { type: 'array' });
+          const sheetName = wb.SheetNames.includes('Items') ? 'Items' : wb.SheetNames[0];
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: '' });
+          if (!rows.length) continue;
+          const headers = Object.keys(rows[0]);
+          const key = detectSheetKeyFromFile(f.name, headers);
+
+          if (key === 'bin') {
+            const newBinsByBc = {};
+            const newBinsByCode = {};
+            rows.forEach(r => {
+              const bc = String(r['Barcode No.'] || '').trim();
+              const bcode = String(r['Bin Code'] || '').trim();
+              const ino = String(r['Item No.'] || '').trim();
+              const desc = String(r['ItemDescription'] || '').trim();
+              const q = Number(r['Quantity (Base)'] || r['Quantity'] || 0);
+              const av = Number(r['Available Qty. to Take'] || q);
+              if (bc && bcode && q > 0) {
+                (newBinsByBc[bc] = newBinsByBc[bc] || []).push([bcode, q, av]);
+                (newBinsByCode[bcode] = newBinsByCode[bcode] || []).push([bc, ino, q, av, desc]);
+              }
+            });
+            cloudBundle.bins_by_bc = newBinsByBc;
+            cloudBundle.bins_by_code = newBinsByCode;
+            updatedNames.push(`Bin Contents (${rows.length.toLocaleString()} سطر)`);
+          } else if (key === 'inv') {
+            const newInvByBc = {};
+            rows.forEach(r => {
+              const bc = String(r['Barcode'] || '').trim();
+              const loc = String(r['Location'] || '').trim();
+              const ino = String(r['Item No'] || '').trim();
+              const vd = String(r['Variant Description'] || '').trim();
+              const vc = String(r['Variant'] || '').trim();
+              const q = Number(r['Inventory'] || 0);
+              if (bc && loc && q !== 0) {
+                if (!newInvByBc[bc]) newInvByBc[bc] = {};
+                newInvByBc[bc][loc] = (newInvByBc[bc][loc] || 0) + q;
+                if (ino && (!cloudBundle.reg_by_bc[bc])) {
+                  cloudBundle.reg_by_bc[bc] = [ino, vd, vc];
+                  (cloudBundle.variants_by_item[ino] = cloudBundle.variants_by_item[ino] || []).push(bc);
+                }
+              }
+            });
+            cloudBundle.inv_by_bc = newInvByBc;
+            updatedNames.push(`Inventory By Location (${rows.length.toLocaleString()} سطر)`);
+          } else if (key === 'tr') {
+            const newTrByBc = {};
+            const newTrByDoc = {};
+            rows.forEach(r => {
+              const doc = String(r['Document No.'] || '').trim();
+              const bc = String(r['Barcodes'] || '').trim();
+              const ino = String(r['Item No.'] || '').trim();
+              const fromC = String(r['Transfer-from Code'] || '').trim();
+              const toC = String(r['Transfer-to Code'] || '').trim();
+              const stVal = String(r['Status'] || '').trim();
+              const shipDt = String(r['Shipment Date'] || '').slice(0, 10);
+              const q = Number(r['Quantity'] || 0);
+              if (bc && fromC && fromC !== 'IN-TRANSIT' && q > 0) {
+                (newTrByBc[bc] = newTrByBc[bc] || []).push([doc, fromC, toC, q, stVal, shipDt]);
+                (newTrByDoc[doc] = newTrByDoc[doc] || []).push([bc, ino, fromC, toC, q, stVal, shipDt]);
+              }
+            });
+            cloudBundle.tr_by_bc = newTrByBc;
+            cloudBundle.tr_by_doc = newTrByDoc;
+            updatedNames.push(`Transfer Line (${rows.length.toLocaleString()} سطر)`);
+          }
+          // Update metadata display
+          if (key && cloudBundle.sheets_meta) {
+            const m = cloudBundle.sheets_meta.find(x => x.sheet_key === key);
+            const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
+            if (m) {
+              m.file_name = f.name;
+              m.row_count = rows.length;
+              m.last_updated = nowStr;
+            } else {
+              cloudBundle.sheets_meta.push({ sheet_key: key, file_name: f.name, row_count: rows.length, last_updated: nowStr });
+            }
+            cloudBundle.updated_at = nowStr;
+          }
+        }
+        statusEl.style.color = 'var(--q-success)';
+        statusEl.innerHTML = `✅ تم قراءة وتحديث الملفات في المتصفح بنجاح: ${updatedNames.join(' + ')}!`;
+        await loadSheetsMetadata();
+      } catch (err) {
+        statusEl.style.color = 'var(--q-danger)';
+        statusEl.innerHTML = `❌ خطأ أثناء قراءة ملف الإكسل: ${err.message}`;
       }
     }
 
@@ -2890,10 +3227,23 @@
       const container = document.getElementById('usersListContainer');
       container.innerHTML = '<div style="padding:16px;">⏳ جاري تحميل قائمة الحسابات...</div>';
       try {
-        const res = await fetch('/api/users');
-        const data = await res.json();
-        if (!data.ok) return;
-        allUsersCache = data.users;
+        let usersArr = null;
+        if (!isStaticCloudHost) {
+          try {
+            const res = await fetch('/api/users');
+            if (res.ok) {
+              const data = await res.json();
+              if (data.ok) usersArr = data.users;
+            } else {
+              isStaticCloudHost = true;
+            }
+          } catch (e) { isStaticCloudHost = true; }
+        }
+        if (!usersArr) {
+          if (!cloudUsers) await refreshRemoteCloudData(false);
+          usersArr = cloudUsers || [];
+        }
+        allUsersCache = usersArr;
         container.innerHTML = `
           <div class="table-wrap">
             <table>
@@ -2908,7 +3258,7 @@
                 </tr>
               </thead>
               <tbody>
-                ${data.users.map(u => `
+                ${usersArr.map(u => `
                   <tr>
                     <td style="font-family:Roboto; font-weight:800;">${u.username}</td>
                     <td><strong>${u.display_name}</strong></td>
