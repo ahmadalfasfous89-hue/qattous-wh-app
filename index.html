@@ -1629,7 +1629,8 @@
       </div>
 
       <div class="header-controls">
-        <button class="btn btn-bronze btn-sm" id="btnMobileRefresh" style="display:none;" onclick="refreshRemoteCloudData(true)" aria-label="refresh">🔄</button>
+        <button class="btn btn-bronze btn-sm" id="btnMobileRefresh" style="display:none;"
+          onclick="refreshRemoteCloudData(true)" aria-label="refresh">🔄</button>
         <button class="btn btn-charcoal btn-sm" id="btnMenu" style="display:none;" onclick="openSheet()"
           aria-label="menu">☰ <span id="menuUserShort">User</span></button>
         <button class="btn btn-bronze btn-sm" onclick="refreshRemoteCloudData(true)" id="btnRemoteRefresh"
@@ -1930,16 +1931,19 @@
       <p style="font-size:0.78rem; color:var(--q-bronze); font-weight:700; margin-bottom:18px;">QATTOUS GROUP</p>
       <div class="form-group" style="margin-bottom:12px; text-align:start;">
         <label>اسم المستخدم (Username):</label>
-        <input type="text" id="loginUsername" class="form-control" placeholder="أدخل اسم المستخدم" autocomplete="username"
+        <input type="text" id="loginUsername" class="form-control" placeholder="أدخل اسم المستخدم"
+          autocomplete="username"
           onkeydown="if(event.key==='Enter') document.getElementById('loginPassword').focus()" />
       </div>
       <div class="form-group" style="margin-bottom:16px; text-align:start;">
         <label>كلمة المرور (Password):</label>
-        <input type="password" id="loginPassword" class="form-control" placeholder="أدخل كلمة المرور" autocomplete="current-password"
-          onkeydown="if(event.key==='Enter') submitLogin()" />
+        <input type="password" id="loginPassword" class="form-control" placeholder="أدخل كلمة المرور"
+          autocomplete="current-password" onkeydown="if(event.key==='Enter') submitLogin()" />
       </div>
-      <div id="loginErrorMsg" style="color:var(--q-danger); font-size:0.82rem; font-weight:700; margin-bottom:10px; min-height:18px;"></div>
-      <button class="btn btn-bronze" style="width:100%; padding:12px; font-size:0.98rem;" onclick="submitLogin()" id="btnLoginSubmit">
+      <div id="loginErrorMsg"
+        style="color:var(--q-danger); font-size:0.82rem; font-weight:700; margin-bottom:10px; min-height:18px;"></div>
+      <button class="btn btn-bronze" style="width:100%; padding:12px; font-size:0.98rem;" onclick="submitLogin()"
+        id="btnLoginSubmit">
         🔐 تسجيل الدخول (Sign In)
       </button>
     </div>
@@ -2026,7 +2030,8 @@
     <div class="row" style="cursor:pointer; color:var(--q-danger);" onclick="closeSheet(); logoutAccount();">
       <span>🚪 <span data-mi="sh_logout">تسجيل الخروج وتبديل الحساب</span></span><span>›</span>
     </div>
-    <button class="btn btn-outline" style="width:100%; margin-top:12px;" onclick="closeSheet()" data-mi="sh_close">إغلاق</button>
+    <button class="btn btn-outline" style="width:100%; margin-top:12px;" onclick="closeSheet()"
+      data-mi="sh_close">إغلاق</button>
   </div>
 
   <script>
@@ -3460,7 +3465,7 @@
                   </div>
                   <div class="rc-row"><span class="chip" style="cursor:pointer" onclick="executeLookup('${r.serial}')">👕 ${r.serial}</span></div>
                 </div>`).join('')
-          )}
+        )}
           </div>
         `;
         return;
