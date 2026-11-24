@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Qattous Group | نظام المستودعات وتوزيع السيري</title>
+  <title>Brands Stock Stores/WH | Qattous Group</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./qattous_logo.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1623,26 +1623,25 @@
         <img src="./qattous_logo.png" alt="Qattous Group" class="brand-logo" />
         <div class="brand-divider"></div>
         <div class="brand-titles">
-          <h1 data-i18n="app_title">نظام المستودعات وتوزيع السيري الذكي</h1>
-          <p>QATTOUS GROUP • LA FAMILIA &amp; WAREHOUSE PDA SYSTEM <span id="lastSyncBadge"
-              style="color:#16794b; margin-inline-start:6px;"></span></p>
+          <h1 data-i18n="app_title">Brands Stock Stores/WH</h1>
+          <p>QATTOUS GROUP <span id="lastSyncBadge" style="color:#16794b; margin-inline-start:6px;"></span></p>
         </div>
       </div>
 
       <div class="header-controls">
         <button class="btn btn-bronze btn-sm" id="btnMobileRefresh" style="display:none;" onclick="refreshRemoteCloudData(true)" aria-label="refresh">🔄</button>
         <button class="btn btn-charcoal btn-sm" id="btnMenu" style="display:none;" onclick="openSheet()"
-          aria-label="menu">☰ <span id="menuUserShort">Admin</span></button>
+          aria-label="menu">☰ <span id="menuUserShort">User</span></button>
         <button class="btn btn-bronze btn-sm" onclick="refreshRemoteCloudData(true)" id="btnRemoteRefresh"
-          title="سحب أحدث أرقام ولوكيشنات من السحابة عبر 4G / Wi-Fi">
-          🔄 <span data-i18n="btn_remote_refresh">تحديث الداتا (Refresh)</span>
+          title="تحديث البيانات">
+          🔄 <span data-i18n="btn_remote_refresh">تحديث</span>
         </button>
         <div class="user-pill">
           <span id="currentUserDisplay">—</span>
           <span id="currentUserRoleBadge" class="role-badge">USER</span>
         </div>
         <button class="btn btn-outline btn-sm" onclick="logoutAccount()" data-i18n="btn_logout">🚪 خروج</button>
-        <button class="btn btn-charcoal btn-sm" onclick="toggleLanguage()" id="langBtn">English (EN)</button>
+        <button class="btn btn-charcoal btn-sm" onclick="toggleLanguage()" id="langBtn">EN</button>
       </div>
     </div>
   </header>
@@ -1651,16 +1650,16 @@
   <nav class="main-nav">
     <div class="nav-inner">
       <button class="nav-tab active" data-view="scannerView" onclick="switchView('scannerView')">
-        <span>🔍</span> <span data-i18n="nav_scanner">الفحص والمسح (Scanner &amp; Manual)</span>
+        <span>🔍</span> <span data-i18n="nav_scanner">الفحص</span>
       </button>
       <button class="nav-tab" id="navReportTab" data-view="reportView" onclick="switchView('reportView')">
-        <span>📊</span> <span data-i18n="nav_report">ريبورت توزيع السيري والإكسل</span>
+        <span>📊</span> <span data-i18n="nav_report">الريبورت</span>
       </button>
       <button class="nav-tab" id="navDataTab" data-view="dataView" onclick="switchView('dataView')">
-        <span>🔄</span> <span data-i18n="nav_data">تحديث شيتات الإكسل (Data Sync)</span>
+        <span>🔄</span> <span data-i18n="nav_data">البيانات</span>
       </button>
       <button class="nav-tab" id="navUsersTab" data-view="usersView" onclick="switchView('usersView')">
-        <span>👥</span> <span data-i18n="nav_users">إدارة اليوزرات والصلاحيات</span>
+        <span>👥</span> <span data-i18n="nav_users">اليوزرات</span>
       </button>
     </div>
   </nav>
@@ -1732,11 +1731,11 @@
             <div id="suggestDropdown" class="suggest-dropdown"></div>
           </div>
           <button class="btn btn-bronze" onclick="triggerScanFromInput()">
-            <span>🔍</span> <span data-i18n="btn_manual_search">فحص / بحث يدوي</span>
+            <span>🔍</span> <span data-i18n="btn_manual_search">بحث</span>
           </button>
           <button class="btn btn-outline btn-cam" style="background:#2b2b2b; color:#fff; border-color:#555;"
             onclick="toggleCameraScanner()" aria-label="camera">
-            <span>📷</span> <span class="d-only" data-i18n="btn_camera">مسح بالكاميرا</span>
+            <span>📷</span> <span class="d-only" data-i18n="btn_camera">كاميرا</span>
           </button>
           <button class="btn btn-outline btn-clear" style="background:#2b2b2b; color:#fff; border-color:#555;"
             onclick="clearScanInput()">
@@ -1752,7 +1751,7 @@
             <input type="checkbox" id="autoEnterToggle"
               style="width:17px; height:17px; accent-color:#906f49; cursor:pointer;"
               onchange="localStorage.setItem('qattous_auto_enter', this.checked ? '1' : '0')" />
-            <span data-i18n="auto_enter_label">⚡ إنتر تلقائي فور مسح الباركود (Auto-Enter)</span>
+            <span data-i18n="auto_enter_label">⚡ إنتر تلقائي</span>
           </label>
         </div>
 
@@ -1842,12 +1841,9 @@
 
         <!-- Sub-tabs inside Report -->
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
-          <button class="btn btn-bronze btn-sm" id="repSubBtn_dist" onclick="switchReportSubTab('dist')">📋 جدول
-            الريبورت (بنفس تصميم الإكسل)</button>
-          <button class="btn btn-outline btn-sm" id="repSubBtn_summary" onclick="switchReportSubTab('summary')">📈 ملخص
-            الأقسام (Summary)</button>
-          <button class="btn btn-outline btn-sm" id="repSubBtn_transfers" onclick="switchReportSubTab('transfers')">🔄
-            ترانسفير محل لمحل (<span id="stTransfersCountBadge">0</span>)</button>
+          <button class="btn btn-bronze btn-sm" id="repSubBtn_dist" onclick="switchReportSubTab('dist')">📋 الجدول</button>
+          <button class="btn btn-outline btn-sm" id="repSubBtn_summary" onclick="switchReportSubTab('summary')">📈 الملخص</button>
+          <button class="btn btn-outline btn-sm" id="repSubBtn_transfers" onclick="switchReportSubTab('transfers')">🔄 ترانسفير (<span id="stTransfersCountBadge">0</span>)</button>
         </div>
 
         <div id="reportContentArea">
@@ -1866,10 +1862,10 @@
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button class="btn btn-bronze" onclick="runSelectedSheetsUpdate(false)" id="btnRunSheetsUpdate">
-              <span>⚡</span> <span data-i18n="btn_update_selected">تحديث محلي للشيتات المحددة</span>
+              <span>⚡</span> <span data-i18n="btn_update_selected">تحديث محلي</span>
             </button>
             <button class="btn btn-success" onclick="runSelectedSheetsUpdate(true)" id="btnPushCloudUpdate">
-              <span>☁️</span> <span>تحديث الشيتات + رفعها للرابط الخارجي (GitHub 4G)</span>
+              <span>☁️</span> <span>رفع للسحابة</span>
             </button>
           </div>
         </div>
@@ -1916,7 +1912,7 @@
             <span data-i18n="users_mgmt_title">إدارة الحسابات والصلاحيات (Admin / Supervisor / User)</span>
           </div>
           <button class="btn btn-bronze" onclick="openUserEditorModal(null)">
-            <span>➕</span> <span data-i18n="btn_add_user">إضافة حساب جديد</span>
+            <span>➕</span> <span data-i18n="btn_add_user">يوزر جديد</span>
           </button>
         </div>
 
@@ -1930,8 +1926,8 @@
   <div id="loginModal" class="modal-backdrop" style="background:rgba(21,21,21,0.92); backdrop-filter:blur(6px);">
     <div class="modal-card" style="max-width:410px; text-align:center;">
       <img src="./qattous_logo.png" alt="Qattous Group" style="height:48px; margin-bottom:10px; object-fit:contain;" />
-      <h2 style="font-size:1.1rem; color:var(--q-charcoal); margin-bottom:4px;">نظام المستودعات والمحلات</h2>
-      <p style="font-size:0.78rem; color:var(--q-bronze); font-weight:700; margin-bottom:18px;">QATTOUS GROUP • SECURE LOGIN</p>
+      <h2 style="font-size:1.1rem; color:var(--q-charcoal); margin-bottom:4px;">Brands Stock Stores/WH</h2>
+      <p style="font-size:0.78rem; color:var(--q-bronze); font-weight:700; margin-bottom:18px;">QATTOUS GROUP</p>
       <div class="form-group" style="margin-bottom:12px; text-align:start;">
         <label>اسم المستخدم (Username):</label>
         <input type="text" id="loginUsername" class="form-control" placeholder="أدخل اسم المستخدم" autocomplete="username"
@@ -1994,7 +1990,7 @@
         </label>
         <div style="display:flex; gap:8px;">
           <button class="btn btn-outline" onclick="closeUserEditorModal()">إلغاء</button>
-          <button class="btn btn-bronze" onclick="saveUserFromModal()">💾 حفظ الحساب والصلاحيات</button>
+          <button class="btn btn-bronze" onclick="saveUserFromModal()">💾 حفظ</button>
         </div>
       </div>
     </div>
@@ -2093,45 +2089,51 @@
         mode_wh_stores_desc: 'عرض شامل لمواقع الـ Bins في المستودع + أرصدة كافة المحلات',
         scanner_ready: 'جاهز لمسح ليزر الـ PDA أو الكاميرا أو الإدخال اليدوي (باركود / كود آيتم I... / كود Bin)',
         pda_mode_label: 'تركيز تلقائي لليزر الـ PDA',
-        btn_manual_search: 'فحص / بحث يدوي',
-        btn_camera: 'مسح بالكاميرا',
-        quick_samples_label: 'أمثلة سريعة للتجربة بضغطة زر:',
-        empty_state_title: 'امسح الباركود أو كود الرف (Bin) أو اكتب الكود يدوياً للبدء',
-        empty_state_desc: 'يعمل البحث في أقل من 0.01 ثانية عبر قاعدة البيانات المحلية المفهرسة',
-        report_title: 'ريبورت توزيع السيري والأولويات (La Familia - سيزن 2026)',
-        btn_export_excel: 'تصدير وتحميل ملف الإكسل (.xlsx)',
-        data_sync_title: 'تحديث شيتات الإكسل الانتقائي (Selective Sheets Updater)',
-        btn_update_selected: 'تحديث الشيتات المحددة الآن',
-        users_mgmt_title: 'إدارة الحسابات والصلاحيات (Admin / Supervisor / User)',
-        btn_add_user: 'إضافة حساب جديد'
+        btn_manual_search: 'بحث',
+        btn_camera: 'كاميرا',
+        btn_remote_refresh: 'تحديث',
+        btn_logout: '🚪 خروج',
+        auto_enter_label: '⚡ إنتر تلقائي',
+        nav_scanner: 'الفحص',
+        nav_report: 'الريبورت',
+        nav_data: 'البيانات',
+        nav_users: 'اليوزرات',
+        empty_state_title: 'امسح الباركود أو الـ Bin أو اكتب الكود للبدء',
+        empty_state_desc: 'البحث الفوري عبر قاعدة البيانات',
+        report_title: 'تقرير التوزيع والإكسل',
+        btn_export_excel: 'تصدير إكسل',
+        data_sync_title: 'تحديث البيانات',
+        btn_update_selected: 'تحديث محلي',
+        users_mgmt_title: 'اليوزرات والصلاحيات',
+        btn_add_user: 'يوزر جديد'
       },
       en: {
-        app_title: 'Smart Warehouse & Series Distribution System',
-        proto_switcher: 'Quick Account & Role Switcher (Prototype Test):',
-        btn_login_switch: '🔐 Switch Account',
-        nav_scanner: 'Scanner & Manual Inquiry',
-        nav_report: 'Series Distribution Report & Excel',
-        nav_data: 'Selective Excel Data Sync',
-        nav_users: 'Users & Permissions Management',
-        mode_wh_only_title: 'Check Warehouse Only',
-        mode_wh_only_desc: 'Check W0001 stock, Bin locations & bin count only',
-        mode_stores_only_title: 'Check Stores Only',
-        mode_stores_only_desc: 'Check store quantities (S0001..S0012) & In-Transit only',
-        mode_wh_stores_title: 'Check Warehouse & Stores',
-        mode_wh_stores_desc: 'Combined view of Warehouse Bins + All Store inventories',
-        scanner_ready: 'Ready for PDA Laser, Camera, or Manual Input (Barcode / Item I... / Bin Code)',
-        pda_mode_label: 'PDA Laser Auto-Focus',
-        btn_manual_search: 'Search / Check',
-        btn_camera: 'Camera Scan',
-        quick_samples_label: 'Quick 1-Click Test Samples:',
-        empty_state_title: 'Scan a Barcode or Bin Code, or type manually above to begin',
-        empty_state_desc: 'Instant < 0.01s lookup powered by local indexed SQLite database',
-        report_title: 'Series Distribution & Priority Report (La Familia - Season 2026)',
-        btn_export_excel: 'Export & Download Excel (.xlsx)',
-        data_sync_title: 'Selective Excel Sheets Updater',
-        btn_update_selected: 'Update Selected Sheets Now',
-        users_mgmt_title: 'Users & Granular Permissions (Admin / Supervisor / User)',
-        btn_add_user: 'Add New User'
+        app_title: 'Brands Stock Stores/WH',
+        btn_remote_refresh: 'Refresh',
+        btn_logout: '🚪 Logout',
+        auto_enter_label: '⚡ Auto-Enter',
+        nav_scanner: 'Scan',
+        nav_report: 'Report',
+        nav_data: 'Data',
+        nav_users: 'Users',
+        mode_wh_only_title: 'Warehouse',
+        mode_wh_only_desc: 'W0001 stock & Bins',
+        mode_stores_only_title: 'Stores',
+        mode_stores_only_desc: 'Branches & In-Transit',
+        mode_wh_stores_title: 'WH & Stores',
+        mode_wh_stores_desc: 'Combined view',
+        scanner_ready: 'Scan or type Barcode / Item / Bin',
+        pda_mode_label: 'PDA Focus',
+        btn_manual_search: 'Search',
+        btn_camera: 'Camera',
+        empty_state_title: 'Scan a Barcode or Bin Code to start',
+        empty_state_desc: 'Instant indexed lookup',
+        report_title: 'Distribution Report',
+        btn_export_excel: 'Export Excel',
+        data_sync_title: 'Data Sync',
+        btn_update_selected: 'Update Local',
+        users_mgmt_title: 'Users & Permissions',
+        btn_add_user: 'New User'
       }
     };
 
@@ -2139,7 +2141,7 @@
       currentLang = currentLang === 'ar' ? 'en' : 'ar';
       document.documentElement.lang = currentLang;
       document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-      document.getElementById('langBtn').textContent = currentLang === 'ar' ? 'English (EN)' : 'العربية (AR)';
+      document.getElementById('langBtn').textContent = currentLang === 'ar' ? 'EN' : 'عربي';
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (I18N[currentLang][key]) {
@@ -2264,9 +2266,13 @@
       try {
         const ts = Date.now();
         const fetchOpts = { cache: 'no-store' };
+        // On GitHub Pages / APK: fetch directly from raw.githubusercontent.com so new users & data sync in 2 seconds!
+        const rawBase = 'https://raw.githubusercontent.com/ahmadalfasfous89-hue/qattous-wh-app/main';
+        const dataUrl = isStaticCloudHost ? `${rawBase}/data_bundle.json?t=${ts}` : `./data_bundle.json?t=${ts}`;
+        const usersUrl = isStaticCloudHost ? `${rawBase}/users_bundle.json?t=${ts}` : `./users_bundle.json?t=${ts}`;
         const [bRes, uRes] = await Promise.all([
-          fetch(`./data_bundle.json?t=${ts}`, fetchOpts),
-          fetch(`./users_bundle.json?t=${ts}`, fetchOpts)
+          fetch(dataUrl, fetchOpts).catch(() => fetch(`./data_bundle.json?t=${ts}`, fetchOpts)),
+          fetch(usersUrl, fetchOpts).catch(() => fetch(`./users_bundle.json?t=${ts}`, fetchOpts))
         ]);
         if (bRes.ok) {
           cloudBundle = await bRes.json();
@@ -4205,7 +4211,7 @@
                     </td>
                     <td>
                       <div style="display:flex; gap:6px;">
-                        <button class="btn btn-outline btn-sm" onclick="openUserEditorModal('${u.username}')">✏️ تعديل الصلاحيات</button>
+                        <button class="btn btn-outline btn-sm" onclick="openUserEditorModal('${u.username}')">✏️ تعديل</button>
                         ${u.username !== 'admin' ? `<button class="btn btn-outline btn-sm" style="color:var(--q-danger);" onclick="deleteUserAccount('${u.username}')">🗑️</button>` : ''}
                       </div>
                     </td>
