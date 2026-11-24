@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-24 21:15:23",
+  "updated_at": "2026-11-25 00:37:52",
   "users": [
     {
       "username": "admin",
@@ -56,6 +56,23 @@
       "username": "store_user",
       "password": "1234",
       "display_name": "موظف محلات (Stores & WH)",
+      "role": "user",
+      "active": true,
+      "permissions": {
+        "mode_wh_only": true,
+        "mode_stores_only": true,
+        "mode_wh_stores": true,
+        "scan_bin": true,
+        "view_eligible_store": false,
+        "generate_reports": false,
+        "manage_data": false,
+        "manage_users": false
+      }
+    },
+    {
+      "username": "ahmadfas",
+      "password": "1234",
+      "display_name": "ahmadfas",
       "role": "user",
       "active": true,
       "permissions": {
