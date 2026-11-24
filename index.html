@@ -984,45 +984,49 @@
       .m-only { display:block; }
       .d-only { display:none !important; }
 
-      body { padding-bottom: 76px; font-size: 16px; }
-      .container { padding: 10px 10px 90px; }
+      html, body { max-width: 100vw; overflow-x: hidden; }
+      body { padding-bottom: 76px; font-size: 15px; }
+      .container { padding: 10px 10px 90px; max-width: 100vw; overflow-x: hidden; }
 
       /* Header: single slim row, secondary controls move into the Account sheet */
       .proto-bar { display:none; }
-      .top-header { border-bottom-width: 2px; }
-      .header-inner { padding: 8px 12px; flex-wrap: nowrap; }
-      .brand-logo { height: 32px; }
+      .top-header { border-bottom-width: 2px; max-width: 100vw; overflow: hidden; }
+      .header-inner { padding: 8px 10px; flex-wrap: nowrap; gap: 8px; }
+      .brand-box { min-width: 0; flex: 1; gap: 8px; overflow: hidden; }
+      .brand-logo { height: 28px; flex-shrink: 0; }
       .brand-divider, .brand-titles p { display:none; }
-      .brand-titles h1 { font-size: .92rem; }
+      .brand-titles { min-width: 0; overflow: hidden; }
+      .brand-titles h1 { font-size: .86rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .header-controls { flex-shrink: 0; }
       .header-controls .btn, .header-controls .user-pill { display:none; }
-      .header-controls #btnMenu { display:inline-flex !important; }
+      .header-controls #btnMenu { display:inline-flex !important; padding: 6px 10px; font-size: .78rem; }
       .main-nav { display:none; }
 
       /* Segmented mode control */
       .mode-grid { display:none; }
-      .m-seg { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
-      .m-seg button { border:2px solid #e0d6c8; background:#fff; border-radius:12px; padding:9px 4px;
-                      font-family:inherit; font-weight:800; font-size:.8rem; color:var(--q-charcoal);
-                      display:flex; flex-direction:column; align-items:center; gap:2px; min-height:56px; }
-      .m-seg button .ic { font-size:1.25rem; }
+      .m-seg { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; width:100%; }
+      .m-seg button { border:2px solid #e0d6c8; background:#fff; border-radius:12px; padding:8px 4px;
+                      font-family:inherit; font-weight:800; font-size:.78rem; color:var(--q-charcoal);
+                      display:flex; flex-direction:column; align-items:center; gap:2px; min-height:54px; min-width:0; }
+      .m-seg button .ic { font-size:1.2rem; }
       .m-seg button.active { background:var(--q-bronze); border-color:var(--q-bronze); color:#fff; }
       .m-seg button.disabled { opacity:.35; }
 
       /* Scanner box: compact, sticky, thumb friendly */
-      .scanner-box { position: sticky; top: 0; z-index: 60; padding: 12px; margin: 0 -2px 12px;
-                     border-radius: 16px; }
+      .scanner-box { position: sticky; top: 0; z-index: 60; padding: 10px; margin: 0 0 12px;
+                     border-radius: 14px; width: 100%; }
       .scanner-top { display:none; }
       .quick-samples { display:none; }
-      .input-row { display:grid; grid-template-columns: 1fr 56px; gap:8px; }
-      .scan-input-wrap { grid-column: 1 / -1; min-width:0; }
-      .scan-input { font-size: 1.1rem; padding: 15px 14px; border-radius: 12px; }
-      .input-row .btn { min-height: 52px; font-size: 1rem; border-radius: 12px; }
+      .input-row { display:grid; grid-template-columns: 1fr 54px; gap:8px; width: 100%; }
+      .scan-input-wrap { grid-column: 1 / -1; min-width:0; width: 100%; }
+      .scan-input { font-size: 0.96rem; padding: 12px; border-radius: 10px; width: 100%; }
+      .input-row .btn { min-height: 48px; font-size: 0.92rem; border-radius: 10px; width: 100%; }
       .input-row .btn-bronze { grid-column: 1; }
       .input-row .btn span + span { display:inline; }
-      .btn-cam { grid-column: 2; }
+      .btn-cam { grid-column: 2; padding: 0; }
       .input-row .btn-clear { display:none; }
       .suggest-dropdown { max-height: 55vh; }
-      .suggest-item { padding: 14px; }
+      .suggest-item { padding: 12px; }
 
       /* Cards replace wide tables */
       .table-wrap.has-cards { display:none; }
