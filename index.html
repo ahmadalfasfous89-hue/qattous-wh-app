@@ -4,9 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Brands Stock Stores/WH | Qattous Group</title>
   <title>Qattous Stock Management App | Qattous Group</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./qattous_logo.png" type="image/png" />
+  <script src="./xlsx.full.min.js" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -1502,19 +1504,24 @@
         flex: 1;
         border: none;
         background: none;
+        padding: 8px 2px 7px;
         padding: 5px 2px 4px;
         font-family: inherit;
+        font-size: .7rem;
         font-size: .64rem;
         font-weight: 800;
         color: var(--q-muted);
         display: flex;
         flex-direction: column;
         align-items: center;
+        gap: 2px;
+        min-height: 58px;
         gap: 1px;
         min-height: 44px;
       }
 
       .bottom-nav button .ic {
+        font-size: 1.35rem;
         font-size: .95rem;
         line-height: 1.1;
       }
@@ -1624,6 +1631,7 @@
         <img src="./qattous_logo.png" alt="Qattous Group" class="brand-logo" />
         <div class="brand-divider"></div>
         <div class="brand-titles">
+          <h1 data-i18n="app_title">Brands Stock Stores/WH</h1>
           <h1 data-i18n="app_title">Qattous SM</h1>
           <p>QATTOUS GROUP <span id="lastSyncBadge" style="color:#16794b; margin-inline-start:6px;"></span></p>
         </div>
@@ -1710,51 +1718,40 @@
       </div>
 
       <!-- PDA Laser + Camera + Manual Input Box -->
-      <div class="scanner-box">
-        <div class="scanner-top">
-          <div class="scanner-status">
-            <span class="pulse-dot"></span>
-            <span data-i18n="scanner_ready">جاهز لمسح ليزر الـ PDA أو الكاميرا أو الإدخال اليدوي (باركود / كود آيتم I...
-              / كود Bin)</span>
-          </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <label style="font-size:0.78rem; display:flex; align-items:center; gap:5px; cursor:pointer;">
-              <input type="checkbox" id="pdaAutoFocusToggle" checked />
-              <span data-i18n="pda_mode_label">تركيز تلقائي لليزر الـ PDA</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="input-row">
-          <div class="scan-input-wrap">
-            <input type="text" id="scanInput" class="scan-input"
-              placeholder="امسح الباركود أو اكتب يدوياً: Barcode / Item No (I...) / Bin Code (B-21-...)"
+      <div class="scanner-box" style="padding:12px 14px;">
+        <div class="input-row" style="gap:6px; align-items:center;">
+          <div class="scan-input-wrap" style="flex:1;">
+            <input type="text" id="scanInput" class="scan-input" inputmode="none"
+              placeholder="Barcode / Item / Bin..."
               autocomplete="off" />
             <div id="suggestDropdown" class="suggest-dropdown"></div>
           </div>
-          <button class="btn btn-bronze" onclick="triggerScanFromInput()">
-            <span>🔍</span> <span data-i18n="btn_manual_search">بحث</span>
-          </button>
-          <button class="btn btn-outline btn-cam" style="background:#2b2b2b; color:#fff; border-color:#555;"
-            onclick="toggleCameraScanner()" aria-label="camera">
-            <span>📷</span> <span class="d-only" data-i18n="btn_camera">كاميرا</span>
-          </button>
-          <button class="btn btn-outline btn-clear" style="background:#2b2b2b; color:#fff; border-color:#555;"
-            onclick="clearScanInput()">
-            <span>✖</span>
-          </button>
+          <button class="btn btn-bronze" style="min-width:44px; height:44px; padding:0; font-size:1.1rem;"
+            onclick="triggerScanFromInput()" title="بحث" aria-label="Search">🔍</button>
+          <button class="btn btn-outline btn-cam" style="min-width:44px; height:44px; padding:0; font-size:1.1rem; background:#2b2b2b; color:#fff; border-color:#555;"
+            onclick="toggleCameraScanner()" title="كاميرا" aria-label="Camera">📷</button>
+          <button class="btn btn-outline btn-clear" style="min-width:42px; height:44px; padding:0; font-size:1rem; background:#2b2b2b; color:#fff; border-color:#555;"
+            onclick="clearScanInput()" title="مسح" aria-label="Clear">✖</button>
         </div>
 
-        <!-- Auto-Enter after Scan Toggle (Always visible on PDA, Mobile, and Desktop) -->
-        <div
-          style="margin-top:8px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-          <label
-            style="display:inline-flex; align-items:center; gap:7px; font-size:0.84rem; font-weight:700; color:#f5efe8; cursor:pointer; background:rgba(144,111,73,0.28); border:1px solid rgba(216,198,176,0.45); padding:5px 11px; border-radius:8px;">
-            <input type="checkbox" id="autoEnterToggle"
-              style="width:17px; height:17px; accent-color:#906f49; cursor:pointer;"
-              onchange="localStorage.setItem('qattous_auto_enter', this.checked ? '1' : '0')" />
-            <span data-i18n="auto_enter_label">⚡ إنتر تلقائي</span>
-          </label>
+        <!-- Compact PDA & Auto-Enter Toggles -->
+        <div style="margin-top:8px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <label
+              style="display:inline-flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:700; color:#f5efe8; cursor:pointer; background:rgba(144,111,73,0.28); border:1px solid rgba(216,198,176,0.45); padding:4px 10px; border-radius:8px;">
+              <input type="checkbox" id="autoEnterToggle"
+                style="width:15px; height:15px; accent-color:#906f49; cursor:pointer;"
+                onchange="localStorage.setItem('qattous_auto_enter', this.checked ? '1' : '0')" />
+              <span data-i18n="auto_enter_label">⚡ إنتر تلقائي</span>
+            </label>
+            <label
+              style="display:inline-flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:700; color:#d8c6b0; cursor:pointer; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); padding:4px 10px; border-radius:8px;">
+              <input type="checkbox" id="pdaAutoFocusToggle" checked
+                style="width:15px; height:15px; accent-color:#906f49; cursor:pointer;" />
+              <span data-i18n="pda_mode_label">🎯 PDA</span>
+            </label>
+          </div>
+          <span class="pulse-dot" title="جاهز للمسح"></span>
         </div>
 
         <!-- Live Camera Box -->
@@ -1843,9 +1840,12 @@
 
         <!-- Sub-tabs inside Report -->
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
-          <button class="btn btn-bronze btn-sm" id="repSubBtn_dist" onclick="switchReportSubTab('dist')">📋 الجدول</button>
-          <button class="btn btn-outline btn-sm" id="repSubBtn_summary" onclick="switchReportSubTab('summary')">📈 الملخص</button>
-          <button class="btn btn-outline btn-sm" id="repSubBtn_transfers" onclick="switchReportSubTab('transfers')">🔄 ترانسفير (<span id="stTransfersCountBadge">0</span>)</button>
+          <button class="btn btn-bronze btn-sm" id="repSubBtn_dist" onclick="switchReportSubTab('dist')">📋
+            الجدول</button>
+          <button class="btn btn-outline btn-sm" id="repSubBtn_summary" onclick="switchReportSubTab('summary')">📈
+            الملخص</button>
+          <button class="btn btn-outline btn-sm" id="repSubBtn_transfers" onclick="switchReportSubTab('transfers')">🔄
+            ترانسفير (<span id="stTransfersCountBadge">0</span>)</button>
         </div>
 
         <div id="reportContentArea">
@@ -1928,6 +1928,7 @@
   <div id="loginModal" class="modal-backdrop" style="background:rgba(21,21,21,0.92); backdrop-filter:blur(6px);">
     <div class="modal-card" style="max-width:410px; text-align:center;">
       <img src="./qattous_logo.png" alt="Qattous Group" style="height:48px; margin-bottom:10px; object-fit:contain;" />
+      <h2 style="font-size:1.1rem; color:var(--q-charcoal); margin-bottom:4px;">Brands Stock Stores/WH</h2>
       <h2 style="font-size:1.1rem; color:var(--q-charcoal); margin-bottom:4px;">Qattous SM</h2>
       <p style="font-size:0.78rem; color:var(--q-bronze); font-weight:700; margin-bottom:18px;">QATTOUS GROUP</p>
       <div class="form-group" style="margin-bottom:12px; text-align:start;">
@@ -2026,10 +2027,13 @@
       <span>🔄 <span data-mi="sh_refresh">تحديث الداتا الآن</span></span><span>›</span>
     </div>
     <div class="row" style="cursor:pointer;" onclick="checkAppUpdate()">
-      <span>⬇️ <span data-mi="sh_update">فحص تحديث التطبيق</span> <small id="sheetAppVer" style="color:var(--q-muted); font-family:Roboto; font-weight:700;"></small></span>
+      <span>⬇️ <span data-mi="sh_update">فحص تحديث التطبيق</span> <small id="sheetAppVer"
+          style="color:var(--q-muted); font-family:Roboto; font-weight:700;"></small></span>
       <span id="sheetUpdateBadge">›</span>
     </div>
-    <div id="appUpdateBox" style="display:none; background:#f5efe8; border:1px solid var(--q-bronze); border-radius:10px; padding:10px 12px; margin:6px 0; font-size:0.82rem;"></div>
+    <div id="appUpdateBox"
+      style="display:none; background:#f5efe8; border:1px solid var(--q-bronze); border-radius:10px; padding:10px 12px; margin:6px 0; font-size:0.82rem;">
+    </div>
     <div class="row" style="cursor:pointer;" onclick="toggleLanguage(); closeSheet();">
       <span>🌐 <span data-mi="sh_lang">اللغة: عربي / English</span></span><span>›</span>
     </div>
@@ -2085,9 +2089,14 @@
 
     const I18N = {
       ar: {
+        app_title: 'نظام المستودعات وتوزيع السيري الذكي',
         app_title: 'Qattous SM',
         proto_switcher: 'تبديل سريع لتجربة الحسابات والصلاحيات:',
         btn_login_switch: '🔐 تبديل الحساب',
+        nav_scanner: 'الفحص والمسح (Scanner & Manual)',
+        nav_report: 'ريبورت توزيع السيري والإكسل',
+        nav_data: 'تحديث شيتات الإكسل (Data Sync)',
+        nav_users: 'إدارة اليوزرات والصلاحيات',
         mode_wh_only_title: 'تشييك ويرهاوس فقط',
         mode_wh_only_desc: 'فحص أرصدة المستودع W0001 ومواقع الـ Bins وعددها فقط',
         mode_stores_only_title: 'تشييك محلات فقط',
@@ -2095,7 +2104,7 @@
         mode_wh_stores_title: 'تشييك مستودع ومحلات',
         mode_wh_stores_desc: 'عرض شامل لمواقع الـ Bins في المستودع + أرصدة كافة المحلات',
         scanner_ready: 'جاهز لمسح ليزر الـ PDA أو الكاميرا أو الإدخال اليدوي (باركود / كود آيتم I... / كود Bin)',
-        pda_mode_label: 'تركيز تلقائي لليزر الـ PDA',
+        pda_mode_label: '🎯 PDA',
         btn_manual_search: 'بحث',
         btn_camera: 'كاميرا',
         btn_remote_refresh: 'تحديث',
@@ -2115,6 +2124,7 @@
         btn_add_user: 'يوزر جديد'
       },
       en: {
+        app_title: 'Brands Stock Stores/WH',
         app_title: 'Qattous SM',
         btn_remote_refresh: 'Refresh',
         btn_logout: '🚪 Logout',
@@ -2130,7 +2140,7 @@
         mode_wh_stores_title: 'WH & Stores',
         mode_wh_stores_desc: 'Combined view',
         scanner_ready: 'Scan or type Barcode / Item / Bin',
-        pda_mode_label: 'PDA Focus',
+        pda_mode_label: '🎯 PDA',
         btn_manual_search: 'Search',
         btn_camera: 'Camera',
         empty_state_title: 'Scan a Barcode or Bin Code to start',
@@ -2392,7 +2402,7 @@
           const addQ = Number(trAddedByStore[sc.code] || 0);
           storesBaseQty[sc.code] = baseQ;
           storesTrAdded[sc.code] = addQ;
-          storesQty[sc.code] = baseQ + addQ;
+          storesQty[sc.code] = baseQ;
         });
 
         const whQ = Number(baseLocs['W0001'] || 0);
@@ -2730,7 +2740,7 @@
           applyUserPermissionsUI();
           switchView('scannerView');
           scanInput.value = '';
-          scanInput.focus();
+          focusScanForLaser(false);
         } else {
           if (errEl) errEl.textContent = '❌ ' + res.error;
         }
@@ -2751,6 +2761,30 @@
       const savedAE = localStorage.getItem('qattous_auto_enter');
       autoEnterToggle.checked = (savedAE === null) ? true : (savedAE === '1');
     }
+
+    // Keep Android soft keyboard CLOSED during hardware PDA laser scanning;
+    // ONLY open soft keyboard when the user manually taps the input box!
+    function focusScanForLaser(selectAll = false) {
+      if (!scanInput) return;
+      const pdaOn = document.getElementById('pdaAutoFocusToggle')?.checked;
+      if (pdaOn) {
+        scanInput.setAttribute('inputmode', 'none');
+      }
+      scanInput.focus({ preventScroll: true });
+      if (selectAll && scanInput.value) {
+        try { scanInput.select(); } catch (_) {}
+      }
+    }
+
+    // Manual tap by user -> allow soft keyboard to open
+    scanInput.addEventListener('pointerdown', () => {
+      scanInput.setAttribute('inputmode', 'text');
+    });
+    scanInput.addEventListener('blur', () => {
+      if (document.getElementById('pdaAutoFocusToggle')?.checked) {
+        scanInput.setAttribute('inputmode', 'none');
+      }
+    });
 
     scanInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -2850,7 +2884,7 @@
     function clearScanInput() {
       scanInput.value = '';
       suggestDropdown.classList.remove('open');
-      scanInput.focus();
+      focusScanForLaser(false);
     }
 
     function triggerScanFromInput() {
@@ -2900,7 +2934,7 @@
         lastScanResponse = data;
         renderScanResponse(data);
         if (document.getElementById('pdaAutoFocusToggle').checked) {
-          scanInput.select();
+          focusScanForLaser(true);
         }
       } catch (e) {
         area.innerHTML = `<div class="card">خطأ في الاتصال: ${e.message}</div>`;
@@ -2959,10 +2993,6 @@
     }
 
     function exportTableToExcel(btn, prefix = 'Qattous_SM') {
-      if (typeof XLSX === 'undefined') {
-        alert('مكتبة الإكسل غير جاهزة حالياً، تأكد من اتصال الإنترنت.');
-        return;
-      }
       let table = null;
       if (btn && btn.parentElement) {
         let sib = btn.parentElement.nextElementSibling;
@@ -2982,9 +3012,29 @@
         if (typeof showToast === 'function') showToast('لا يوجد جدول لتصديره');
         return;
       }
-      const wb = XLSX.utils.table_to_book(table, { sheet: 'Data', raw: true });
       const ts = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
-      saveWorkbookSmart(wb, `${prefix}_${ts}.xlsx`);
+      if (typeof XLSX !== 'undefined') {
+        const wb = XLSX.utils.table_to_book(table, { sheet: 'Data', raw: true });
+        saveWorkbookSmart(wb, `${prefix}_${ts}.xlsx`);
+        return;
+      }
+      // Zero-dependency CSV fallback (opens directly in Excel)
+      const rows = Array.from(table.querySelectorAll('tr')).map(tr =>
+        Array.from(tr.querySelectorAll('th,td')).map(td => '"' + (td.innerText || '').replace(/"/g, '""').replace(/\s+/g, ' ').trim() + '"').join(',')
+      );
+      const csv = '\uFEFF' + rows.join('\r\n');
+      const filename = `${prefix}_${ts}.csv`;
+      if (window.AndroidBridge && typeof window.AndroidBridge.saveBase64File === 'function') {
+        const b64 = btoa(unescape(encodeURIComponent(csv)));
+        window.AndroidBridge.saveBase64File(b64, filename, 'text/csv');
+        if (typeof showToast === 'function') showToast('✅ تم حفظ الملف في التنزيلات: ' + filename);
+      } else {
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+      }
     }
 
     const INSTALLED_APK_VER = (new URLSearchParams(window.location.search).get('apk_ver')) || '2.0.0';
@@ -3013,7 +3063,7 @@
           try {
             const r = await fetch(u, { cache: 'no-store' });
             if (r.ok) { info = await r.json(); break; }
-          } catch (_) {}
+          } catch (_) { }
         }
         if (!info || !info.version) throw new Error('تعذر قراءة ملف الإصدار');
         const remoteVer = String(info.version).trim();
@@ -3159,7 +3209,8 @@
           activeStores = STORE_COLUMNS.filter(s =>
             expandedRows.some(r => {
               const v = useOrder ? Number((r.or_stores || {})[s.code] || 0) : Number((r.oh_stores || {})[s.code] || 0);
-              return v > 0 || (useOrder && r.winner_store === s.code);
+              const trAdd = !useOrder ? Number((r.tr_added_stores || {})[s.code] || 0) : 0;
+              return v > 0 || trAdd > 0 || (useOrder && r.winner_store === s.code);
             })
           );
         } else {
@@ -3230,7 +3281,7 @@
           } else if (isTransferDon) {
             cellStyle = 'background:#fff3cd; color:#856404; font-weight:900;';
           }
-          const trTag = trAdd > 0 ? ` <small style="color:#b86b11; font-weight:800;" title="شامل +${trAdd} من الـ Transfer Line">(+${trAdd} TO)</small>` : '';
+          const trTag = trAdd > 0 ? ` <small style="color:#b86b11; font-weight:800;" title="قادم بالترانسفير +${trAdd} (غير مضاف على الرصيد)">(+${trAdd} TO)</small>` : '';
           return `<td style="${cellStyle}">${val}${trTag}</td>`;
         }).join('')}
                     ${hasInTransit ? `
@@ -3302,8 +3353,9 @@
       return `
         <details open style="margin-top:12px; background:#fffdf7; border:1px solid #e6d5b8; border-radius:10px; padding:10px 14px;">
           <summary style="cursor:pointer; font-weight:800; font-size:0.86rem; color:#745736;">
-            🚚 تابة تفاصيل الـ In-Transit وأرقام الـ TO Number (${transfersList.length} حركة نقل مضافة على أرصدة المحلات)
+            🚚 تابة تفاصيل الـ In-Transit وأرقام الـ TO Number (${transfersList.length} حركة نقل قادمة للمحلات - غير مضافة على الرصيد)
           </summary>
+          <div class="table-wrap" style="margin-top:8px;">
           <div style="margin-top:8px;">${buildTableExportBar('Qattous_SM_Transfers')}</div>
           <div class="table-wrap" style="margin-top:4px;">
             <table class="excel-table" dir="ltr">
@@ -3342,12 +3394,14 @@
     const MI18N = {
       ar: {
         seg_wh: 'مستودع', seg_st: 'محلات', seg_both: 'الاثنان', nav_scan: 'فحص', nav_rep: 'ريبورت', nav_data: 'تحديث', nav_users: 'اليوزرات', nav_more: 'المزيد',
+        sh_sync: 'آخر تحديث للبيانات', sh_refresh: 'تحديث الداتا الآن', sh_lang: 'اللغة: عربي / English', sh_login: 'تسجيل دخول بحساب آخر', sh_quick: 'تبديل سريع للحساب (للتجربة)', sh_close: 'إغلاق',
         sh_sync: 'آخر تحديث للبيانات', sh_refresh: 'تحديث الداتا الآن', sh_update: 'فحص تحديث التطبيق', sh_lang: 'اللغة: عربي / English', sh_login: 'تسجيل دخول بحساب آخر', sh_quick: 'تبديل سريع للحساب (للتجربة)', sh_close: 'إغلاق',
         wh: 'المستودع', transit: 'بالطريق', stores: 'المحلات', bins: 'الأرفف (Bin)', nobin: 'غير موجود بأي رف', send: 'أرسل إلى', hold: 'يبقى بالمستودع', none: 'لا إجراء',
         barcodes: 'باركود', total: 'الإجمالي', inwh: 'في المستودع', instores: 'في المحلات', pcs: 'قطعة', moreitems: 'كل باركودات الآيتم', exp: 'تحميل إكسل', items: 'أصناف', skus: 'باركود', to: 'أمر نقل'
       },
       en: {
         seg_wh: 'Warehouse', seg_st: 'Stores', seg_both: 'Both', nav_scan: 'Scan', nav_rep: 'Report', nav_data: 'Update', nav_users: 'Users', nav_more: 'More',
+        sh_sync: 'Data last updated', sh_refresh: 'Refresh data now', sh_lang: 'Language: English / عربي', sh_login: 'Sign in as another user', sh_quick: 'Quick account switch (testing)', sh_close: 'Close',
         sh_sync: 'Data last updated', sh_refresh: 'Refresh data now', sh_update: 'Check App Update', sh_lang: 'Language: English / عربي', sh_login: 'Sign in as another user', sh_quick: 'Quick account switch (testing)', sh_close: 'Close',
         wh: 'Warehouse', transit: 'In transit', stores: 'Stores', bins: 'Bins', nobin: 'Not in any bin', send: 'Send to', hold: 'Keep in warehouse', none: 'No action',
         barcodes: 'barcodes', total: 'Total', inwh: 'In warehouse', instores: 'In stores', pcs: 'pcs', moreitems: 'All barcodes of this item', exp: 'Download Excel', items: 'items', skus: 'barcodes', to: 'Transfer order'
@@ -3383,10 +3437,10 @@
       const whQty = Number(r.wh_oh || 0);
       const stOH = r.oh_stores || {};
       const storeChips = showStores
-        ? STORE_COLUMNS.filter(s => Number(stOH[s.code] || 0) > 0).map(s => {
+        ? STORE_COLUMNS.filter(s => Number(stOH[s.code] || 0) > 0 || Number((r.tr_added_stores || {})[s.code] || 0) > 0).map(s => {
           const win = showEligible && r.winner_store === s.code && (r.eligible_mode === 'wh' || r.eligible_mode === 'transfer');
           const tr = Number((r.tr_added_stores || {})[s.code] || 0);
-          return `<span class="chip ${win ? 'good' : ''}">${s.short} <b>${stOH[s.code]}</b>${tr > 0 ? `<small style="color:#b86b11">(+${tr})</small>` : ''}</span>`;
+          return `<span class="chip ${win ? 'good' : ''}">${s.short} <b>${Number(stOH[s.code] || 0)}</b>${tr > 0 ? ` <small style="color:#b86b11; font-weight:800;">(+${tr} 🚚)</small>` : ''}</span>`;
         }).join('')
         : '';
       const inTr = Number(r.in_transit || 0);
@@ -3440,6 +3494,8 @@
       const totSt = rows.reduce((a, r) => a + Object.values(r.oh_stores || {}).reduce((x, y) => x + Math.max(0, Number(y) || 0), 0), 0);
       return `
         <div class="m-summary">
+          <div class="t">${title}</div>
+          <div class="s">${subtitle}</div>
           <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
             <div style="min-width:0;">
               <div class="t">${title}</div>
@@ -4482,7 +4538,7 @@
           if (res.ok) {
             currentUser = res.user;
             applyUserPermissionsUI();
-            scanInput.focus();
+            focusScanForLaser(false);
             return;
           }
         } catch (e) { }
