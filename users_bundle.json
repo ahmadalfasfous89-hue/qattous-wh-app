@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-25 11:43:35",
+  "updated_at": "2026-11-25 13:39:38",
   "users": [
     {
       "username": "admin",
@@ -77,8 +77,8 @@
       "active": true,
       "permissions": {
         "mode_wh_only": true,
-        "mode_stores_only": true,
-        "mode_wh_stores": true,
+        "mode_stores_only": false,
+        "mode_wh_stores": false,
         "scan_bin": true,
         "view_eligible_store": false,
         "generate_reports": false,
