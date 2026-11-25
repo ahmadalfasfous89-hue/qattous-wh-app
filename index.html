@@ -1849,6 +1849,8 @@
     #exportBackdrop { z-index: 1200; }
 
     .d-only-block { display: block; }
+    .install-steps { margin: 10px 0 0; padding-inline-start: 18px; font-size: .78rem; line-height: 1.7; color: var(--v2-ink); }
+    .install-steps li { margin-bottom: 4px; }
 
     @media (max-width: 760px) {
       .d-only, .d-only-block { display: none !important; }
@@ -3635,7 +3637,12 @@
           if (badge) badge.innerHTML = '<span style="color:#16794b; font-weight:900;">جديد!</span>';
           box.innerHTML = `
             <div style="font-weight:800; color:#16794b; margin-bottom:6px;">🎉 يتوفر تحديث جديد للتطبيق: v${remoteVer} (الحالي: v${INSTALLED_APK_VER})</div>
-            <button type="button" class="btn btn-success btn-sm" style="width:100%;" onclick="openExternalUpdateUrl('${apkUrl}')">⬇️ تحميل وتثبيت التحديث الجديد</button>
+            <button type="button" class="btn btn-success btn-sm" style="width:100%;" onclick="openExternalUpdateUrl('${apkUrl}')">تحميل التحديث</button>
+            <ol class="install-steps">
+              <li>بعد ما يخلص التحميل، افتح الملف من الإشعار أو من تطبيق الملفات ← التنزيلات.</li>
+              <li>إذا ما فتح أو طلعت رسالة "غير مسموح"، اضغط <b>الإعدادات</b> وفعّل <b>السماح من هذا المصدر</b>، وارجع اضغط على الملف.</li>
+              <li>اضغط <b>تحديث</b>. إذا طلع تحذير Play Protect اضغط <b>تفاصيل ← التثبيت على أي حال</b>.</li>
+            </ol>
           `;
         } else {
           if (badge) badge.textContent = '✅';
