@@ -1849,6 +1849,32 @@
     #exportBackdrop { z-index: 1200; }
 
     .d-only-block { display: block; }
+
+    /* Wide (replacement-style) result table */
+    .w-bar { display: flex; align-items: center; gap: 8px; margin: 14px 0 8px; flex-wrap: wrap; }
+    .w-bar .btn-bronze { margin-inline-start: auto; }
+    .w-toggle { display: inline-grid; grid-auto-flow: column; background: var(--v2-surface); border: 1px solid var(--v2-line); border-radius: 10px; padding: 2px; }
+    .w-toggle button { border: 0; background: none; padding: 6px 12px; border-radius: 8px; font-size: .8rem; color: var(--v2-muted); cursor: pointer; font-family: inherit; }
+    .w-toggle button.on { background: var(--v2-ink); color: var(--v2-bg); }
+    .w-wrap { overflow-x: auto; background: var(--v2-surface); border: 1px solid var(--v2-line); border-radius: 12px; -webkit-overflow-scrolling: touch; }
+    .w-table { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: .82rem; font-variant-numeric: tabular-nums; }
+    .w-table th, .w-table td { padding: 8px 10px; border-bottom: 1px solid var(--v2-line); border-inline-end: 1px solid var(--v2-line); white-space: nowrap; text-align: left; background: var(--v2-surface); color: var(--v2-ink); font-weight: 400; }
+    .w-table thead th { background: #f1ece4; color: var(--v2-ink); font-weight: 600; font-size: .76rem; position: sticky; top: 0; z-index: 1; }
+    .w-table thead th.w-store { background: #fbf3d6; }
+    .w-table tbody tr:hover td { background: #faf7f2; }
+    .w-table tfoot td { font-weight: 600; background: #f7f3ec; border-bottom: 0; }
+    .w-table .w-sticky { position: sticky; left: 0; z-index: 2; box-shadow: 1px 0 0 var(--v2-line); }
+    .w-table thead .w-sticky { z-index: 3; }
+    .w-table .w-num { text-align: center; min-width: 46px; }
+    .w-table td.w-num.z { color: #c9c1b6; }
+    .w-table td.w-num.has { font-weight: 600; }
+    .w-table td.w-num.strong.has { background: #eef6f1; color: var(--v2-ok); }
+    .w-table td.w-num.warn { color: var(--v2-warn); }
+    .w-table .w-inc { display: block; font-size: .66rem; color: var(--v2-warn); font-weight: 500; line-height: 1; }
+    .w-table .w-desc { max-width: 240px; overflow: hidden; text-overflow: ellipsis; }
+    .w-link, .w-loc { border: 0; background: none; padding: 0; font: inherit; color: var(--v2-bronze-d); cursor: pointer; text-decoration: underline; text-decoration-color: var(--v2-line); text-underline-offset: 3px; }
+    .w-loc { color: var(--v2-ink); font-weight: 500; text-decoration: none; }
+    .w-loc small { margin-inline-start: 6px; color: var(--v2-muted); font-weight: 400; font-size: .7rem; }
     .install-steps { margin: 10px 0 0; padding-inline-start: 18px; font-size: .78rem; line-height: 1.7; color: var(--v2-ink); }
     .install-steps li { margin-bottom: 4px; }
 
@@ -2626,7 +2652,18 @@
       }
     }
 
-    async function refreshRemoteCloudData(showAlert = false) {
+    // One download at a time: a scan or tap during a running refresh waits for it instead of starting another 6 MB fetch.
+    let refreshInFlight = null;
+    function refreshRemoteCloudData(showAlert = false) {
+      if (refreshInFlight) {
+        if (showAlert) refreshInFlight.then(ok => showToast(ok ? (currentLang === 'ar' ? 'تم تحديث البيانات' : 'Data refreshed') : (currentLang === 'ar' ? 'تعذر تحديث البيانات' : 'Could not refresh data'), !ok));
+        return refreshInFlight;
+      }
+      refreshInFlight = doRefreshRemoteCloudData(showAlert).finally(() => { refreshInFlight = null; });
+      return refreshInFlight;
+    }
+
+    async function doRefreshRemoteCloudData(showAlert = false) {
       const btn = document.getElementById('btnRemoteRefresh');
       const mBtn = document.getElementById('btnMobileRefresh');
       [btn, mBtn].forEach(b => { if (b) { b.disabled = true; b.classList.add('spinning'); } });
@@ -4206,12 +4243,216 @@
       return `<div class="d-only">${desktopHtml}</div><div class="m-only">${mobileHtml}</div>`;
     }
 
+    // ==================== WIDE VIEW (replacement-report layout: one row per barcode) ====================
+    // Columns: Barcode | Serial | Description | Brand | DEPT | ART NO.. | Color/Size | stores (priority order)
+    //          | In Transit | Wh Qty | Location | Location2 | Location3  — screen and Excel use the same model.
+    let resultViewMode = localStorage.getItem('qattous_view') || 'table';
+    let lastWide = null;
+
+    function setResultViewMode(m) {
+      resultViewMode = m;
+      localStorage.setItem('qattous_view', m);
+      if (lastScanResponse) renderScanResponse(lastScanResponse);
+    }
+
+    function wideBarcodesFor(data) {
+      const b = cloudBundle;
+      if (data.scan_type === 'bin' || data.scan_type === 'to_number') {
+        return (data.items || []).map(it => ({ bc: String(it.barcode), extra: Number(it.qty || 0), ino: it.item_no || it.serial || '', desc: it.description || '' }));
+      }
+      if (data.scan_type === 'item_all_barcodes') {
+        const ino = data.item_no || (data.allocation && data.allocation.item_no);
+        let list = (b.variants_by_item && b.variants_by_item[ino]) || ((data.allocation && data.allocation.variants) || []).map(v => v.barcode);
+        list = list.slice().sort((x, y) => x.slice(0, -2).localeCompare(y.slice(0, -2)) || (parseInt(x.slice(-2), 10) - parseInt(y.slice(-2), 10)));
+        return list.map(bc => ({ bc: String(bc) }));
+      }
+      return [{ bc: String(data.target_barcode || data.queried_code) }];
+    }
+
+    function buildWideRow(bc, extra, eligibleByBc) {
+      const b = cloudBundle;
+      const reg = (b.reg_by_bc && b.reg_by_bc[bc]) || ['', '', ''];
+      const ino = reg[0] || '';
+      const im = (b.items_meta && b.items_meta[ino]) || ['', '', '', '', '', '', ''];
+      const inv = (b.inv_by_bc && b.inv_by_bc[bc]) || {};
+      const bins = ((b.bins_by_bc && b.bins_by_bc[bc]) || []).map(x => ({ bin: x[0], qty: Number(x[1] || 0) }))
+        .sort((x, y) => y.qty - x.qty);
+      const incoming = {};
+      const toNums = [];
+      ((b.tr_by_bc && b.tr_by_bc[bc]) || []).forEach(t => {
+        const [doc, , to, q, st] = t;
+        if (st === 'Released' && Number(q) > 0) incoming[to] = (incoming[to] || 0) + Number(q);
+        if (!toNums.includes(doc)) toNums.push(doc);
+      });
+      const stores = {};
+      STORE_COLUMNS.forEach(s => { stores[s.code] = Number(inv[s.code] || 0); });
+      const binTotal = bins.reduce((a, x) => a + x.qty, 0);
+      const whInv = Number(inv['W0001'] || 0);
+      return {
+        bc, ino, desc: im[0] || '', brand: im[1] || '', dept: im[2] || '', art: im[4] || '', cs: reg[1] || '',
+        stores, incoming, toNums,
+        inTransit: Number(inv['IN-TRANSIT'] || 0) + Object.values(incoming).reduce((a, v) => a + v, 0),
+        wh: whInv > 0 ? whInv : binTotal,
+        bins, extra,
+        eligible: eligibleByBc ? (eligibleByBc[bc] || '') : ''
+      };
+    }
+
+    function buildWideModel(data, opts) {
+      const ar = currentLang === 'ar';
+      const eligibleByBc = {};
+      if (opts.showEligible && data.allocation && data.allocation.variants) {
+        data.allocation.variants.forEach(v => {
+          if (v.eligible_mode === 'wh' || v.eligible_mode === 'transfer') eligibleByBc[v.barcode] = v.eligible_summary || '';
+        });
+      }
+      let rows = wideBarcodesFor(data).map(x => {
+        const r = buildWideRow(x.bc, x.extra, eligibleByBc);
+        if (!r.ino && x.ino) r.ino = x.ino;
+        if (!r.desc && x.desc) r.desc = x.desc;
+        return r;
+      });
+      if (data.scan_type === 'bin') rows.sort((a, c) => (c.extra || 0) - (a.extra || 0));
+      // Stores: the 7 La Familia stores always (replacement order), other stores only when they hold stock
+      const lf = ['S0001', 'S0011', 'S0002', 'S0003', 'S0004', 'S0010', 'S0012'];
+      const storeCols = opts.showStores
+        ? STORE_COLUMNS.filter(s => lf.includes(s.code) || rows.some(r => r.stores[s.code] > 0 || r.incoming[s.code] > 0))
+          .sort((a, c) => (lf.indexOf(a.code) + 1 || 99) - (lf.indexOf(c.code) + 1 || 99))
+        : [];
+      const extraLabel = data.scan_type === 'bin' ? 'Bin Qty' : data.scan_type === 'to_number' ? 'TO Qty' : '';
+      const cols = [
+        { k: 'bc', h: 'Barcode' }, { k: 'ino', h: 'Serial' }, { k: 'desc', h: 'Description' }, { k: 'brand', h: 'Brand' },
+        { k: 'dept', h: 'DEPT' }, { k: 'art', h: 'ART NO..' }, { k: 'cs', h: 'Color/Size' }
+      ];
+      if (extraLabel) cols.push({ k: 'extra', h: extraLabel, num: true, strong: true });
+      storeCols.forEach(s => cols.push({ k: 'st', code: s.code, h: s.short, num: true, store: true }));
+      if (opts.showStores) cols.push({ k: 'inTransit', h: 'In Transit', num: true, warn: true });
+      if (opts.showWH) {
+        cols.push({ k: 'wh', h: 'Wh Qty', num: true, strong: true });
+        cols.push({ k: 'loc', i: 0, h: 'Location' }, { k: 'loc', i: 1, h: 'Location2' }, { k: 'loc', i: 2, h: 'Location3' });
+      }
+      if (opts.showStores) cols.push({ k: 'toNums', h: 'TO Numbers' });
+      if (opts.showEligible && rows.some(r => r.eligible)) cols.push({ k: 'eligible', h: 'Send to' });
+      return { rows, cols };
+    }
+
+    function wideCellValue(r, c) {
+      if (c.k === 'st') return r.stores[c.code] || 0;
+      if (c.k === 'loc') return r.bins[c.i] ? r.bins[c.i].bin : '';
+      if (c.k === 'toNums') return r.toNums.join(', ');
+      return r[c.k] == null ? '' : r[c.k];
+    }
+
+    function buildWideTableHtml(model) {
+      const { rows, cols } = model;
+      const totals = {};
+      cols.forEach((c, i) => { if (c.num) totals[i] = rows.reduce((a, r) => a + Number(wideCellValue(r, c) || 0), 0); });
+      const td = (r, c) => {
+        const v = wideCellValue(r, c);
+        if (c.k === 'bc') return `<td class="w-sticky"><button type="button" class="w-link num" onclick="executeLookup('${escHtml(r.bc)}')">${escHtml(r.bc)}</button></td>`;
+        if (c.k === 'ino') return `<td><button type="button" class="w-link num" onclick="executeLookup('${escHtml(r.ino)}')">${escHtml(r.ino)}</button></td>`;
+        if (c.k === 'loc') {
+          const bn = r.bins[c.i];
+          return bn ? `<td><button type="button" class="w-loc num" onclick="executeLookup('${escHtml(bn.bin)}')">${escHtml(bn.bin)}<small>${bn.qty}</small></button></td>` : '<td></td>';
+        }
+        if (c.k === 'st') {
+          const inc = r.incoming[c.code] || 0;
+          return `<td class="w-num ${v ? 'has' : 'z'}">${v || (inc ? 0 : '')}${inc ? `<small class="w-inc">+${inc}</small>` : ''}</td>`;
+        }
+        if (c.num) return `<td class="w-num ${v ? 'has' : 'z'}${c.strong ? ' strong' : ''}${c.warn && v ? ' warn' : ''}">${v || ''}</td>`;
+        if (c.k === 'desc') return `<td class="w-desc">${escHtml(v)}</td>`;
+        return `<td>${escHtml(v)}</td>`;
+      };
+      return `
+        <div class="w-wrap"><table class="w-table" dir="ltr">
+          <thead><tr>${cols.map(c => `<th class="${c.k === 'bc' ? 'w-sticky' : ''}${c.store ? ' w-store' : ''}${c.num ? ' w-num' : ''}">${escHtml(c.h)}</th>`).join('')}</tr></thead>
+          <tbody>${rows.map(r => `<tr>${cols.map(c => td(r, c)).join('')}</tr>`).join('')}</tbody>
+          ${rows.length > 1 ? `<tfoot><tr>${cols.map((c, i) => i === 0 ? `<td class="w-sticky">${currentLang === 'ar' ? 'المجموع' : 'Total'}</td>` : `<td class="w-num">${c.num ? totals[i] : ''}</td>`).join('')}</tr></tfoot>` : ''}
+        </table></div>`;
+    }
+
+    function wideFileName(data) {
+      const tag = data.scan_type === 'bin' ? 'Bin_' + data.bin_code : data.scan_type === 'to_number' ? 'TO_' + data.to_number
+        : data.scan_type === 'item_all_barcodes' ? data.item_no || (data.allocation && data.allocation.item_no) : data.target_barcode || data.queried_code;
+      const ts = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+      return `Qattous_SM_${String(tag).replace(/[^\w-]/g, '_')}_${ts}.xlsx`;
+    }
+
+    // Excel = exactly the on-screen columns (numbers stay numbers so the sheet can be summed/filtered)
+    function exportWideExcel() {
+      if (!lastWide) return;
+      const { model, filename } = lastWide;
+      const aoa = [model.cols.map(c => c.h)];
+      model.rows.forEach(r => aoa.push(model.cols.map(c => wideCellValue(r, c))));
+      if (typeof XLSX === 'undefined') {
+        const csv = '﻿' + aoa.map(row => row.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+        offerExport(btoa(unescape(encodeURIComponent(csv))), filename.replace(/\.xlsx$/, '.csv'), 'text/csv');
+        return;
+      }
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      ws['!cols'] = model.cols.map(c => ({ wch: c.k === 'desc' ? 34 : c.k === 'bc' ? 17 : c.k === 'ino' ? 16 : c.k === 'loc' ? 14 : c.k === 'toNums' ? 22 : c.k === 'eligible' ? 30 : c.num ? 9 : 12 }));
+      ws['!autofilter'] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: aoa.length - 1, c: aoa[0].length - 1 } }) };
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+      saveWorkbookSmart(wb, filename);
+    }
+
+    function renderWideView(data, opts) {
+      const ar = currentLang === 'ar';
+      const model = buildWideModel(data, opts);
+      lastWide = { model, filename: wideFileName(data) };
+      const rows = model.rows;
+      const r0 = rows[0] || {};
+      let title = '', sub = '';
+      if (data.scan_type === 'bin') { title = (ar ? 'رف ' : 'Bin ') + data.bin_code; sub = `${data.sku_count} ${ar ? 'صنف' : 'items'} · ${data.total_qty} ${ar ? 'قطعة' : 'pcs'}`; }
+      else if (data.scan_type === 'to_number') { title = data.to_number; sub = `${(data.items[0] || {}).from_code || ''} ← ${storeName((data.items[0] || {}).to_code || '')} · ${data.total_qty} ${ar ? 'قطعة' : 'pcs'}`; }
+      else if (data.scan_type === 'item_all_barcodes') { title = r0.desc || data.item_no; sub = `${data.item_no || ''} · ${rows.length} ${ar ? 'باركود' : 'barcodes'}${r0.dept ? ' · ' + r0.dept : ''}`; }
+      else { title = r0.desc || r0.bc; sub = `${r0.ino || ''}${r0.cs ? ' · ' + r0.cs : ''}${r0.dept ? ' · ' + r0.dept : ''}`; }
+      const sum = f => rows.reduce((a, r) => a + f(r), 0);
+      const cells = [];
+      if (opts.showWH) cells.push({ v: sum(r => r.wh), l: ar ? 'بالمستودع' : 'Warehouse' });
+      if (opts.showStores) cells.push({ v: sum(r => Object.values(r.stores).reduce((a, v) => a + Math.max(0, v), 0)), l: ar ? 'بالمحلات' : 'Stores' });
+      if (opts.showStores) { const t = sum(r => r.inTransit); cells.push({ v: t, l: ar ? 'بالطريق' : 'In transit', warn: t > 0 }); }
+      document.getElementById('scanResultsArea').innerHTML = `
+        <div class="v2-box v2-item-head">
+          <div class="v2-head-row"><div style="min-width:0"><div class="d">${escHtml(title)}</div><div class="s">${escHtml(sub)}</div></div></div>
+          ${v2Totals(cells)}
+        </div>
+        <div class="w-bar">
+          <div class="w-toggle" role="tablist">
+            <button type="button" class="on" aria-selected="true">${ar ? 'جدول' : 'Table'}</button>
+            <button type="button" onclick="setResultViewMode('cards')">${ar ? 'بطاقات' : 'Cards'}</button>
+          </div>
+          ${data.scan_type === 'barcode' && r0.ino ? `<button type="button" class="btn btn-outline btn-sm" onclick="executeLookup('${escHtml(r0.ino)}')">${ar ? 'كل المقاسات' : 'All sizes'}</button>` : ''}
+          <button type="button" class="btn btn-bronze btn-sm" onclick="exportWideExcel()">${ar ? 'تصدير إكسل' : 'Export Excel'}</button>
+        </div>
+        ${buildWideTableHtml(model)}
+        <p class="v2-hint">${ar ? 'اسحب الجدول يمين ويسار لباقي الأعمدة. اضغط على الباركود أو الآيتم أو الرف لفتحه.' : 'Swipe the table sideways for more columns. Tap a barcode, item or bin to open it.'}</p>`;
+    }
+
     function renderScanResponse(data) {
       const area = document.getElementById('scanResultsArea');
       const p = currentUser.permissions || {};
       const showWH = (currentCheckMode === 'wh_only' || currentCheckMode === 'wh_stores') && (p.mode_wh_only || p.mode_wh_stores);
       const showStores = (currentCheckMode === 'stores_only' || currentCheckMode === 'wh_stores') && (p.mode_stores_only || p.mode_wh_stores);
       const showEligible = !!p.view_eligible_store;
+
+      if (resultViewMode === 'table' && cloudBundle) {
+        try {
+          renderWideView(data, { showWH, showStores, showEligible });
+          return;
+        } catch (e) {
+          console.warn('Wide view failed, falling back to cards:', e);
+        }
+      }
+      // Cards view: offer the way back to the table
+      setTimeout(() => {
+        if (!cloudBundle || area.querySelector('.w-bar')) return;
+        const bar = document.createElement('div');
+        bar.className = 'w-bar';
+        bar.innerHTML = `<div class="w-toggle"><button type="button" onclick="setResultViewMode('table')">${currentLang === 'ar' ? 'جدول' : 'Table'}</button><button type="button" class="on">${currentLang === 'ar' ? 'بطاقات' : 'Cards'}</button></div>`;
+        area.prepend(bar);
+      }, 0);
 
       const adminModeToggle = showStores ? `
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
