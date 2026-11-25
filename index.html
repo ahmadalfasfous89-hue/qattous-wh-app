@@ -4,15 +4,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Brands Stock Stores/WH | Qattous Group</title>
   <title>Qattous Stock Management App | Qattous Group</title>
+  <meta name="theme-color" content="#906f49" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./qattous_logo.png" type="image/png" />
   <script src="./xlsx.full.min.js" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Roboto:wght@400;500;700;900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&family=Cairo:wght@400;600;700;800&family=Roboto:wght@400;500;700;900&display=swap"
     rel="stylesheet" />
   <style>
     :root {
@@ -1619,6 +1619,269 @@
       color: #fff;
       border-color: var(--q-bronze);
     }
+
+    /* ==================================================================
+       V2 DESIGN LAYER (2026-11) — approved prototype design/qattous_sm_prototype.html
+       Sits on top of the original styles; logic and markup ids are unchanged.
+       ================================================================== */
+    :root {
+      --v2-bg: #f7f5f2;
+      --v2-surface: #ffffff;
+      --v2-line: #e6e0d7;
+      --v2-ink: #2a2622;
+      --v2-muted: #7a7168;
+      --v2-bronze: #906f49;
+      --v2-bronze-d: #745736;
+      --v2-bronze-t: #efe6da;
+      --v2-ok: #1f7a4d;
+      --v2-ok-t: #e3f1e9;
+      --v2-warn: #a86200;
+      --v2-warn-t: #fbeeda;
+      --v2-bad: #b3261e;
+      --v2-bad-t: #fbe5e3;
+      --v2-plate: #2a2622;
+      --q-bg: var(--v2-bg);
+      --q-onyx: var(--v2-ink);
+      --q-charcoal: var(--v2-ink);
+      --q-muted: var(--v2-muted);
+      --shadow: none;
+    }
+
+    body,
+    html[dir="ltr"] body,
+    .btn,
+    .form-control,
+    .nav-tab,
+    .mode-card,
+    input,
+    select,
+    button {
+      font-family: 'Readex Pro', 'Cairo', system-ui, sans-serif;
+    }
+
+    body { color: var(--v2-ink); background: var(--v2-bg); }
+    .num { font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+    :focus-visible { outline: 3px solid var(--v2-bronze); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+    /* Header */
+    .top-header { border-bottom: 1px solid var(--v2-line); box-shadow: none; }
+    .brand-titles h1 { font-weight: 600; color: var(--v2-ink); }
+    .sync-line { display: flex; align-items: center; gap: 6px; font-size: .74rem !important; color: var(--v2-muted) !important; font-weight: 400 !important; letter-spacing: 0 !important; }
+    .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--v2-muted); flex: none; }
+    .sync-dot.ok { background: var(--v2-ok); }
+    .sync-dot.stale { background: var(--v2-warn); }
+    .sync-dot.off { background: var(--v2-bad); }
+    #btnRemoteRefresh.spinning, #btnMobileRefresh.spinning { opacity: .7; }
+    #btnMobileRefresh.spinning { animation: v2spin 1s linear infinite; }
+    @keyframes v2spin { to { transform: rotate(360deg); } }
+
+    .data-banner { display: none; padding: 9px 16px; font-size: .82rem; font-weight: 500; text-align: center; }
+    .data-banner.show { display: block; }
+    .data-banner.stale { background: var(--v2-warn-t); color: var(--v2-warn); }
+    .data-banner.off { background: var(--v2-bad-t); color: var(--v2-bad); }
+
+    /* Buttons */
+    .btn { border-radius: 11px; font-weight: 500; }
+    .btn-bronze { background: var(--v2-bronze); }
+    .btn-bronze:hover { background: var(--v2-bronze-d); }
+    .btn-outline { border-color: var(--v2-line); color: var(--v2-ink); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .card { border-color: var(--v2-line); box-shadow: none; border-radius: 14px; }
+    .card-title { font-weight: 600; }
+
+    /* Scan box: light surface with a single bronze action */
+    .scanner-box {
+      background: var(--v2-surface) !important;
+      color: var(--v2-ink) !important;
+      border: 1.5px solid var(--v2-line);
+      border-bottom: 1.5px solid var(--v2-line);
+      border-radius: 14px;
+    }
+    .scanner-box:focus-within { border-color: var(--v2-bronze); }
+    .scan-input {
+      background: transparent !important;
+      border: 0 !important;
+      color: var(--v2-ink) !important;
+      font-size: 1.05rem !important;
+      box-shadow: none !important;
+    }
+    .scan-input::placeholder { color: var(--v2-muted) !important; }
+    .scanner-box .btn-cam, .scanner-box .btn-clear {
+      background: transparent !important; color: var(--v2-ink) !important; border-color: transparent !important;
+    }
+    .scanner-box .btn-cam:hover, .scanner-box .btn-clear:hover { background: var(--v2-bronze-t) !important; }
+    .scanner-box label { color: var(--v2-muted) !important; background: var(--v2-bg) !important; border-color: var(--v2-line) !important; }
+    .suggest-dropdown { border-radius: 12px; border: 1px solid var(--v2-line); box-shadow: 0 12px 28px -12px rgba(40, 30, 20, .3); }
+    .suggest-type { font-size: .7rem; border-radius: 6px; }
+
+    /* Mode switch (mobile) */
+    .m-seg { background: var(--v2-surface); border: 1px solid var(--v2-line); border-radius: 12px; padding: 3px; gap: 0 !important; }
+    .m-seg button { border: 0 !important; background: transparent !important; color: var(--v2-muted) !important; border-radius: 9px !important; font-weight: 500 !important; }
+    .m-seg button .ic { display: none; }
+    .m-seg button.active { background: var(--v2-ink) !important; color: var(--v2-bg) !important; }
+    .m-seg button.disabled { opacity: .35; }
+    .mode-card { border-width: 1.5px; border-color: var(--v2-line); }
+    .mode-card.active { border-color: var(--v2-bronze); box-shadow: none; }
+    .mode-icon { background: var(--v2-bronze-t); color: var(--v2-bronze-d); }
+
+    /* Result building blocks */
+    .v2-box { background: var(--v2-surface); border: 1px solid var(--v2-line); border-radius: 14px; }
+    .v2-sec { margin-top: 16px; }
+    .v2-sec-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0 4px 8px; }
+    .v2-sec-h h3 { font-size: .9rem; font-weight: 600; }
+    .v2-sec-h span { font-size: .76rem; color: var(--v2-muted); }
+    .v2-item-head { padding: 0; overflow: hidden; }
+    .v2-item-head .d { font-size: 1.04rem; font-weight: 600; line-height: 1.4; padding: 14px 14px 0; }
+    .v2-item-head .s { font-size: .78rem; color: var(--v2-muted); padding: 2px 14px 0; }
+    .v2-head-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding-inline-end: 12px; padding-top: 2px; }
+    .v2-head-row .d, .v2-head-row .s { padding-inline-end: 0; }
+    .v2-head-row > .btn, .v2-head-row > .v2-tag { margin-top: 12px; }
+    .v2-item-head .m { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 14px 14px; }
+    .v2-chip { font-size: .74rem; padding: 3px 8px; border-radius: 6px; background: var(--v2-bg); color: var(--v2-muted); border: 1px solid var(--v2-line); font-family: inherit; }
+    .v2-chip.link { color: var(--v2-bronze-d); border-color: var(--v2-bronze); cursor: pointer; }
+    .v2-totals { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border-top: 1px solid var(--v2-line); margin-top: 12px; }
+    .v2-item-head .m + .v2-totals { margin-top: 0; }
+    .v2-totals div { padding: 10px 12px; border-inline-start: 1px solid var(--v2-line); }
+    .v2-totals div:first-child { border-inline-start: 0; }
+    .v2-totals b { display: block; font-size: 1.35rem; font-weight: 600; line-height: 1.2; text-align: start; }
+    .v2-totals small { font-size: .72rem; color: var(--v2-muted); }
+
+    .v2-plates { display: flex; flex-direction: column; gap: 8px; }
+    .v2-plate { display: flex; align-items: stretch; width: 100%; padding: 0; border-radius: 9px; overflow: hidden; background: var(--v2-surface); border: 1px solid var(--v2-line); text-align: start; cursor: pointer; font-family: inherit; color: var(--v2-ink); }
+    .v2-plate .code { background: var(--v2-plate); color: #f7f5f2; padding: 10px 14px; font-size: 1.25rem; font-weight: 600; letter-spacing: .04em; min-width: 58%; display: flex; flex-direction: column; justify-content: center; transition: background .15s; }
+    .v2-plate .code small { font-size: .66rem; font-weight: 400; opacity: .7; letter-spacing: 0; }
+    .v2-plate .q { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; }
+    .v2-plate .q b { font-size: 1.5rem; font-weight: 600; line-height: 1; }
+    .v2-plate .q small { font-size: .7rem; color: var(--v2-muted); margin-top: 2px; }
+    .v2-plate:hover .code { background: var(--v2-bronze-d); }
+    .v2-plate.first { border-color: var(--v2-plate); }
+    .v2-plate.static { cursor: default; }
+    .v2-plate.static:hover .code { background: var(--v2-plate); }
+
+    .v2-rows { overflow: hidden; }
+    .v2-r { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-top: 1px solid var(--v2-line); width: 100%; background: none; border-inline: 0; border-bottom: 0; font-family: inherit; color: var(--v2-ink); text-align: start; font-size: .92rem; }
+    .v2-rows > .v2-r:first-child, .v2-more > .v2-r:first-child { border-top: 0; }
+    .v2-more { border-top: 1px solid var(--v2-line); }
+    .v2-r .n { flex: 1; min-width: 0; }
+    .v2-r .n small { display: block; font-size: .72rem; color: var(--v2-muted); margin-top: 1px; }
+    .v2-r b { font-size: 1.05rem; font-weight: 600; min-width: 28px; text-align: center; }
+    .v2-r.zero { opacity: .5; }
+    .v2-r.win { background: var(--v2-ok-t); }
+    .v2-r-btn { cursor: pointer; }
+    .v2-r-btn:hover { background: var(--v2-bg); }
+    .v2-r .chev { color: var(--v2-muted); font-size: 1.2rem; }
+    html[dir="ltr"] .v2-r .chev { transform: scaleX(-1); }
+    .v2-tag { font-size: .72rem; padding: 3px 7px; border-radius: 6px; font-weight: 500; white-space: nowrap; background: var(--v2-bg); color: var(--v2-muted); }
+    .v2-tag.warn { background: var(--v2-warn-t); color: var(--v2-warn); }
+    .v2-tag.ok { background: var(--v2-ok-t); color: var(--v2-ok); }
+    .v2-showall { width: 100%; padding: 11px; font-size: .84rem; color: var(--v2-bronze-d); border: 0; border-top: 1px solid var(--v2-line); background: none; cursor: pointer; font-family: inherit; }
+    .v2-empty-line { padding: 12px 14px; font-size: .86rem; color: var(--v2-muted); }
+    .v2-note { margin-top: 12px; padding: 10px 14px; border-radius: 11px; font-size: .88rem; font-weight: 500; background: var(--v2-bg); color: var(--v2-muted); border: 1px solid var(--v2-line); }
+    .v2-note.ok { background: var(--v2-ok-t); color: var(--v2-ok); border-color: transparent; }
+    .v2-note.warn { background: var(--v2-warn-t); color: var(--v2-warn); border-color: transparent; }
+    .v2-full { width: 100%; padding: 12px; }
+    .v2-hint { font-size: .74rem; color: var(--v2-muted); margin: 8px 4px 0; }
+
+    .v2-matrix { overflow-x: auto; }
+    .v2-matrix table { border-collapse: collapse; width: 100%; font-size: .84rem; }
+    .v2-matrix th, .v2-matrix td { padding: 9px 6px; text-align: center; border-top: 1px solid var(--v2-line); white-space: nowrap; }
+    .v2-matrix th { font-weight: 500; color: var(--v2-muted) !important; background: var(--v2-surface) !important; font-size: .74rem; border-top: 0; }
+    .v2-matrix td { background: var(--v2-surface); color: var(--v2-ink); }
+    .v2-matrix td:first-child, .v2-matrix th:first-child { text-align: start; padding-inline-start: 14px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+    .v2-matrix td.z { color: var(--v2-muted); opacity: .5; }
+    .v2-matrix td.tap { cursor: pointer; font-weight: 500; }
+    .v2-matrix td.tap:hover { background: var(--v2-bronze-t); }
+
+    .v2-state { text-align: center; padding: 40px 22px; }
+    .v2-state .ill { width: 72px; height: 72px; border-radius: 20px; background: var(--v2-bronze-t); color: var(--v2-bronze); display: grid; place-items: center; margin: 0 auto 14px; }
+    .v2-state .ill svg { width: 34px; height: 34px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .v2-state h3 { font-size: 1.02rem; font-weight: 600; margin-bottom: 6px; color: var(--v2-ink); }
+    .v2-state p { font-size: .86rem; color: var(--v2-muted); line-height: 1.7; }
+    .v2-state.err .ill { background: var(--v2-bad-t); color: var(--v2-bad); }
+    .v2-actions { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+    .skel { background: linear-gradient(90deg, var(--v2-line) 0%, var(--v2-bg) 50%, var(--v2-line) 100%); background-size: 200% 100%; animation: v2sh 1.2s infinite; border-radius: 8px; }
+    @keyframes v2sh { to { background-position: -200% 0; } }
+
+    /* Login gate: full screen, nothing of the app shows behind it */
+    body.locked { overflow: hidden; }
+    .login-gate { background: var(--v2-bg) !important; backdrop-filter: none !important; }
+    .login-card { box-shadow: none !important; border: 0 !important; background: transparent !important; }
+    .login-card .form-control { background: var(--v2-surface); border: 1.5px solid var(--v2-line); border-radius: 11px; padding: 12px; font-size: .98rem; }
+    .login-card .form-control:focus { border-color: var(--v2-bronze); outline: none; }
+    .login-card label { font-weight: 500 !important; font-size: .82rem !important; }
+    .login-title { font-size: 1.35rem; font-weight: 600; color: var(--v2-ink); margin-bottom: 24px; }
+    .login-lead { font-size: .86rem; color: var(--v2-muted); margin-bottom: 24px; }
+    .login-foot { font-size: .74rem; color: var(--v2-muted); margin-top: 18px; }
+    #btnLoginSubmit { font-weight: 500; border-radius: 12px; }
+    .pw-wrap { position: relative; }
+    .pw-wrap .form-control { padding-inline-end: 64px; }
+    .pw-toggle { position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: var(--v2-bronze-d); font-size: .78rem; padding: 6px 8px; cursor: pointer; font-family: inherit; }
+    #loginErrorMsg { font-weight: 500 !important; }
+    .login-splash { display: none; text-align: center; color: var(--v2-muted); font-size: .86rem; }
+    .login-splash img { height: 44px; margin-bottom: 18px; }
+    .splash-bar { width: 140px; height: 3px; border-radius: 2px; background: var(--v2-line); margin: 0 auto 12px; overflow: hidden; }
+    .splash-bar span { display: block; width: 40%; height: 100%; background: var(--v2-bronze); animation: v2bar 1.1s ease-in-out infinite; }
+    @keyframes v2bar { 0% { transform: translateX(-120%); } 100% { transform: translateX(320%); } }
+    html[dir="rtl"] .splash-bar span { animation-name: v2barR; }
+    @keyframes v2barR { 0% { transform: translateX(120%); } 100% { transform: translateX(-320%); } }
+    /* While a saved session is checked, show the splash instead of the form */
+    .login-gate.booting .login-splash { display: block; }
+    .login-gate.booting .login-card { display: none; }
+
+    /* Sheets (More + Export) */
+    .sheet { border-radius: 22px 22px 0 0; }
+    .sheet h3 { font-weight: 600; }
+    .sheet .row { align-items: center; gap: 12px; }
+    .sheet .row > span:first-child { flex: 1; }
+    .row-sub { display: block; font-size: .74rem; color: var(--v2-muted); font-weight: 400; margin-top: 1px; }
+    .sheet-sub { font-size: .78rem; color: var(--v2-muted); margin: 2px 0 10px; word-break: break-all; }
+    .sw { width: 44px; height: 26px; border-radius: 13px; background: var(--v2-line); position: relative; flex: none; transition: background .15s; }
+    .sw::after { content: ''; position: absolute; top: 3px; inset-inline-start: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: inset-inline-start .15s; }
+    .sw.on { background: var(--v2-bronze); }
+    .sw.on::after { inset-inline-start: 21px; }
+    .ex-opt { width: 100%; background: none; border: 0; border-top: 1px solid var(--v2-line); font-family: inherit; color: var(--v2-ink); text-align: start; cursor: pointer; display: flex; padding: 14px 4px; }
+    .ex-opt .grow { flex: 1; }
+    .ex-opt b { font-weight: 500; font-size: .95rem; }
+    .ex-opt:disabled { opacity: .5; cursor: not-allowed; }
+    .ex-ic { width: 42px; height: 42px; border-radius: 12px; background: var(--v2-bronze-t); color: var(--v2-bronze-d); display: grid; place-items: center; flex: none; }
+    #exportSheet { z-index: 1201; }
+    #exportBackdrop { z-index: 1200; }
+
+    .d-only-block { display: block; }
+
+    @media (max-width: 760px) {
+      .d-only, .d-only-block { display: none !important; }
+      .scan-toggles { display: none !important; }
+      .header-inner { padding: 10px 14px !important; }
+      .brand-logo { height: 26px !important; }
+      .brand-titles h1 { font-size: 1rem !important; }
+      .brand-titles p.sync-line { display: flex !important; }
+      .header-controls #btnMenu { display: none !important; }
+      .header-controls #btnMobileRefresh {
+        display: grid !important; place-items: center; width: 40px; height: 40px; padding: 0 !important;
+        background: transparent !important; color: var(--v2-ink) !important; border: 0 !important; font-size: 1.05rem !important; border-radius: 12px;
+      }
+      .scanner-box { padding: 4px 4px 4px 6px !important; margin-bottom: 12px; }
+      .scanner-box .input-row { display: flex !important; align-items: center; gap: 2px !important; }
+      .scanner-box .scan-input-wrap { flex: 1; min-width: 0; }
+      .scanner-box .scan-input { padding: 12px 8px !important; }
+      .scanner-box .input-row .btn { min-height: 44px !important; height: 44px !important; min-width: 44px !important; width: 44px; padding: 0 !important; }
+      .scanner-box .input-row .btn-clear { display: inline-flex !important; }
+      .scanner-box .btn-bronze { border-radius: 11px !important; width: 48px !important; }
+      .m-seg { margin-bottom: 12px !important; }
+      .bottom-nav { background: var(--v2-surface) !important; border-top: 1px solid var(--v2-line) !important; box-shadow: none !important; }
+      .bottom-nav button { color: var(--v2-muted) !important; font-weight: 400 !important; }
+      .bottom-nav button.active { color: var(--v2-bronze) !important; font-weight: 600 !important; background: transparent !important; }
+      .card { padding: 12px; }
+      #scanResultsArea > .card { background: transparent; border: 0; padding: 0; }
+      #scanResultsArea > .card > .card-header { display: none; }
+      .rc { border-inline-start-width: 1px; border-color: var(--v2-line); border-radius: 14px; box-shadow: none; }
+      .rc.has-wh, .rc.star { border-inline-start-color: var(--v2-line); }
+      .chip { font-weight: 500; border-radius: 7px; font-size: .82rem; padding: 4px 9px; }
+      .rc-title { font-weight: 600; }
+      .rc-size { background: var(--v2-bronze-t); color: var(--v2-bronze-d); font-weight: 600; }
+    }
   </style>
 </head>
 
@@ -1631,15 +1894,14 @@
         <img src="./qattous_logo.png" alt="Qattous Group" class="brand-logo" />
         <div class="brand-divider"></div>
         <div class="brand-titles">
-          <h1 data-i18n="app_title">Brands Stock Stores/WH</h1>
-          <h1 data-i18n="app_title">Qattous SM</h1>
-          <p>QATTOUS GROUP <span id="lastSyncBadge" style="color:#16794b; margin-inline-start:6px;"></span></p>
+          <h1>Qattous SM</h1>
+          <p class="sync-line"><span class="sync-dot" id="syncDot"></span><span id="lastSyncBadge">جاري تحميل البيانات...</span></p>
         </div>
       </div>
 
       <div class="header-controls">
         <button class="btn btn-bronze btn-sm" id="btnMobileRefresh" style="display:none;"
-          onclick="refreshRemoteCloudData(true)" aria-label="refresh">🔄</button>
+          onclick="refreshRemoteCloudData(true)" aria-label="تحديث البيانات"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
         <button class="btn btn-charcoal btn-sm" id="btnMenu" style="display:none;" onclick="openSheet()"
           aria-label="menu">☰ <span id="menuUserShort">User</span></button>
         <button class="btn btn-bronze btn-sm" onclick="refreshRemoteCloudData(true)" id="btnRemoteRefresh"
@@ -1673,6 +1935,8 @@
       </button>
     </div>
   </nav>
+
+  <div id="dataBanner" class="data-banner" role="status"></div>
 
   <!-- Main Content -->
   <main class="container">
@@ -1722,7 +1986,7 @@
         <div class="input-row" style="gap:6px; align-items:center;">
           <div class="scan-input-wrap" style="flex:1;">
             <input type="text" id="scanInput" class="scan-input" inputmode="none"
-              placeholder="Barcode / Item / Bin..."
+              placeholder="امسح أو اكتب باركود، آيتم، رف أو TO"
               autocomplete="off" />
             <div id="suggestDropdown" class="suggest-dropdown"></div>
           </div>
@@ -1735,7 +1999,7 @@
         </div>
 
         <!-- Compact PDA & Auto-Enter Toggles -->
-        <div style="margin-top:8px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <div class="scan-toggles" style="margin-top:8px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <label
               style="display:inline-flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:700; color:#f5efe8; cursor:pointer; background:rgba(144,111,73,0.28); border:1px solid rgba(216,198,176,0.45); padding:4px 10px; border-radius:8px;">
@@ -1767,15 +2031,7 @@
       </div>
 
       <!-- Dynamic Scan Results Container -->
-      <div id="scanResultsArea">
-        <div class="card" style="text-align:center; padding:36px 20px; color:var(--q-muted);">
-          <div style="font-size:2.6rem; margin-bottom:10px;">📦</div>
-          <h3 style="color:var(--q-charcoal); margin-bottom:6px;" data-i18n="empty_state_title">امسح الباركود أو كود
-            الرف (Bin) أو اكتب الكود يدوياً للبدء</h3>
-          <p style="font-size:0.85rem;" data-i18n="empty_state_desc">يعمل البحث في أقل من 0.01 ثانية عبر قاعدة البيانات
-            المحلية المفهرسة</p>
-        </div>
-      </div>
+      <div id="scanResultsArea"></div>
 
     </section>
 
@@ -1925,29 +2181,34 @@
   </main>
 
   <!-- ==================== PRODUCTION LOGIN GATE ==================== -->
-  <div id="loginModal" class="modal-backdrop" style="background:rgba(21,21,21,0.92); backdrop-filter:blur(6px);">
-    <div class="modal-card" style="max-width:410px; text-align:center;">
+  <div id="loginModal" class="modal-backdrop open login-gate">
+    <div class="login-splash" id="loginSplash">
+      <img src="./qattous_logo.png" alt="Qattous Group" />
+      <div class="splash-bar"><span></span></div>
+      <p>جاري فتح التطبيق...</p>
+    </div>
+    <div class="modal-card login-card" id="loginCard" style="max-width:410px; text-align:center;">
       <img src="./qattous_logo.png" alt="Qattous Group" style="height:48px; margin-bottom:10px; object-fit:contain;" />
-      <h2 style="font-size:1.1rem; color:var(--q-charcoal); margin-bottom:4px;">Brands Stock Stores/WH</h2>
-      <h2 style="font-size:1.1rem; color:var(--q-charcoal); margin-bottom:4px;">Qattous SM</h2>
-      <p style="font-size:0.78rem; color:var(--q-bronze); font-weight:700; margin-bottom:18px;">QATTOUS GROUP</p>
+      <h2 class="login-title">Qattous SM</h2>
       <div class="form-group" style="margin-bottom:12px; text-align:start;">
-        <label>اسم المستخدم (Username):</label>
-        <input type="text" id="loginUsername" class="form-control" placeholder="أدخل اسم المستخدم"
-          autocomplete="username"
+        <label for="loginUsername">اسم المستخدم</label>
+        <input type="text" id="loginUsername" class="form-control" placeholder="اسم المستخدم"
+          autocomplete="username" autocapitalize="off" spellcheck="false"
           onkeydown="if(event.key==='Enter') document.getElementById('loginPassword').focus()" />
       </div>
       <div class="form-group" style="margin-bottom:16px; text-align:start;">
-        <label>كلمة المرور (Password):</label>
-        <input type="password" id="loginPassword" class="form-control" placeholder="أدخل كلمة المرور"
-          autocomplete="current-password" onkeydown="if(event.key==='Enter') submitLogin()" />
+        <label for="loginPassword">كلمة المرور</label>
+        <div class="pw-wrap">
+          <input type="password" id="loginPassword" class="form-control" placeholder="كلمة المرور"
+            autocomplete="current-password" onkeydown="if(event.key==='Enter') submitLogin()" />
+          <button type="button" class="pw-toggle" id="pwToggle" onclick="togglePasswordVisibility()">إظهار</button>
+        </div>
       </div>
       <div id="loginErrorMsg"
         style="color:var(--q-danger); font-size:0.82rem; font-weight:700; margin-bottom:10px; min-height:18px;"></div>
       <button class="btn btn-bronze" style="width:100%; padding:12px; font-size:0.98rem;" onclick="submitLogin()"
-        id="btnLoginSubmit">
-        🔐 تسجيل الدخول (Sign In)
-      </button>
+        id="btnLoginSubmit">تسجيل الدخول</button>
+      <p class="login-foot">نسيت كلمة المرور؟ تواصل مع مسؤول النظام</p>
     </div>
   </div>
 
@@ -2034,6 +2295,14 @@
     <div id="appUpdateBox"
       style="display:none; background:#f5efe8; border:1px solid var(--q-bronze); border-radius:10px; padding:10px 12px; margin:6px 0; font-size:0.82rem;">
     </div>
+    <div class="row" style="cursor:pointer;" onclick="toggleProxyCheckbox('pdaAutoFocusToggle')">
+      <span><span data-mi="sh_pda">مسح بالليزر (PDA)</span><small class="row-sub" data-mi="sh_pda_sub">يخفي الكيبورد وقت المسح</small></span>
+      <span class="sw" id="swPda" role="switch"></span>
+    </div>
+    <div class="row" style="cursor:pointer;" onclick="toggleProxyCheckbox('autoEnterToggle')">
+      <span><span data-mi="sh_ae">بحث تلقائي بعد المسح</span><small class="row-sub" data-mi="sh_ae_sub">بدون ما تضغط بحث</small></span>
+      <span class="sw" id="swAe" role="switch"></span>
+    </div>
     <div class="row" style="cursor:pointer;" onclick="toggleLanguage(); closeSheet();">
       <span>🌐 <span data-mi="sh_lang">اللغة: عربي / English</span></span><span>›</span>
     </div>
@@ -2044,24 +2313,30 @@
       data-mi="sh_close">إغلاق</button>
   </div>
 
+  <!-- ===== Export sheet: share (WhatsApp etc.) or save ===== -->
+  <div class="sheet-backdrop" id="exportBackdrop" onclick="closeExportSheet()"></div>
+  <div class="sheet" id="exportSheet" role="dialog" aria-labelledby="exportSheetTitle">
+    <h3 id="exportSheetTitle" data-mi="ex_title">ملف الإكسل جاهز</h3>
+    <p class="sheet-sub" id="exportFileName">—</p>
+    <button class="row ex-opt" id="exShareBtn" onclick="shareExportFile()">
+      <span class="ex-ic">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
+      </span>
+      <span class="grow"><b data-mi="ex_share">مشاركة</b><small class="row-sub" id="exShareSub">واتساب، إيميل، تيليجرام وغيرها</small></span>
+    </button>
+    <button class="row ex-opt" onclick="saveExportFile()">
+      <span class="ex-ic">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+      </span>
+      <span class="grow"><b data-mi="ex_save">حفظ على الجهاز</b><small class="row-sub" data-mi="ex_save_sub">في مجلد التنزيلات</small></span>
+    </button>
+    <button class="btn btn-outline" style="width:100%; margin-top:12px;" onclick="closeExportSheet()" data-mi="sh_close">إغلاق</button>
+  </div>
+
   <script>
     let currentLang = 'ar';
-    let currentUser = {
-      username: 'admin',
-      display_name: 'أحمد فسفوس (Admin)',
-      role: 'admin',
-      active: true,
-      permissions: {
-        mode_wh_only: true,
-        mode_stores_only: true,
-        mode_wh_stores: true,
-        scan_bin: true,
-        view_eligible_store: true,
-        generate_reports: true,
-        manage_data: true,
-        manage_users: true
-      }
-    };
+    // Nobody is signed in until the login succeeds: no permissions by default.
+    let currentUser = { username: '', display_name: '', role: 'user', active: false, permissions: {} };
     let currentCheckMode = 'wh_stores'; // 'wh_only' | 'stores_only' | 'wh_stores'
     let lastScanResponse = null;
     let currentReportData = null;
@@ -2089,7 +2364,6 @@
 
     const I18N = {
       ar: {
-        app_title: 'نظام المستودعات وتوزيع السيري الذكي',
         app_title: 'Qattous SM',
         proto_switcher: 'تبديل سريع لتجربة الحسابات والصلاحيات:',
         btn_login_switch: '🔐 تبديل الحساب',
@@ -2124,7 +2398,6 @@
         btn_add_user: 'يوزر جديد'
       },
       en: {
-        app_title: 'Brands Stock Stores/WH',
         app_title: 'Qattous SM',
         btn_remote_refresh: 'Refresh',
         btn_logout: '🚪 Logout',
@@ -2275,57 +2548,101 @@
       window._toastTimer = setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.style.display = 'none', 260); }, 3200);
     }
 
+    const RAW_BASE = 'https://raw.githubusercontent.com/ahmadalfasfous89-hue/qattous-wh-app/main';
+
+    // Fetch one JSON bundle: on GitHub Pages / APK straight from raw.githubusercontent.com (fast propagation),
+    // falling back to the copy next to the page. Returns null when nothing could be loaded.
+    async function fetchBundle(name) {
+      const ts = Date.now();
+      const opts = { cache: 'no-store' };
+      const urls = isStaticCloudHost ? [`${RAW_BASE}/${name}?t=${ts}`, `./${name}?t=${ts}`] : [`./${name}?t=${ts}`];
+      for (const u of urls) {
+        try {
+          const r = await fetch(u, opts);
+          if (r.ok) return await r.json();
+        } catch (_) { }
+      }
+      return null;
+    }
+
+    // Small (≈2 KB): users only. Used for sign-in so the 6 MB data bundle is never downloaded twice.
+    async function refreshCloudUsers() {
+      const uData = await fetchBundle('users_bundle.json');
+      if (!uData) return false;
+      cloudUsers = uData.users || [];
+      return true;
+    }
+
+    // After a refresh: if the signed-in account was deleted or disabled, sign out; otherwise apply new permissions.
+    function syncCurrentUserFromCloud() {
+      if (!currentUser || !currentUser.username || !cloudUsers) return;
+      const matchU = cloudUsers.find(x => x.username.toLowerCase() === currentUser.username.toLowerCase());
+      if (!matchU || !matchU.active) {
+        showToast(currentLang === 'ar' ? 'تم إيقاف حسابك أو حذفه. سجّل الدخول مرة ثانية.' : 'Your account was disabled or removed. Please sign in again.', true);
+        logoutAccount();
+        return;
+      }
+      const { password, ...safeUser } = matchU;
+      currentUser = safeUser;
+      applyUserPermissionsUI();
+    }
+
+    function updateSyncStatus() {
+      const badge = document.getElementById('lastSyncBadge');
+      const dot = document.getElementById('syncDot');
+      const shSync = document.getElementById('sheetSync');
+      const banner = document.getElementById('dataBanner');
+      const ar = currentLang === 'ar';
+      let state = 'ok', txt = '', bannerTxt = '';
+      if (!cloudBundle || !cloudBundle.updated_at) {
+        state = 'off';
+        txt = ar ? 'البيانات غير محمّلة' : 'Data not loaded';
+        bannerTxt = ar ? 'تعذر تحميل البيانات. تأكد من الإنترنت واضغط زر التحديث.' : 'Could not load data. Check your connection and tap refresh.';
+      } else {
+        const upd = new Date(cloudBundle.updated_at.replace(' ', 'T'));
+        const ageH = (Date.now() - upd.getTime()) / 36e5;
+        const hhmm = cloudBundle.updated_at.slice(11, 16);
+        const isToday = upd.toDateString() === new Date().toDateString();
+        const when = isToday ? (ar ? `اليوم ${hhmm}` : `today ${hhmm}`) : cloudBundle.updated_at.slice(0, 16);
+        txt = (ar ? 'آخر تحديث للبيانات: ' : 'Data updated ') + when;
+        if (ageH > 24) {
+          state = 'stale';
+          const days = Math.max(1, Math.round(ageH / 24));
+          bannerTxt = ar ? `آخر تحديث للبيانات قبل ${days} يوم. الكميات ممكن تكون غير دقيقة.` : `Data was last updated ${days} day(s) ago. Quantities may be out of date.`;
+        }
+        if (!navigator.onLine) {
+          state = 'off';
+          bannerTxt = ar ? 'أنت بدون إنترنت. البحث شغّال على آخر بيانات محمّلة.' : 'You are offline. Search uses the last loaded data.';
+        }
+      }
+      if (badge) badge.textContent = txt;
+      if (dot) dot.className = 'sync-dot ' + state;
+      if (shSync) shSync.textContent = cloudBundle && cloudBundle.updated_at ? cloudBundle.updated_at : '—';
+      if (banner) {
+        banner.textContent = bannerTxt;
+        banner.className = 'data-banner' + (bannerTxt ? ' show ' + state : '');
+      }
+    }
+
     async function refreshRemoteCloudData(showAlert = false) {
       const btn = document.getElementById('btnRemoteRefresh');
       const mBtn = document.getElementById('btnMobileRefresh');
-      if (btn) { btn.disabled = true; btn.innerHTML = '⏳ جاري التحديث...'; }
-      if (mBtn) { mBtn.disabled = true; mBtn.textContent = '⏳'; }
+      [btn, mBtn].forEach(b => { if (b) { b.disabled = true; b.classList.add('spinning'); } });
       try {
-        const ts = Date.now();
-        const fetchOpts = { cache: 'no-store' };
-        // On GitHub Pages / APK: fetch directly from raw.githubusercontent.com so new users & data sync in 2 seconds!
-        const rawBase = 'https://raw.githubusercontent.com/ahmadalfasfous89-hue/qattous-wh-app/main';
-        const dataUrl = isStaticCloudHost ? `${rawBase}/data_bundle.json?t=${ts}` : `./data_bundle.json?t=${ts}`;
-        const usersUrl = isStaticCloudHost ? `${rawBase}/users_bundle.json?t=${ts}` : `./users_bundle.json?t=${ts}`;
-        const [bRes, uRes] = await Promise.all([
-          fetch(dataUrl, fetchOpts).catch(() => fetch(`./data_bundle.json?t=${ts}`, fetchOpts)),
-          fetch(usersUrl, fetchOpts).catch(() => fetch(`./users_bundle.json?t=${ts}`, fetchOpts))
-        ]);
-        if (bRes.ok) {
-          cloudBundle = await bRes.json();
-          const badge = document.getElementById('lastSyncBadge');
-          if (badge && cloudBundle.updated_at) {
-            badge.textContent = `• آخر تحديث: ${cloudBundle.updated_at}`;
-          }
-          const shSync = document.getElementById('sheetSync');
-          if (shSync && cloudBundle.updated_at) {
-            shSync.textContent = cloudBundle.updated_at;
-          }
-        }
-        if (uRes.ok) {
-          const uData = await uRes.json();
-          cloudUsers = uData.users || [];
-          // Refresh current user permissions from remote users_bundle
-          if (currentUser && currentUser.username) {
-            const matchU = cloudUsers.find(x => x.username.toLowerCase() === currentUser.username.toLowerCase());
-            if (matchU) {
-              currentUser = { ...matchU };
-              applyUserPermissionsUI();
-            }
-          }
-        }
-        if (lastScanResponse && lastScanResponse.queried_code) {
-          await executeLookup(lastScanResponse.queried_code);
+        const [bundle, usersOk] = await Promise.all([fetchBundle('data_bundle.json'), refreshCloudUsers()]);
+        if (bundle) cloudBundle = bundle;
+        updateSyncStatus();
+        if (usersOk) syncCurrentUserFromCloud();
+        if (bundle && lastScanResponse && lastScanResponse.queried_code) {
+          await executeLookup(lastScanResponse.queried_code, { silent: true });
         }
         if (showAlert) {
-          showToast(`✅ تم تحديث البيانات بنجاح! (${cloudBundle ? cloudBundle.updated_at : 'الآن'})`);
+          if (bundle) showToast(currentLang === 'ar' ? `تم تحديث البيانات · ${bundle.updated_at || ''}` : `Data refreshed · ${bundle.updated_at || ''}`);
+          else showToast(currentLang === 'ar' ? 'تعذر تحديث البيانات. تأكد من الإنترنت وحاول مرة ثانية.' : 'Could not refresh data. Check your connection and try again.', true);
         }
-      } catch (e) {
-        console.warn('Cloud bundle fetch info:', e);
-        if (showAlert) showToast('⚠️ تعذر سحب التحديث: تأكد من اتصال الإنترنت (4G / Wi-Fi)', true);
+        return !!bundle;
       } finally {
-        if (btn) { btn.disabled = false; btn.innerHTML = '🔄 تحديث الداتا (Refresh)'; }
-        if (mBtn) { mBtn.disabled = false; mBtn.textContent = '🔄'; }
+        [btn, mBtn].forEach(b => { if (b) { b.disabled = false; b.classList.remove('spinning'); } });
       }
     }
 
@@ -2590,7 +2907,15 @@
       const qUp = q.toUpperCase();
 
       // 1. Check Bin Code
-      const binMatchKey = Object.keys(b.bins_by_code || {}).find(k => k.toUpperCase() === qUp);
+      // Exact key first (instant), case-insensitive scan only as a fallback
+      const findKey = (obj) => {
+        if (!obj) return null;
+        if (Object.prototype.hasOwnProperty.call(obj, q)) return q;
+        if (Object.prototype.hasOwnProperty.call(obj, qUp)) return qUp;
+        for (const k in obj) { if (k.toUpperCase() === qUp) return k; }
+        return null;
+      };
+      const binMatchKey = findKey(b.bins_by_code);
       if (binMatchKey) {
         const rawList = b.bins_by_code[binMatchKey];
         let totQ = 0;
@@ -2609,7 +2934,7 @@
       }
 
       // 2. Check TO Number
-      const toMatchKey = Object.keys(b.tr_by_doc || {}).find(k => k.toUpperCase() === qUp);
+      const toMatchKey = findKey(b.tr_by_doc);
       if (toMatchKey) {
         const rawList = b.tr_by_doc[toMatchKey];
         let totQ = 0;
@@ -2629,8 +2954,7 @@
       }
 
       // 3. Check Item Code (Serial starting with I)
-      const itemMatchKey = Object.keys(b.items_meta || {}).find(k => k.toUpperCase() === qUp)
-        || Object.keys(b.variants_by_item || {}).find(k => k.toUpperCase() === qUp);
+      const itemMatchKey = findKey(b.items_meta) || findKey(b.variants_by_item);
       if (itemMatchKey) {
         const alloc = computeAllocationFromBundle(itemMatchKey, null);
         const itemAllBins = [];
@@ -2657,10 +2981,50 @@
         };
       }
 
-      return { ok: false, error: `لم يتم العثور على باركود أو آيتم كود أو رف (Bin) أو TO بالكود: ${code}` };
+      return { ok: false, not_found: true, error: `لم يتم العثور على باركود أو آيتم كود أو رف (Bin) أو TO بالكود: ${code}` };
     }
 
     // ==================== PRODUCTION AUTHENTICATION & SESSION ====================
+    // The saved session keeps a hash of the password, never the password itself.
+    async function hashSecret(text) {
+      const salted = 'qattous-sm|' + text;
+      try {
+        if (window.crypto && crypto.subtle) {
+          const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salted));
+          return 's1:' + Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+      } catch (_) { }
+      let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+      for (let i = 0; i < salted.length; i++) {
+        const c = salted.charCodeAt(i);
+        h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677);
+      }
+      return 'f1:' + (h2 >>> 0).toString(16) + (h1 >>> 0).toString(16);
+    }
+
+    async function saveSession(username, password) {
+      try { localStorage.setItem('qattous_session_user', JSON.stringify({ username, h: await hashSecret(password) })); } catch (_) { }
+    }
+
+    // Restore a saved session against the latest users bundle (small file, ≈2 KB).
+    async function restoreSession(saved) {
+      if (!saved || !saved.username) return { ok: false };
+      // Old sessions stored the plain password: verify once, then re-save as a hash.
+      if (saved.password) {
+        const res = await authenticateUser(saved.username, saved.password);
+        if (res.ok) await saveSession(saved.username, saved.password);
+        return res;
+      }
+      if (!(await refreshCloudUsers())) return { ok: false, offline: true };
+      const found = (cloudUsers || []).find(x => x.username.toLowerCase() === saved.username.toLowerCase());
+      if (!found || !found.active) return { ok: false };
+      const prefix = String(saved.h || '').slice(0, 3);
+      const expected = await hashSecret(found.password || '');
+      if (expected.slice(0, 3) !== prefix || expected !== saved.h) return { ok: false };
+      const { password, ...safeUser } = found;
+      return { ok: true, user: safeUser };
+    }
+
     async function authenticateUser(username, password) {
       if (!isStaticCloudHost) {
         try {
@@ -2678,17 +3042,29 @@
           }
         } catch (e) { isStaticCloudHost = true; }
       }
-      // Always fetch latest users_bundle.json from cloud so newly created users work immediately
-      await refreshRemoteCloudData(false);
+      // Always fetch the latest users list (small file) so newly created users work immediately
+      const usersOk = await refreshCloudUsers();
+      if (!usersOk && !cloudUsers) {
+        return { ok: false, error: 'تعذر الاتصال. تأكد من الإنترنت وحاول مرة ثانية.' };
+      }
       const uList = cloudUsers || [];
       const found = uList.find(x => x.username.toLowerCase() === username.toLowerCase() && x.password === password);
       if (!found) {
-        return { ok: false, error: 'اسم المستخدم أو كلمة المرور غير صحيحة / Invalid credentials' };
+        return { ok: false, error: 'اسم المستخدم أو كلمة المرور غير صحيحة. تأكد منها وحاول مرة ثانية.' };
       }
       if (!found.active) {
-        return { ok: false, error: 'هذا الحساب موقوف من قبل الإدارة / Account disabled' };
+        return { ok: false, error: 'هذا الحساب موقوف. تواصل مع مسؤول النظام.' };
       }
-      return { ok: true, user: { ...found } };
+      const { password: _pw, ...safeUser } = found;
+      return { ok: true, user: safeUser };
+    }
+
+    function togglePasswordVisibility() {
+      const p = document.getElementById('loginPassword');
+      const b = document.getElementById('pwToggle');
+      const show = p.type === 'password';
+      p.type = show ? 'text' : 'password';
+      b.textContent = show ? (currentLang === 'ar' ? 'إخفاء' : 'Hide') : (currentLang === 'ar' ? 'إظهار' : 'Show');
     }
 
     function openLoginModal() {
@@ -2696,27 +3072,24 @@
       if (errEl) errEl.textContent = '';
       document.getElementById('loginUsername').value = '';
       document.getElementById('loginPassword').value = '';
-      document.getElementById('loginModal').classList.add('open');
+      const modal = document.getElementById('loginModal');
+      modal.classList.add('open');
+      modal.classList.remove('booting');
+      document.body.classList.add('locked');
       setTimeout(() => document.getElementById('loginUsername').focus(), 100);
     }
 
     function closeLoginModal() {
-      document.getElementById('loginModal').classList.remove('open');
+      document.getElementById('loginModal').classList.remove('open', 'booting');
+      document.body.classList.remove('locked');
     }
 
     function logoutAccount() {
       localStorage.removeItem('qattous_session_user');
+      currentUser = { username: '', display_name: '', role: 'user', active: false, permissions: {} };
       lastScanResponse = null;
       currentReportData = null;
-      const area = document.getElementById('scanResultsArea');
-      if (area) {
-        area.innerHTML = `
-          <div class="card" style="text-align:center; padding:36px 20px; color:var(--q-muted);">
-            <div style="font-size:2.6rem; margin-bottom:10px;">📦</div>
-            <h3 style="color:var(--q-charcoal); margin-bottom:6px;" data-i18n="empty_state_title">امسح الباركود أو كود الرف (Bin) أو اكتب الكود يدوياً للبدء</h3>
-            <p style="font-size:0.85rem;" data-i18n="empty_state_desc">يعمل البحث في أقل من 0.01 ثانية عبر قاعدة البيانات المحلية المفهرسة</p>
-          </div>`;
-      }
+      renderEmptyState();
       openLoginModal();
     }
 
@@ -2726,27 +3099,34 @@
       const errEl = document.getElementById('loginErrorMsg');
       const btn = document.getElementById('btnLoginSubmit');
       if (!u || !p) {
-        if (errEl) errEl.textContent = 'يرجى إدخال اسم المستخدم وكلمة المرور';
+        if (errEl) errEl.textContent = 'اكتب اسم المستخدم وكلمة المرور';
         return;
       }
-      if (btn) { btn.disabled = true; btn.textContent = '⏳ جاري التحقق...'; }
+      if (btn) { btn.disabled = true; btn.textContent = 'جاري الدخول...'; }
       if (errEl) errEl.textContent = '';
       try {
         const res = await authenticateUser(u, p);
         if (res.ok) {
           currentUser = res.user;
-          localStorage.setItem('qattous_session_user', JSON.stringify({ username: u, password: p }));
-          closeLoginModal();
-          applyUserPermissionsUI();
-          switchView('scannerView');
-          scanInput.value = '';
-          focusScanForLaser(false);
+          await saveSession(u, p);
+          onSignedIn();
         } else {
-          if (errEl) errEl.textContent = '❌ ' + res.error;
+          if (errEl) errEl.textContent = res.error;
         }
       } finally {
-        if (btn) { btn.disabled = false; btn.textContent = '🔐 تسجيل الدخول (Sign In)'; }
+        if (btn) { btn.disabled = false; btn.textContent = currentLang === 'ar' ? 'تسجيل الدخول' : 'Sign in'; }
       }
+    }
+
+    // Shared by fresh sign-in and session restore. Data loads in the background if it isn't here yet.
+    function onSignedIn() {
+      closeLoginModal();
+      applyUserPermissionsUI();
+      switchView('scannerView');
+      scanInput.value = '';
+      renderEmptyState();
+      focusScanForLaser(false);
+      if (!cloudBundle) refreshRemoteCloudData(false);
     }
 
     // ==================== SCANNER, PDA WEDGE & MANUAL AUTOCOMPLETE ====================
@@ -2795,24 +3175,38 @@
       }
     });
 
+    // Tell a laser scanner (whole code arrives in a burst, <40 ms per char) from a person typing.
+    // Only scanner bursts auto-search; people typing get suggestions and press Enter/Search themselves.
+    let typingStartAt = 0;
+    let typingStartLen = 0;
+    let prevInputLen = 0;
     scanInput.addEventListener('input', () => {
       clearTimeout(suggestTimer);
       clearTimeout(autoEnterTimer);
       const q = scanInput.value.trim();
+      const now = performance.now();
+      const jumped = q.length - prevInputLen >= 6; // some PDAs inject the whole code in one event
+      prevInputLen = q.length;
+      if (jumped) { typingStartAt = now - q.length; typingStartLen = 0; }
+      else if (q.length <= 1 || !typingStartAt) { typingStartAt = now; typingStartLen = Math.max(0, q.length - 1); }
       if (q.length < 2) {
         suggestDropdown.classList.remove('open');
+        if (!q) typingStartAt = 0;
         return;
       }
-      // If Auto-Enter tick is enabled: wait 300ms after scanner stops typing and auto-submit!
-      if (autoEnterToggle && autoEnterToggle.checked && q.length >= 6) {
+      const typedChars = Math.max(1, q.length - typingStartLen);
+      const msPerChar = (now - typingStartAt) / typedChars;
+      const looksLikeScanner = typedChars >= 6 && msPerChar < 40;
+      if (autoEnterToggle && autoEnterToggle.checked && looksLikeScanner) {
         autoEnterTimer = setTimeout(() => {
           if (scanInput.value.trim() === q) {
             suggestDropdown.classList.remove('open');
+            typingStartAt = 0;
             triggerScanFromInput();
           }
-        }, 300);
+        }, 150);
       } else {
-        suggestTimer = setTimeout(() => fetchSuggestions(q), 160);
+        suggestTimer = setTimeout(() => fetchSuggestions(q), 200);
       }
     });
 
@@ -2836,29 +3230,31 @@
         }
         if (isStaticCloudHost && cloudBundle) {
           const qUp = q.toUpperCase();
-          // Bin suggestions
-          Object.keys(cloudBundle.bins_by_code || {}).forEach(bcode => {
-            if (suggestions.length < 5 && bcode.toUpperCase().includes(qUp)) {
-              const arr = cloudBundle.bins_by_code[bcode];
-              suggestions.push({ type: 'bin', code: bcode, label: `رف مستودع (Bin): ${bcode}`, sub: `${arr.length} SKUs` });
+          const isDigits = /^\d+$/.test(q);
+          // Stop scanning as soon as each group has enough hits (keeps PDAs responsive)
+          const collect = (obj, limit, test, make) => {
+            let n = 0;
+            for (const k in (obj || {})) {
+              if (n >= limit) break;
+              if (test(k)) { suggestions.push(make(k)); n++; }
             }
-          });
-          // Item code suggestions
-          Object.keys(cloudBundle.items_meta || {}).forEach(ino => {
-            if (suggestions.length < 10 && ino.toUpperCase().includes(qUp)) {
-              const im = cloudBundle.items_meta[ino];
-              const bcCnt = ((cloudBundle.variants_by_item || {})[ino] || []).length;
-              suggestions.push({ type: 'item_code', code: ino, label: im[0], sub: `عرض كل باركودات الموديل (${bcCnt} باركود)` });
-            }
-          });
-          // Barcode suggestions
-          Object.keys(cloudBundle.reg_by_bc || {}).forEach(bc => {
-            if (suggestions.length < 15 && bc.includes(q)) {
+          };
+          if (!isDigits) {
+            collect(cloudBundle.bins_by_code, 5, k => k.toUpperCase().includes(qUp), bcode => ({
+              type: 'bin', code: bcode, label: `رف مستودع: ${bcode}`, sub: `${cloudBundle.bins_by_code[bcode].length} صنف`
+            }));
+            collect(cloudBundle.items_meta, 5, k => k.toUpperCase().includes(qUp), ino => ({
+              type: 'item_code', code: ino, label: cloudBundle.items_meta[ino][0],
+              sub: `كل المقاسات (${((cloudBundle.variants_by_item || {})[ino] || []).length} باركود)`
+            }));
+          }
+          if (q.length >= 4 && (isDigits || suggestions.length < 5)) {
+            collect(cloudBundle.reg_by_bc, 6, k => k.includes(q), bc => {
               const [ino, cs] = cloudBundle.reg_by_bc[bc];
               const im = (cloudBundle.items_meta || {})[ino] || [''];
-              suggestions.push({ type: 'barcode', code: bc, label: im[0], sub: `${ino} | ${cs}` });
-            }
-          });
+              return { type: 'barcode', code: bc, label: im[0], sub: `${ino} | ${cs}` };
+            });
+          }
         }
         const p = currentUser.permissions || {};
         const filtered = suggestions.filter(s => s.type !== 'bin' || p.scan_bin);
@@ -2872,7 +3268,7 @@
               <div class="suggest-code">${s.code}</div>
               <div class="suggest-sub">${s.label || ''} — ${s.sub || ''}</div>
             </div>
-            <span class="suggest-type ${s.type}">${s.type === 'bin' ? '🗄️ BIN' : (s.type === 'item_code' ? '👕 ITEM (كل الباركودات)' : '📦 BARCODE')}</span>
+            <span class="suggest-type ${s.type}">${s.type === 'bin' ? 'رف' : (s.type === 'item_code' ? 'آيتم' : 'باركود')}</span>
           </div>
         `).join('');
         suggestDropdown.classList.add('open');
@@ -2883,7 +3279,10 @@
 
     function clearScanInput() {
       scanInput.value = '';
+      prevInputLen = 0;
+      lastScanResponse = null;
       suggestDropdown.classList.remove('open');
+      renderEmptyState();
       focusScanForLaser(false);
     }
 
@@ -2893,11 +3292,94 @@
       executeLookup(code);
     }
 
-    async function executeLookup(code) {
+    const ICONS = {
+      scan: '<svg viewBox="0 0 24 24"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M8 8v8M11 8v8M14 8v8M17 8v8"/></svg>',
+      warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/></svg>',
+      lock: '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+      cloud: '<svg viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.6-9.96A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9z"/><path d="m4 4 16 16"/></svg>',
+    };
+    const escHtml = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    // ---- Recent scans (kept on this device only) ----
+    function getRecentScans() {
+      try { return JSON.parse(localStorage.getItem('qattous_recent_scans') || '[]'); } catch (_) { return []; }
+    }
+    function pushRecentScan(data) {
+      let code = data.queried_code || data.bin_code || data.to_number || '';
+      if (!code) return;
+      let label = '', kind = '';
+      if (data.scan_type === 'bin') { kind = currentLang === 'ar' ? 'رف' : 'Bin'; label = `${data.sku_count} ${currentLang === 'ar' ? 'صنف' : 'items'}`; }
+      else if (data.scan_type === 'to_number') { kind = 'TO'; label = `${data.lines_count} ${currentLang === 'ar' ? 'سطر' : 'lines'}`; }
+      else { kind = data.scan_type === 'item_all_barcodes' ? (currentLang === 'ar' ? 'آيتم' : 'Item') : (currentLang === 'ar' ? 'باركود' : 'Barcode'); label = (data.allocation && data.allocation.description) || ''; }
+      const list = getRecentScans().filter(r => r.code !== code);
+      list.unshift({ code, label, kind, at: Date.now() });
+      try { localStorage.setItem('qattous_recent_scans', JSON.stringify(list.slice(0, 8))); } catch (_) { }
+    }
+    function timeAgo(ts) {
+      const m = Math.round((Date.now() - ts) / 60000);
+      const ar = currentLang === 'ar';
+      if (m < 1) return ar ? 'الآن' : 'just now';
+      if (m < 60) return ar ? `قبل ${m} دقيقة` : `${m} min ago`;
+      const h = Math.round(m / 60);
+      if (h < 24) return ar ? `قبل ${h} ساعة` : `${h} h ago`;
+      return new Date(ts).toLocaleDateString();
+    }
+
+    function renderEmptyState() {
+      const area = document.getElementById('scanResultsArea');
+      if (!area) return;
+      const ar = currentLang === 'ar';
+      const recent = getRecentScans();
+      if (recent.length) {
+        area.innerHTML = `
+          <div class="v2-sec">
+            <div class="v2-sec-h"><h3>${ar ? 'آخر عمليات الفحص' : 'Recent scans'}</h3><span>${ar ? 'على هذا الجهاز' : 'On this device'}</span></div>
+            <div class="v2-box v2-rows">
+              ${recent.map(r => `
+                <button type="button" class="v2-r v2-r-btn" onclick="executeLookup('${escHtml(r.code)}')">
+                  <span class="n"><span class="num">${escHtml(r.code)}</span><small>${escHtml(r.kind)}${r.label ? ' · ' + escHtml(r.label) : ''} · ${timeAgo(r.at)}</small></span>
+                  <span class="chev">‹</span>
+                </button>`).join('')}
+            </div>
+          </div>`;
+      } else {
+        area.innerHTML = `
+          <div class="v2-state">
+            <div class="ill">${ICONS.scan}</div>
+            <h3>${ar ? 'امسح باركود للبدء' : 'Scan a barcode to start'}</h3>
+            <p>${ar ? 'امسح أو اكتب باركود، كود آيتم يبدأ بـ I، كود رف، أو رقم TO.' : 'Scan or type a barcode, an item code (I…), a bin code or a TO number.'}</p>
+          </div>`;
+      }
+    }
+
+    function renderNotFound(code) {
+      const ar = currentLang === 'ar';
+      document.getElementById('scanResultsArea').innerHTML = `
+        <div class="v2-state err">
+          <div class="ill">${ICONS.warn}</div>
+          <h3>${ar ? `الكود ${escHtml(code)} مش موجود` : `${escHtml(code)} was not found`}</h3>
+          <p>${ar ? 'ما لقينا باركود أو آيتم أو رف أو TO بهذا الكود.<br>تأكد إن الكود مكتمل، أو جرّب المسح بالكاميرا.' : 'No barcode, item, bin or TO matches this code.<br>Check the code is complete, or try the camera.'}</p>
+          <div class="v2-actions">
+            <button type="button" class="btn btn-outline" onclick="clearScanInput()">${ar ? 'مسح الحقل' : 'Clear'}</button>
+            <button type="button" class="btn btn-bronze" onclick="toggleCameraScanner()">${ar ? 'مسح بالكاميرا' : 'Use camera'}</button>
+          </div>
+        </div>`;
+    }
+
+    async function executeLookup(code, opts = {}) {
+      code = String(code || '').trim();
+      if (!code) return;
       scanInput.value = code;
+      prevInputLen = code.length;
       suggestDropdown.classList.remove('open');
       const area = document.getElementById('scanResultsArea');
-      area.innerHTML = `<div class="card" style="text-align:center; padding:24px;">⏳ جاري الفحص الفوري للكود <strong>${code}</strong> ...</div>`;
+      if (!opts.silent) {
+        area.innerHTML = `
+          <div class="v2-skel-wrap" aria-busy="true">
+            <div class="v2-box" style="padding:14px"><div class="skel" style="height:18px;width:70%"></div><div class="skel" style="height:12px;width:45%;margin-top:10px"></div><div class="skel" style="height:44px;margin-top:16px"></div></div>
+            <div class="skel" style="height:56px;margin-top:12px"></div><div class="skel" style="height:56px;margin-top:8px"></div>
+          </div>`;
+      }
       try {
         const t0 = performance.now();
         let data = null;
@@ -2905,39 +3387,48 @@
           try {
             const res = await fetch(`/api/scan?code=${encodeURIComponent(code)}`);
             if (res.ok) data = await res.json();
-            else isStaticCloudHost = true;
+            // A server error falls back to the cloud copy for this lookup only
           } catch (e) {
-            isStaticCloudHost = true;
+            isStaticCloudHost = true; // server unreachable: switch to cloud mode
           }
         }
         if (!data) {
           if (!cloudBundle) await refreshRemoteCloudData(false);
+          if (!cloudBundle) {
+            const ar = currentLang === 'ar';
+            area.innerHTML = `<div class="v2-state err"><div class="ill">${ICONS.cloud}</div>
+              <h3>${ar ? 'البيانات مش محمّلة' : 'Data is not loaded'}</h3>
+              <p>${ar ? 'تأكد من الإنترنت (4G أو واي فاي) ثم اضغط إعادة المحاولة.' : 'Check your connection (4G or Wi-Fi), then retry.'}</p>
+              <div class="v2-actions"><button type="button" class="btn btn-bronze" onclick="executeLookup('${escHtml(code)}')">${ar ? 'إعادة المحاولة' : 'Retry'}</button></div></div>`;
+            return;
+          }
           data = lookupInCloudBundle(code);
         }
         data._elapsedMs = Math.max(1, Math.round(performance.now() - t0));
         if (!data.ok) {
-          area.innerHTML = `
-            <div class="card" style="border-color:var(--q-danger); background:var(--q-danger-bg); color:var(--q-danger);">
-              <h3>❌ ${data.error}</h3>
-            </div>
-          `;
+          if (navigator.vibrate) navigator.vibrate([60, 60, 60]);
+          renderNotFound(code);
           return;
         }
         if (data.scan_type === 'bin' && !(currentUser.permissions && currentUser.permissions.scan_bin)) {
-          area.innerHTML = `
-            <div class="card" style="border-color:var(--q-warning); background:var(--q-warning-bg);">
-              <h3>🔒 ليس لديك صلاحية فحص محتويات الـ Bin (اطلب تفعيلها من الأدمن)</h3>
-            </div>
-          `;
+          const ar = currentLang === 'ar';
+          area.innerHTML = `<div class="v2-state"><div class="ill">${ICONS.lock}</div>
+            <h3>${ar ? 'حسابك ما عنده صلاحية فحص الرفوف' : 'Your account cannot view bin contents'}</h3>
+            <p>${ar ? 'تقدر تفحص الباركود والآيتم. لفحص محتويات الرف اطلب الصلاحية من مسؤول النظام.' : 'You can still check barcodes and items. Ask your admin for bin access.'}</p></div>`;
           return;
         }
+        if (!data.queried_code) data.queried_code = code;
         lastScanResponse = data;
+        if (!opts.silent) {
+          pushRecentScan(data);
+          if (navigator.vibrate) navigator.vibrate(35);
+        }
         renderScanResponse(data);
         if (document.getElementById('pdaAutoFocusToggle').checked) {
           focusScanForLaser(true);
         }
       } catch (e) {
-        area.innerHTML = `<div class="card">خطأ في الاتصال: ${e.message}</div>`;
+        area.innerHTML = `<div class="v2-state err"><div class="ill">${ICONS.warn}</div><h3>${currentLang === 'ar' ? 'صار خطأ أثناء الفحص' : 'Something went wrong'}</h3><p>${escHtml(e.message)}</p></div>`;
       }
     }
 
@@ -2949,10 +3440,10 @@
       { code: 'S0001', short: 'Avenue', en: 'Avenue Mall', ar: 'أفنيو مول', sr: 3, prio: true },
       { code: 'S0011', short: 'Mecca', en: 'Mecca Mall', ar: 'مكة مول', sr: 3, prio: true },
       { code: 'S0002', short: 'Khalda', en: 'Khalda', ar: 'خلدا', sr: 2, prio: true },
-      { code: 'S0003', short: 'Tabarbour', en: 'Tabarbour', ar: 'طبربور', sr: 2, prio: false },
-      { code: 'S0004', short: 'Marj', en: 'Marj Al Hamam', ar: 'مرج الحمام', sr: 2, prio: false },
-      { code: 'S0010', short: 'Irbid', en: 'Irbid', ar: 'إربد', sr: 2, prio: false },
-      { code: 'S0012', short: 'Zarqa', en: 'Bawabat Al Amadina', ar: 'بوابة المدينة', sr: 2, prio: false },
+      { code: 'S0003', short: 'Tabarbour', en: 'Tabarbour', ar: 'طبربور', sr: 2, prio: true },
+      { code: 'S0004', short: 'Marj', en: 'Marj Al Hamam', ar: 'مرج الحمام', sr: 2, prio: true },
+      { code: 'S0010', short: 'Irbid', en: 'Irbid', ar: 'إربد', sr: 2, prio: true },
+      { code: 'S0012', short: 'Zarqa', en: 'Bawabat Al Amadina', ar: 'بوابة المدينة', sr: 2, prio: true },
       { code: 'S0005', short: 'Istiklal', en: 'Istiklal Mall', ar: 'استقلال مول', sr: 0, prio: false },
       { code: 'S0006', short: 'Online', en: 'Online Store', ar: 'أونلاين', sr: 0, prio: false },
       { code: 'S0007', short: 'Ohana Av.', en: 'Ohana Avenue', ar: 'أوهانا أفنيو', sr: 0, prio: false },
@@ -2981,15 +3472,98 @@
       `;
     }
 
-    function saveWorkbookSmart(wb, filename) {
-      if (window.AndroidBridge && typeof window.AndroidBridge.saveBase64File === 'function') {
-        const b64 = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
-        window.AndroidBridge.saveBase64File(b64, filename, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        if (typeof showToast === 'function') showToast('✅ تم حفظ الإكسل في التنزيلات: ' + filename);
+    // ==================== EXPORT: SHARE (WhatsApp etc.) OR SAVE ====================
+    const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    let pendingExport = null; // { b64, filename, mime }
+
+    const hasNativeShare = () => !!(window.AndroidBridge && typeof window.AndroidBridge.shareBase64File === 'function');
+    const isOldApk = () => !!(window.AndroidBridge && !hasNativeShare());
+
+    function b64ToFile(b64, filename, mime) {
+      const bin = atob(b64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return new File([bytes], filename, { type: mime });
+    }
+
+    function canWebShareFile(file) {
+      try { return !!(navigator.canShare && navigator.share && navigator.canShare({ files: [file] })); } catch (_) { return false; }
+    }
+
+    // Every export goes through here: the file is built once, then the person picks Share or Save.
+    function offerExport(b64, filename, mime) {
+      pendingExport = { b64, filename, mime };
+      const ar = currentLang === 'ar';
+      document.getElementById('exportFileName').textContent = filename;
+      const shareBtn = document.getElementById('exShareBtn');
+      const shareSub = document.getElementById('exShareSub');
+      const webShareOk = !window.AndroidBridge && canWebShareFile(b64ToFile(b64, filename, mime));
+      if (hasNativeShare() || webShareOk) {
+        shareBtn.disabled = false;
+        shareSub.textContent = ar ? 'واتساب، إيميل، تيليجرام وغيرها' : 'WhatsApp, email, Telegram and more';
+      } else if (isOldApk()) {
+        shareBtn.disabled = false; // tapping explains how to get the update
+        shareSub.textContent = ar ? 'يحتاج تحديث التطبيق مرة واحدة (اضغط للتفاصيل)' : 'Needs a one-time app update (tap for details)';
       } else {
-        XLSX.writeFile(wb, filename);
-        if (typeof showToast === 'function') showToast('✅ تم تحميل ملف الإكسل: ' + filename);
+        shareBtn.disabled = true;
+        shareSub.textContent = ar ? 'غير متاح على هذا المتصفح. احفظ الملف وأرسله يدوياً.' : 'Not available in this browser. Save the file and send it manually.';
       }
+      applyMobileI18n();
+      document.getElementById('exportBackdrop').classList.add('open');
+      document.getElementById('exportSheet').classList.add('open');
+    }
+
+    function closeExportSheet() {
+      document.getElementById('exportBackdrop').classList.remove('open');
+      document.getElementById('exportSheet').classList.remove('open');
+    }
+
+    async function shareExportFile() {
+      if (!pendingExport) return;
+      const { b64, filename, mime } = pendingExport;
+      const ar = currentLang === 'ar';
+      if (hasNativeShare()) {
+        window.AndroidBridge.shareBase64File(b64, filename, mime);
+        closeExportSheet();
+        return;
+      }
+      if (isOldApk()) {
+        closeExportSheet();
+        showToast(ar ? 'المشاركة تحتاج تحديث التطبيق مرة واحدة. افتح المزيد ← تحديث التطبيق.' : 'Sharing needs a one-time app update. Open More → App update.');
+        openSheet();
+        checkAppUpdate();
+        return;
+      }
+      try {
+        await navigator.share({ files: [b64ToFile(b64, filename, mime)], title: filename });
+        closeExportSheet();
+      } catch (e) {
+        if (e && e.name === 'AbortError') return; // person closed the share sheet
+        showToast(ar ? 'تعذرت المشاركة. احفظ الملف وأرسله يدوياً.' : 'Could not share. Save the file and send it manually.', true);
+      }
+    }
+
+    function saveExportFile() {
+      if (!pendingExport) return;
+      const { b64, filename, mime } = pendingExport;
+      const ar = currentLang === 'ar';
+      if (window.AndroidBridge && typeof window.AndroidBridge.saveBase64File === 'function') {
+        window.AndroidBridge.saveBase64File(b64, filename, mime);
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(b64ToFile(b64, filename, mime));
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+      }
+      closeExportSheet();
+      showToast((ar ? 'تم حفظ الملف في التنزيلات: ' : 'Saved to Downloads: ') + filename);
+    }
+
+    function saveWorkbookSmart(wb, filename) {
+      const b64 = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+      offerExport(b64, filename, XLSX_MIME);
     }
 
     function exportTableToExcel(btn, prefix = 'Qattous_SM') {
@@ -3023,18 +3597,7 @@
         Array.from(tr.querySelectorAll('th,td')).map(td => '"' + (td.innerText || '').replace(/"/g, '""').replace(/\s+/g, ' ').trim() + '"').join(',')
       );
       const csv = '\uFEFF' + rows.join('\r\n');
-      const filename = `${prefix}_${ts}.csv`;
-      if (window.AndroidBridge && typeof window.AndroidBridge.saveBase64File === 'function') {
-        const b64 = btoa(unescape(encodeURIComponent(csv)));
-        window.AndroidBridge.saveBase64File(b64, filename, 'text/csv');
-        if (typeof showToast === 'function') showToast('✅ تم حفظ الملف في التنزيلات: ' + filename);
-      } else {
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        a.click();
-      }
+      offerExport(btoa(unescape(encodeURIComponent(csv))), `${prefix}_${ts}.csv`, 'text/csv');
     }
 
     const INSTALLED_APK_VER = (new URLSearchParams(window.location.search).get('apk_ver')) || '2.0.0';
@@ -3397,14 +3960,18 @@
         sh_sync: 'آخر تحديث للبيانات', sh_refresh: 'تحديث الداتا الآن', sh_lang: 'اللغة: عربي / English', sh_login: 'تسجيل دخول بحساب آخر', sh_quick: 'تبديل سريع للحساب (للتجربة)', sh_close: 'إغلاق',
         sh_sync: 'آخر تحديث للبيانات', sh_refresh: 'تحديث الداتا الآن', sh_update: 'فحص تحديث التطبيق', sh_lang: 'اللغة: عربي / English', sh_login: 'تسجيل دخول بحساب آخر', sh_quick: 'تبديل سريع للحساب (للتجربة)', sh_close: 'إغلاق',
         wh: 'المستودع', transit: 'بالطريق', stores: 'المحلات', bins: 'الأرفف (Bin)', nobin: 'غير موجود بأي رف', send: 'أرسل إلى', hold: 'يبقى بالمستودع', none: 'لا إجراء',
-        barcodes: 'باركود', total: 'الإجمالي', inwh: 'في المستودع', instores: 'في المحلات', pcs: 'قطعة', moreitems: 'كل باركودات الآيتم', exp: 'تحميل إكسل', items: 'أصناف', skus: 'باركود', to: 'أمر نقل'
+        barcodes: 'باركود', total: 'الإجمالي', inwh: 'في المستودع', instores: 'في المحلات', pcs: 'قطعة', moreitems: 'كل باركودات الآيتم', exp: 'تصدير إكسل', items: 'أصناف', skus: 'باركود', to: 'أمر نقل',
+        sh_logout: 'تسجيل الخروج', sh_pda: 'مسح بالليزر (PDA)', sh_pda_sub: 'يخفي الكيبورد وقت المسح', sh_ae: 'بحث تلقائي بعد المسح', sh_ae_sub: 'بدون ما تضغط بحث',
+        ex_title: 'ملف الإكسل جاهز', ex_share: 'مشاركة', ex_save: 'حفظ على الجهاز', ex_save_sub: 'في مجلد التنزيلات'
       },
       en: {
         seg_wh: 'Warehouse', seg_st: 'Stores', seg_both: 'Both', nav_scan: 'Scan', nav_rep: 'Report', nav_data: 'Update', nav_users: 'Users', nav_more: 'More',
         sh_sync: 'Data last updated', sh_refresh: 'Refresh data now', sh_lang: 'Language: English / عربي', sh_login: 'Sign in as another user', sh_quick: 'Quick account switch (testing)', sh_close: 'Close',
         sh_sync: 'Data last updated', sh_refresh: 'Refresh data now', sh_update: 'Check App Update', sh_lang: 'Language: English / عربي', sh_login: 'Sign in as another user', sh_quick: 'Quick account switch (testing)', sh_close: 'Close',
         wh: 'Warehouse', transit: 'In transit', stores: 'Stores', bins: 'Bins', nobin: 'Not in any bin', send: 'Send to', hold: 'Keep in warehouse', none: 'No action',
-        barcodes: 'barcodes', total: 'Total', inwh: 'In warehouse', instores: 'In stores', pcs: 'pcs', moreitems: 'All barcodes of this item', exp: 'Download Excel', items: 'items', skus: 'barcodes', to: 'Transfer order'
+        barcodes: 'barcodes', total: 'Total', inwh: 'In warehouse', instores: 'In stores', pcs: 'pcs', moreitems: 'All barcodes of this item', exp: 'Export Excel', items: 'items', skus: 'barcodes', to: 'Transfer order',
+        sh_logout: 'Sign out', sh_pda: 'Laser scanning (PDA)', sh_pda_sub: 'Hides the keyboard while scanning', sh_ae: 'Search right after a scan', sh_ae_sub: 'No need to tap Search',
+        ex_title: 'Excel file ready', ex_share: 'Share', ex_save: 'Save to device', ex_save_sub: 'In the Downloads folder'
       }
     };
     function mt(k) { return (MI18N[currentLang] || MI18N.ar)[k] || k; }
@@ -3420,8 +3987,24 @@
       const vEl = document.getElementById('sheetAppVer');
       if (vEl) vEl.textContent = '(v' + INSTALLED_APK_VER + ')';
       document.querySelectorAll('#accountSheet .acc button').forEach(b => b.classList.toggle('active', b.getAttribute('data-u') === u.username));
+      syncSheetSwitches();
       document.getElementById('sheetBackdrop').classList.add('open');
       document.getElementById('accountSheet').classList.add('open');
+    }
+
+    // The More sheet's switches drive the original checkboxes, so all existing logic keeps working.
+    function syncSheetSwitches() {
+      const pda = document.getElementById('pdaAutoFocusToggle'), ae = document.getElementById('autoEnterToggle');
+      const sp = document.getElementById('swPda'), sa = document.getElementById('swAe');
+      if (sp && pda) { sp.classList.toggle('on', pda.checked); sp.setAttribute('aria-checked', pda.checked); }
+      if (sa && ae) { sa.classList.toggle('on', ae.checked); sa.setAttribute('aria-checked', ae.checked); }
+    }
+    function toggleProxyCheckbox(id) {
+      const cb = document.getElementById(id);
+      if (!cb) return;
+      cb.checked = !cb.checked;
+      cb.dispatchEvent(new Event('change'));
+      syncSheetSwitches();
     }
     function closeSheet() {
       document.getElementById('sheetBackdrop').classList.remove('open');
@@ -3429,6 +4012,111 @@
     }
 
     function storeShort(code) { const s = STORE_COLUMNS.find(x => x.code === code); return s ? s.short : code; }
+
+    const storeName = code => { const s = STORE_COLUMNS.find(x => x.code === code); return s ? (currentLang === 'ar' ? s.ar : s.en) : code; };
+    const sumStores = r => Object.values(r.oh_stores || {}).reduce((a, v) => a + Math.max(0, Number(v) || 0), 0);
+    const sumIncoming = r => Object.values(r.tr_added_stores || {}).reduce((a, v) => a + Math.max(0, Number(v) || 0), 0);
+
+    function v2Totals(cells) {
+      return `<div class="v2-totals">${cells.map(c => `<div><b class="num"${c.warn ? ' style="color:var(--v2-warn)"' : ''}>${c.v}</b><small>${c.l}</small></div>`).join('')}</div>`;
+    }
+
+    // Bin locations as shelf-label plates, largest quantity first
+    function v2Plates(bins) {
+      const ar = currentLang === 'ar';
+      if (!bins.length) return `<div class="v2-box v2-empty-line">${ar ? 'غير موجود بأي رف' : 'Not in any bin'}</div>`;
+      const sorted = bins.slice().sort((a, b) => Number(b.qty || 0) - Number(a.qty || 0));
+      return `<div class="v2-plates">${sorted.map((b, i) => `
+        <button type="button" class="v2-plate${i === 0 && sorted.length > 1 ? ' first' : ''}" onclick="executeLookup('${escHtml(b.bin_code)}')">
+          <span class="code"><small>${i === 0 && sorted.length > 1 ? (ar ? 'ابدأ من هنا · أكبر كمية' : 'Start here · most stock') : (ar ? 'رف' : 'Bin')}</small><span class="num">${escHtml(b.bin_code)}</span></span>
+          <span class="q"><b class="num">${b.qty}</b><small>${ar ? 'قطعة' : 'pcs'}</small></span>
+        </button>`).join('')}</div>`;
+    }
+
+    // Stores with stock or incoming TOs; the rest behind a "show all" toggle
+    function v2Stores(r, opts) {
+      const ar = currentLang === 'ar';
+      const oh = r.oh_stores || {}, tr = r.tr_added_stores || {};
+      const has = s => Number(oh[s.code] || 0) > 0 || Number(tr[s.code] || 0) > 0;
+      const withStock = STORE_COLUMNS.filter(has);
+      const rest = STORE_COLUMNS.filter(s => !has(s));
+      const row = (s, zero) => {
+        const win = opts.showEligible && r.winner_store === s.code && (r.eligible_mode === 'wh' || r.eligible_mode === 'transfer');
+        const inc = Number(tr[s.code] || 0);
+        return `<div class="v2-r${zero ? ' zero' : ''}${win ? ' win' : ''}"><span class="n">${escHtml(storeName(s.code))}<small class="num">${s.code}</small></span>${win ? `<span class="v2-tag ok">${ar ? 'الأحق' : 'Priority'}</span>` : ''}${inc > 0 ? `<span class="v2-tag warn">+${inc} ${ar ? 'بالطريق' : 'incoming'}</span>` : ''}<b class="num">${Number(oh[s.code] || 0)}</b></div>`;
+      };
+      const id = 'st_' + String(r.barcode).replace(/\W/g, '');
+      return `<div class="v2-box v2-rows">
+        ${withStock.length ? withStock.map(s => row(s, false)).join('') : `<div class="v2-empty-line">${ar ? 'غير موجود بأي محل' : 'Not in any store'}</div>`}
+        ${rest.length ? `<div class="v2-more" id="${id}" hidden>${rest.map(s => row(s, true)).join('')}</div>
+        <button type="button" class="v2-showall" onclick="const m=document.getElementById('${id}'); m.hidden=!m.hidden; this.textContent=m.hidden?this.dataset.show:this.dataset.hide;"
+          data-show="${ar ? `عرض كل المحلات (${rest.length} بدون كمية)` : `Show all stores (${rest.length} empty)`}" data-hide="${ar ? 'إخفاء المحلات بدون كمية' : 'Hide empty stores'}">${ar ? `عرض كل المحلات (${rest.length} بدون كمية)` : `Show all stores (${rest.length} empty)`}</button>` : ''}
+      </div>`;
+    }
+
+    function v2Eligible(r, opts) {
+      if (!opts.showEligible) return '';
+      const m = r.eligible_mode;
+      if (m === 'wh') return `<div class="v2-note ok">${currentLang === 'ar' ? 'أرسل إلى' : 'Send to'}: ${escHtml(r.eligible_summary)}</div>`;
+      if (m === 'transfer') return `<div class="v2-note warn">${escHtml(r.eligible_summary)}</div>`;
+      if (m === 'wh_full') return `<div class="v2-note">${escHtml(r.eligible_summary)}</div>`;
+      return '';
+    }
+
+    // Full answer for one scanned barcode: what it is, how many where, which bin to walk to.
+    function buildBarcodeMobile(r, opts) {
+      const ar = currentLang === 'ar';
+      const cells = [];
+      if (opts.showWH) cells.push({ v: Number(r.wh_oh || 0), l: ar ? 'بالمستودع' : 'Warehouse' });
+      if (opts.showStores) cells.push({ v: sumStores(r), l: ar ? 'بالمحلات' : 'Stores' });
+      const incoming = sumIncoming(r) + Number(r.in_transit || 0);
+      cells.push({ v: incoming, l: ar ? 'بالطريق' : 'In transit', warn: incoming > 0 });
+      const bins = r.all_bins || [];
+      const binsQty = bins.reduce((a, b) => a + Number(b.qty || 0), 0);
+      return `
+        <div class="v2-box v2-item-head">
+          <div class="d">${escHtml(r.description || r.serial)}</div>
+          <div class="m">
+            <span class="v2-chip num">${escHtml(r.barcode)}</span>
+            ${r.color_size ? `<span class="v2-chip">${escHtml(r.color_size)}</span>` : ''}
+            <button type="button" class="v2-chip link" onclick="executeLookup('${escHtml(r.serial)}')">${escHtml(r.serial)} · ${ar ? 'كل المقاسات' : 'All sizes'}</button>
+            ${r.dept ? `<span class="v2-chip">${escHtml(r.dept)}</span>` : ''}
+          </div>
+          ${v2Totals(cells)}
+        </div>
+        ${opts.showWH ? `<div class="v2-sec"><div class="v2-sec-h"><h3>${ar ? 'وين موجود بالمستودع' : 'Where it is in the warehouse'}</h3><span>${bins.length ? `${bins.length} ${ar ? 'رف' : 'bins'} · ${binsQty} ${ar ? 'قطعة' : 'pcs'}` : ''}</span></div>${v2Plates(bins)}</div>` : ''}
+        ${opts.showStores ? `<div class="v2-sec"><div class="v2-sec-h"><h3>${ar ? 'المحلات' : 'Stores'}</h3></div>${v2Stores(r, opts)}</div>` : ''}
+        ${(opts.showStores && r.transfers && r.transfers.length) ? `<div class="v2-sec"><div class="v2-sec-h"><h3>${ar ? 'أوامر النقل' : 'Transfer orders'}</h3></div><div class="v2-box v2-rows">${r.transfers.map(t => `
+          <button type="button" class="v2-r v2-r-btn" onclick="executeLookup('${escHtml(t.to_number)}')"><span class="n num">${escHtml(t.to_number)}<small>${escHtml(t.from_code)} ← ${escHtml(storeName(t.to_code))} · ${escHtml(t.status)}</small></span><b class="num">${t.qty}</b></button>`).join('')}</div></div>` : ''}
+        ${v2Eligible(r, opts)}
+        <div class="v2-sec"><button type="button" class="btn btn-outline v2-full" onclick="exportTableToExcel(this, 'Qattous_SM_${escHtml(r.barcode)}')">${ar ? 'تصدير إكسل' : 'Export Excel'}</button></div>`;
+    }
+
+    // Item view: colour × size grid so the whole model reads at a glance; tap a number for that barcode.
+    function buildSizeMatrix(rows, opts) {
+      const ar = currentLang === 'ar';
+      const split = cs => { const p = String(cs || '').split('/'); return p.length > 1 ? [p.slice(0, -1).join('/').trim(), p[p.length - 1].trim()] : [String(cs || '').trim() || '—', '—']; };
+      const colors = [], sizes = [], cell = {};
+      rows.forEach(r => {
+        const [c, s] = split(r.color_size);
+        if (!colors.includes(c)) colors.push(c);
+        if (!sizes.includes(s)) sizes.push(s);
+        const q = (opts.showWH ? Number(r.wh_oh || 0) : 0) + (opts.showStores ? sumStores(r) : 0);
+        cell[c + '|' + s] = { q, bc: r.barcode };
+      });
+      if (colors.length * sizes.length > 120 || sizes.length > 12) return '';
+      const scope = opts.showWH && opts.showStores ? (ar ? 'المستودع + المحلات' : 'Warehouse + stores') : opts.showWH ? (ar ? 'المستودع' : 'Warehouse') : (ar ? 'المحلات' : 'Stores');
+      return `<div class="v2-sec"><div class="v2-sec-h"><h3>${ar ? 'الكمية حسب اللون والمقاس' : 'Stock by colour and size'}</h3><span>${scope}</span></div>
+        <div class="v2-box v2-matrix"><table>
+          <thead><tr><th>${ar ? 'اللون' : 'Colour'}</th>${sizes.map(s => `<th>${escHtml(s)}</th>`).join('')}<th>${ar ? 'المجموع' : 'Total'}</th></tr></thead>
+          <tbody>${colors.map(c => {
+            let tot = 0;
+            const tds = sizes.map(s => { const x = cell[c + '|' + s]; if (!x) return '<td class="z">·</td>'; tot += x.q; return `<td class="num ${x.q ? 'tap' : 'z'}" onclick="executeLookup('${escHtml(x.bc)}')">${x.q || '–'}</td>`; }).join('');
+            return `<tr><td>${escHtml(c)}</td>${tds}<td class="num"><b>${tot}</b></td></tr>`;
+          }).join('')}</tbody>
+        </table></div>
+        <p class="v2-hint">${ar ? 'اضغط على أي رقم لتفاصيل الباركود (الرفوف والمحلات)' : 'Tap a number for that barcode’s bins and stores'}</p></div>`;
+    }
 
     // One card per barcode. opts: {showWH, showStores, showEligible}
     function buildCardHtml(r, opts) {
@@ -3440,7 +4128,7 @@
         ? STORE_COLUMNS.filter(s => Number(stOH[s.code] || 0) > 0 || Number((r.tr_added_stores || {})[s.code] || 0) > 0).map(s => {
           const win = showEligible && r.winner_store === s.code && (r.eligible_mode === 'wh' || r.eligible_mode === 'transfer');
           const tr = Number((r.tr_added_stores || {})[s.code] || 0);
-          return `<span class="chip ${win ? 'good' : ''}">${s.short} <b>${Number(stOH[s.code] || 0)}</b>${tr > 0 ? ` <small style="color:#b86b11; font-weight:800;">(+${tr} 🚚)</small>` : ''}</span>`;
+          return `<span class="chip ${win ? 'good' : ''}">${escHtml(storeName(s.code))} <b>${Number(stOH[s.code] || 0)}</b>${tr > 0 ? ` <small style="color:var(--v2-warn); font-weight:500;">+${tr} ${mt('transit')}</small>` : ''}</span>`;
         }).join('')
         : '';
       const inTr = Number(r.in_transit || 0);
@@ -3448,7 +4136,7 @@
       let starHtml = '';
       if (showEligible) {
         const m = r.eligible_mode;
-        if (m === 'wh') starHtml = `<div class="rc-star">⭐ ${mt('send')}: ${r.eligible_summary}</div>`;
+        if (m === 'wh') starHtml = `<div class="rc-star">${mt('send')}: ${r.eligible_summary}</div>`;
         else if (m === 'transfer') starHtml = `<div class="rc-star transfer">${r.eligible_summary}</div>`;
         else if (m === 'wh_full') starHtml = `<div class="rc-star none">${r.eligible_summary}</div>`;
       }
@@ -3460,22 +4148,22 @@
             <div style="min-width:0">
               <div class="rc-title">${r.description || r.serial}</div>
               <div class="rc-sub">${[r.brand, r.dept, r.art_no].filter(Boolean).join(' • ')}</div>
-              <div class="rc-sub rc-code" style="color:#0c5489;cursor:pointer" onclick="executeLookup('${r.barcode}')">${r.barcode}</div>
+              <div class="rc-sub rc-code" style="color:var(--v2-bronze-d);cursor:pointer" onclick="executeLookup('${r.barcode}')">${r.barcode}</div>
             </div>
-            ${sizeTxt ? `<div class="rc-size">${sizeTxt}</div>` : ''}
+            ${sizeTxt ? `<div class="rc-size">${escHtml(sizeTxt)}</div>` : ''}
           </div>
           ${showWH ? `
             <div class="rc-row">
-              <span class="chip wh">🏭 ${mt('wh')} <b>${whQty}</b></span>
-              ${inTr > 0 ? `<span class="chip warn">🚚 ${mt('transit')} <b>${inTr}</b></span>` : ''}
+              <span class="chip wh">${mt('wh')} <b>${whQty}</b></span>
+              ${inTr > 0 ? `<span class="chip warn">${mt('transit')} <b>${inTr}</b></span>` : ''}
             </div>
-            ${bins.length ? `<div class="rc-label">${mt('bins')}</div><div class="rc-row" style="margin-top:0">${bins.map(b => `<span class="chip bin" onclick="executeLookup('${b.bin_code}')">📍 ${b.bin_code} <b>${b.qty}</b></span>`).join('')}</div>`
+            ${bins.length ? `<div class="rc-label">${mt('bins')}</div><div class="rc-row" style="margin-top:0">${bins.slice().sort((a, b) => b.qty - a.qty).map(b => `<span class="chip bin num" onclick="executeLookup('${b.bin_code}')">${b.bin_code} <b>${b.qty}</b></span>`).join('')}</div>`
             : `<div class="rc-label">${mt('bins')}: ${mt('nobin')}</div>`}
           ` : ''}
           ${showStores ? `
             ${storeChips ? `<div class="rc-label">${mt('stores')}</div><div class="rc-row" style="margin-top:0">${storeChips}</div>` : ''}
-            ${(!showWH && inTr > 0) ? `<div class="rc-row"><span class="chip warn">🚚 ${mt('transit')} <b>${inTr}</b></span></div>` : ''}
-            ${(r.transfers && r.transfers.length) ? `<div class="rc-row">${r.transfers.map(t => `<span class="chip" style="cursor:pointer" onclick="executeLookup('${t.to_number}')">📄 ${t.to_number} <small>${t.from_code}➔${storeShort(t.to_code)}:${t.qty}</small></span>`).join('')}</div>` : ''}
+            ${(!showWH && inTr > 0) ? `<div class="rc-row"><span class="chip warn">${mt('transit')} <b>${inTr}</b></span></div>` : ''}
+            ${(r.transfers && r.transfers.length) ? `<div class="rc-row">${r.transfers.map(t => `<span class="chip" style="cursor:pointer" onclick="executeLookup('${t.to_number}')">${t.to_number} <small>${t.from_code} ← ${escHtml(storeName(t.to_code))}: ${t.qty}</small></span>`).join('')}</div>` : ''}
           ` : ''}
           ${starHtml}
         </div>`;
@@ -3492,23 +4180,18 @@
     function buildMobileSummary(title, subtitle, rows, opts) {
       const totWh = rows.reduce((a, r) => a + Number(r.wh_oh || 0), 0);
       const totSt = rows.reduce((a, r) => a + Object.values(r.oh_stores || {}).reduce((x, y) => x + Math.max(0, Number(y) || 0), 0), 0);
+      const cells = [{ v: rows.length, l: mt('skus') }];
+      if (!opts || opts.showWH !== false) cells.push({ v: totWh, l: mt('inwh') });
+      if (!opts || opts.showStores !== false) cells.push({ v: totSt, l: mt('instores') });
       return `
-        <div class="m-summary">
-          <div class="t">${title}</div>
-          <div class="s">${subtitle}</div>
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
-            <div style="min-width:0;">
-              <div class="t">${title}</div>
-              <div class="s">${subtitle}</div>
-            </div>
-            <button type="button" class="btn btn-success btn-sm" style="flex-shrink:0;" onclick="exportTableToExcel(this, 'Qattous_SM_Scan')">📥 إكسل</button>
+        <div class="v2-box v2-item-head">
+          <div class="v2-head-row">
+            <div style="min-width:0"><div class="d">${escHtml(title)}</div><div class="s">${escHtml(subtitle)}</div></div>
+            <button type="button" class="btn btn-outline btn-sm" style="flex-shrink:0;" onclick="exportTableToExcel(this, 'Qattous_SM_Scan')">${mt('exp')}</button>
           </div>
-          <div class="m-kpis">
-            <div class="m-kpi"><b>${rows.length}</b><span>${mt('skus')}</span></div>
-            <div class="m-kpi"><b>${totWh}</b><span>${mt('inwh')}</span></div>
-            <div class="m-kpi"><b>${totSt}</b><span>${mt('instores')}</span></div>
-          </div>
-        </div>`;
+          ${v2Totals(cells)}
+        </div>
+        ${(opts && rows.length > 1) ? buildSizeMatrix(rows, opts) : ''}`;
     }
 
     // Wrap an existing desktop block + its mobile twin. CSS decides which one is visible.
@@ -3545,8 +4228,20 @@
 
       // CASE 0: TO NUMBER SCAN (محتويات أمر النقل Transfer Order)
       if (data.scan_type === 'to_number') {
+        const ar = currentLang === 'ar';
+        const it0 = data.items[0] || {};
+        const toMobile = `
+          <div class="v2-box v2-item-head">
+            <div class="v2-head-row"><div><div class="d num">${escHtml(data.to_number)}</div>
+              <div class="s">${escHtml(it0.from_code || '')} ← ${escHtml(storeName(it0.to_code || ''))}</div></div>
+              <span class="v2-tag warn">${escHtml(it0.status || '')}</span></div>
+            ${v2Totals([{ v: data.lines_count, l: ar ? 'أسطر' : 'Lines' }, { v: data.total_qty, l: ar ? 'قطعة' : 'Pieces' }, { v: escHtml((it0.ship_date || '—').slice(5)), l: ar ? 'تاريخ الشحن' : 'Ship date' }])}
+          </div>
+          <div class="v2-sec"><div class="v2-sec-h"><h3>${ar ? 'الأصناف' : 'Items'}</h3><button type="button" class="btn btn-outline btn-sm" onclick="exportTableToExcel(this, 'Qattous_SM_TO_${escHtml(data.to_number)}')">${mt('exp')}</button></div>
+          <div class="v2-box v2-rows">${data.items.map(it => `<button type="button" class="v2-r v2-r-btn" onclick="executeLookup('${escHtml(it.barcode)}')"><span class="n">${escHtml(it.description || it.serial)}<small class="num">${escHtml(it.barcode)}${it.color_size ? ' · ' + escHtml(it.color_size) : ''}</small></span><b class="num">${it.qty}</b></button>`).join('')}</div></div>`;
         area.innerHTML = `
-          <div class="card">
+          <div class="m-only">${toMobile}</div>
+          <div class="card d-only-block">
             <div class="card-header">
               <div class="card-title">
                 <span>📄</span>
@@ -3621,18 +4316,13 @@
             </div>
             ${dualView(
           buildWarehousePerBinTableHtml(binRows),
-          binRows.map(r => `
-                <div class="rc has-wh">
-                  <div class="rc-top">
-                    <div style="min-width:0">
-                      <div class="rc-title">${r.description || r.serial}</div>
-                      <div class="rc-sub">${[r.brand, r.dept, r.art_no].filter(Boolean).join(' • ')}</div>
-                      <div class="rc-sub rc-code" style="color:#0c5489;cursor:pointer" onclick="executeLookup('${r.barcode}')">${r.barcode}</div>
-                    </div>
-                    <div class="rc-size">× ${r.wh_qty}</div>
-                  </div>
-                  <div class="rc-row"><span class="chip" style="cursor:pointer" onclick="executeLookup('${r.serial}')">👕 ${r.serial}</span></div>
-                </div>`).join('')
+          `<div class="v2-plate first static"><span class="code"><small>${currentLang === 'ar' ? 'رف مستودع W0001' : 'Warehouse bin W0001'}</small><span class="num">${escHtml(data.bin_code)}</span></span>
+             <span class="q"><b class="num">${data.total_qty}</b><small>${currentLang === 'ar' ? `قطعة · ${data.sku_count} صنف` : `pcs · ${data.sku_count} items`}</small></span></div>
+           <div class="v2-sec"><div class="v2-sec-h"><h3>${currentLang === 'ar' ? 'محتويات الرف' : 'Bin contents'}</h3><button type="button" class="btn btn-outline btn-sm" onclick="exportTableToExcel(this, 'Qattous_SM_Bin_${escHtml(data.bin_code)}')">${mt('exp')}</button></div>
+           <div class="v2-box v2-rows">${binRows.slice().sort((a, b) => Number(b.wh_qty || 0) - Number(a.wh_qty || 0)).map(r => {
+             const reg = cloudBundle && cloudBundle.reg_by_bc ? (cloudBundle.reg_by_bc[r.barcode] || []) : [];
+             return `<button type="button" class="v2-r v2-r-btn" onclick="executeLookup('${escHtml(r.barcode)}')"><span class="n">${escHtml(r.description || r.serial)}<small class="num">${escHtml(r.barcode)}${reg[1] ? ' · ' + escHtml(reg[1]) : ''}</small></span><b class="num">${r.wh_qty}</b></button>`;
+           }).join('')}</div></div>`
         )}
           </div>
         `;
@@ -3662,7 +4352,10 @@
             </div>
             ${dualView(
           buildWarehousePerBinTableHtml(perBinRows) + buildTransfersTabHtml(data.scan_type === 'item_all_barcodes' ? (alloc.item_transfers || []) : ((targetVars[0] && targetVars[0].transfers) || [])),
-          buildCardsList(targetVars.map(v => variantToAPRow(alloc, v)), { showWH: true, showStores: false, showEligible: false })
+          data.scan_type === 'item_all_barcodes'
+            ? buildMobileSummary(alloc.description || alloc.item_no, `${alloc.item_no} · ${alloc.section || ''}`, targetVars.map(v => variantToAPRow(alloc, v)), { showWH: true, showStores: false, showEligible: false }) +
+              buildCardsList(targetVars.map(v => variantToAPRow(alloc, v)), { showWH: true, showStores: false, showEligible: false })
+            : targetVars.map(v => buildBarcodeMobile(variantToAPRow(alloc, v), { showWH: true, showStores: false, showEligible: false })).join('')
         )}
           </div>
         `;
@@ -3680,7 +4373,7 @@
                 <span>كل باركودات الآيتم: <strong style="font-family:Roboto; color:var(--q-bronze-dark);">${alloc.item_no}</strong> (${rows.length} باركود)</span>
               </div>
               ${p.generate_reports ? `
-                <button class="btn btn-success btn-sm" onclick="window.location.href='/api/report?scope_type=item&scope_value=${encodeURIComponent(alloc.item_no)}&dist_mode=wh_to_stores&export=1'">
+                <button class="btn btn-success btn-sm" onclick="exportItemExcel(this, '${alloc.item_no}')">
                   📥 تحميل إكسل (${alloc.item_no})
                 </button>
               ` : ''}
@@ -3711,7 +4404,7 @@
           </div>
           ${dualView(
         buildCleanAPTableHtml(singleRow, showWH, showStores, showEligible, adminModeToggle, data.barcode_bins || []) + ((showStores && sv) ? buildTransfersTabHtml(sv.transfers || []) : ''),
-        buildCardsList(singleRow, { showWH, showStores, showEligible })
+        singleRow.map(r => buildBarcodeMobile(r, { showWH, showStores, showEligible })).join('')
       )}
         </div>
       `;
@@ -3864,11 +4557,39 @@
       }
     }
 
+    // Local PC server builds the formatted .xlsx; we fetch it so it can be shared or saved like any export.
+    async function exportServerReport(scopeType, scopeValue, distMode) {
+      const url = `/api/report?scope_type=${encodeURIComponent(scopeType)}&scope_value=${encodeURIComponent(scopeValue)}&dist_mode=${encodeURIComponent(distMode)}&export=1`;
+      try {
+        showToast(currentLang === 'ar' ? 'جاري تجهيز ملف الإكسل...' : 'Preparing Excel file...');
+        const res = await fetch(url);
+        if (!res.ok) {
+          let msg = '';
+          try { msg = (await res.json()).error; } catch (_) { }
+          showToast(msg || (currentLang === 'ar' ? 'تعذر تجهيز الملف' : 'Could not build the file'), true);
+          return;
+        }
+        const cd = res.headers.get('Content-Disposition') || '';
+        const m = cd.match(/filename="?([^";]+)"?/);
+        const filename = m ? m[1] : `Qattous_Report_${scopeValue || scopeType}.xlsx`;
+        const buf = new Uint8Array(await res.arrayBuffer());
+        let bin = '';
+        for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+        offerExport(btoa(bin), filename, XLSX_MIME);
+      } catch (e) {
+        showToast(currentLang === 'ar' ? 'تعذر الاتصال بالسيرفر' : 'Could not reach the server', true);
+      }
+    }
+
+    function exportItemExcel(btn, itemNo) {
+      if (isStaticCloudHost) exportTableToExcel(btn, 'Qattous_SM_' + itemNo);
+      else exportServerReport('item', itemNo, 'wh_to_stores');
+    }
+
     function exportReportExcel() {
       const { scopeType, scopeValue, distMode } = getReportQueryParams();
       if (!isStaticCloudHost) {
-        const url = `/api/report?scope_type=${encodeURIComponent(scopeType)}&scope_value=${encodeURIComponent(scopeValue)}&dist_mode=${encodeURIComponent(distMode)}&export=1`;
-        window.location.href = url;
+        exportServerReport(scopeType, scopeValue, distMode);
         return;
       }
       // Client-side Excel export on 4G / GitHub Pages using SheetJS
@@ -3900,7 +4621,7 @@
       currentReportSubTab = tab;
       ['summary', 'dist', 'transfers', 'plan'].forEach(t => {
         const btn = document.getElementById('repSubBtn_' + t);
-        btn.className = 'btn btn-sm ' + (t === tab ? 'btn-bronze' : 'btn-outline');
+        if (btn) btn.className = 'btn btn-sm ' + (t === tab ? 'btn-bronze' : 'btn-outline');
       });
       renderReportTables();
     }
@@ -4528,23 +5249,34 @@
     }
 
     // Initialize on load (Production Mode: Require real login & no sample auto-load)
+    // Sign-in comes first; the 6 MB data bundle only starts downloading once someone is signed in.
     window.addEventListener('DOMContentLoaded', async () => {
-      await refreshRemoteCloudData(false);
+      const pdaCb = document.getElementById('pdaAutoFocusToggle');
+      const savedPda = localStorage.getItem('qattous_pda_mode');
+      if (pdaCb) {
+        if (savedPda !== null) pdaCb.checked = savedPda === '1';
+        pdaCb.addEventListener('change', () => {
+          localStorage.setItem('qattous_pda_mode', pdaCb.checked ? '1' : '0');
+          scanInput.setAttribute('inputmode', pdaCb.checked ? 'none' : 'text');
+        });
+        scanInput.setAttribute('inputmode', pdaCb.checked ? 'none' : 'text');
+      }
+      window.addEventListener('online', updateSyncStatus);
+      window.addEventListener('offline', updateSyncStatus);
+
       const savedRaw = localStorage.getItem('qattous_session_user');
       if (savedRaw) {
+        document.getElementById('loginModal').classList.add('booting');
         try {
-          const saved = JSON.parse(savedRaw);
-          const res = await authenticateUser(saved.username, saved.password);
+          const res = await restoreSession(JSON.parse(savedRaw));
           if (res.ok) {
             currentUser = res.user;
-            applyUserPermissionsUI();
-            focusScanForLaser(false);
+            onSignedIn();
             return;
           }
         } catch (e) { }
         localStorage.removeItem('qattous_session_user');
       }
-      // No valid session -> Show clean Qattous Group Login Gate
       openLoginModal();
     });
   </script>
