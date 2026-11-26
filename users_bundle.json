@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26 14:01:22",
+  "updated_at": "2026-11-26 14:03:13",
   "users": [
     {
       "username": "admin",
@@ -122,7 +122,7 @@
     },
     {
       "username": "abuarja",
-      "pw_hash": "s1:7b0c2192f9eccb0b430140de22beb4d42c32b77afe34dd4b15309361c972e2a8",
+      "pw_hash": "s1:27e5448f883c277aa6b5ad994adad941c4a2700e2269940f17af89ef14b599bf",
       "display_name": "invmanager",
       "role": "admin",
       "active": true,
@@ -135,8 +135,7 @@
         "generate_reports": true,
         "manage_data": true,
         "manage_users": true
-      },
-      "must_change": true
+      }
     }
   ]
 }
