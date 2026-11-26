@@ -2349,6 +2349,9 @@
       <span><span data-mi="sh_ae">بحث تلقائي بعد المسح</span><small class="row-sub" data-mi="sh_ae_sub">بدون ما تضغط بحث</small></span>
       <span class="sw" id="swAe" role="switch"></span>
     </div>
+    <div class="row" style="cursor:pointer;" onclick="closeSheet(); changeOwnPassword();">
+      <span>🔑 <span data-mi="sh_pw">تغيير كلمة المرور</span></span><span>›</span>
+    </div>
     <div class="row" style="cursor:pointer;" onclick="toggleLanguage(); closeSheet();">
       <span>🌐 <span data-mi="sh_lang">اللغة: عربي / English</span></span><span>›</span>
     </div>
@@ -4054,7 +4057,7 @@
         sh_sync: 'آخر تحديث للبيانات', sh_refresh: 'تحديث الداتا الآن', sh_update: 'فحص تحديث التطبيق', sh_lang: 'اللغة: عربي / English', sh_login: 'تسجيل دخول بحساب آخر', sh_quick: 'تبديل سريع للحساب (للتجربة)', sh_close: 'إغلاق',
         wh: 'المستودع', transit: 'بالطريق', stores: 'المحلات', bins: 'الأرفف (Bin)', nobin: 'غير موجود بأي رف', send: 'أرسل إلى', hold: 'يبقى بالمستودع', none: 'لا إجراء',
         barcodes: 'باركود', total: 'الإجمالي', inwh: 'في المستودع', instores: 'في المحلات', pcs: 'قطعة', moreitems: 'كل باركودات الآيتم', exp: 'تصدير إكسل', items: 'أصناف', skus: 'باركود', to: 'أمر نقل',
-        sh_logout: 'تسجيل الخروج', sh_pda: 'مسح بالليزر (PDA)', sh_pda_sub: 'يخفي الكيبورد وقت المسح', sh_ae: 'بحث تلقائي بعد المسح', sh_ae_sub: 'بدون ما تضغط بحث',
+        sh_pw: 'تغيير كلمة المرور', sh_logout: 'تسجيل الخروج', sh_pda: 'مسح بالليزر (PDA)', sh_pda_sub: 'يخفي الكيبورد وقت المسح', sh_ae: 'بحث تلقائي بعد المسح', sh_ae_sub: 'بدون ما تضغط بحث',
         ex_title: 'ملف الإكسل جاهز', ex_share: 'مشاركة', ex_save: 'حفظ على الجهاز', ex_save_sub: 'في مجلد التنزيلات'
       },
       en: {
@@ -4063,7 +4066,7 @@
         sh_sync: 'Data last updated', sh_refresh: 'Refresh data now', sh_update: 'Check App Update', sh_lang: 'Language: English / عربي', sh_login: 'Sign in as another user', sh_quick: 'Quick account switch (testing)', sh_close: 'Close',
         wh: 'Warehouse', transit: 'In transit', stores: 'Stores', bins: 'Bins', nobin: 'Not in any bin', send: 'Send to', hold: 'Keep in warehouse', none: 'No action',
         barcodes: 'barcodes', total: 'Total', inwh: 'In warehouse', instores: 'In stores', pcs: 'pcs', moreitems: 'All barcodes of this item', exp: 'Export Excel', items: 'items', skus: 'barcodes', to: 'Transfer order',
-        sh_logout: 'Sign out', sh_pda: 'Laser scanning (PDA)', sh_pda_sub: 'Hides the keyboard while scanning', sh_ae: 'Search right after a scan', sh_ae_sub: 'No need to tap Search',
+        sh_pw: 'Change password', sh_logout: 'Sign out', sh_pda: 'Laser scanning (PDA)', sh_pda_sub: 'Hides the keyboard while scanning', sh_ae: 'Search right after a scan', sh_ae_sub: 'No need to tap Search',
         ex_title: 'Excel file ready', ex_share: 'Share', ex_save: 'Save to device', ex_save_sub: 'In the Downloads folder'
       }
     };
@@ -5369,42 +5372,82 @@
       }
     }
 
-    // ==================== CLOUD UPDATING (any device) ====================
-    // Sheets and users live in the private repo qattous-wh-data. Each upload/edit is a commit there;
-    // a GitHub Actions job rebuilds data_bundle.json + users_bundle.json and publishes them to this app.
-    // The access key is typed once per device by an admin and stays in this device's storage only.
-    const DATA_REPO = 'ahmadalfasfous89-hue/qattous-wh-data';
-    const GH_API = 'https://api.github.com';
-    const TOKEN_KEY = 'qattous_gh_token';
+    // ==================== CLOUD UPDATING (any device, by account) ====================
+    // Sheets and users live in the private repo qattous-wh-data. Updates go through the gateway
+    // (Cloudflare Worker, cloud_pipeline/worker.js) which holds the GitHub key, checks the signed-in
+    // account's password + permission, then commits. A GitHub Actions build publishes to every device.
+    // No device stores a key; the password is asked once per session and kept in memory only.
+    const GATEWAY_URL = (localStorage.getItem('qattous_gateway_url') || 'https://qattous-sm.ahmadalfasfous89.workers.dev').replace(/\/+$/, '');
+    const MIN_UPDATE_PASSWORD = 10;
+    try { localStorage.removeItem('qattous_gh_token'); } catch (_) { } // device keys from the previous version are no longer used
+    let gatewayPass = null; // memory only
 
-    const getCloudToken = () => { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (_) { return ''; } };
-    const cloudPipelineOn = () => !!getCloudToken();
+    const gatewayConfigured = () => !/REPLACE-ME/.test(GATEWAY_URL);
+    const cloudPipelineOn = () => gatewayConfigured();
 
-    async function gh(path, opts = {}) {
-      const res = await fetch(GH_API + path, {
+    async function gw(path, opts = {}) {
+      const res = await fetch(GATEWAY_URL + path, {
         ...opts,
         headers: {
-          'Authorization': 'Bearer ' + getCloudToken(),
-          'Accept': 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-          ...(opts.body ? { 'Content-Type': 'application/json' } : {}),
+          'X-QSM-User': encodeURIComponent(currentUser.username || ''),
+          'X-QSM-Pass': encodeURIComponent(gatewayPass || ''),
+          ...(opts.json ? { 'Content-Type': 'application/json' } : {}),
           ...(opts.headers || {})
         },
+        body: opts.json ? JSON.stringify(opts.json) : opts.body,
         cache: 'no-store'
-      });
-      if (!res.ok) {
-        let msg = '';
-        try { msg = (await res.json()).message || ''; } catch (_) { }
-        const err = new Error(res.status === 401 ? 'مفتاح الربط غير صالح أو منتهي. أدخل مفتاح جديد.'
-          : res.status === 403 || res.status === 404 ? 'مفتاح الربط ما عنده صلاحية على مستودع البيانات.' : (msg || ('GitHub ' + res.status)));
-        err.status = res.status;
-        throw err;
+      }).catch(() => { throw Object.assign(new Error(currentLang === 'ar' ? 'تعذر الاتصال بسيرفر التحديث. تأكد من الإنترنت.' : 'Could not reach the update server. Check your connection.'), { status: 0 }); });
+      let data = {};
+      try { data = await res.json(); } catch (_) { }
+      if (!res.ok || data.ok === false) {
+        if (res.status === 401) gatewayPass = null;
+        throw Object.assign(new Error(data.error || ('Error ' + res.status)), { status: res.status });
       }
-      return res.status === 204 ? null : res.json();
+      return data;
     }
 
-    const b64EncodeUtf8 = s => btoa(unescape(encodeURIComponent(s)));
-    const b64DecodeUtf8 = s => decodeURIComponent(escape(atob(String(s).replace(/\s/g, ''))));
+    // Ask for the signed-in account's password once per session (confirms it's really them)
+    function askPassword(title, hint) {
+      return new Promise(resolve => {
+        const ar = currentLang === 'ar';
+        const wrap = document.createElement('div');
+        wrap.className = 'modal-backdrop open';
+        wrap.style.zIndex = 3000;
+        wrap.innerHTML = `<div class="modal-card" style="max-width:380px">
+          <h3 style="font-weight:600;margin-bottom:4px">${escHtml(title)}</h3>
+          <p style="font-size:.84rem;color:var(--v2-muted);margin-bottom:12px;line-height:1.6">${hint}</p>
+          <div class="pw-wrap"><input type="password" class="form-control" id="gwPwInput" autocomplete="current-password" placeholder="${ar ? 'كلمة المرور' : 'Password'}" /></div>
+          <div class="cc-msg" id="gwPwMsg"></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+            <button type="button" class="btn btn-outline" data-x="0">${ar ? 'إلغاء' : 'Cancel'}</button>
+            <button type="button" class="btn btn-bronze" data-x="1">${ar ? 'متابعة' : 'Continue'}</button>
+          </div></div>`;
+        document.body.appendChild(wrap);
+        const inp = wrap.querySelector('#gwPwInput');
+        const done = v => { wrap.remove(); resolve(v); };
+        wrap.addEventListener('click', e => { const x = e.target.getAttribute('data-x'); if (x === '0') done(null); if (x === '1') done(inp.value); });
+        inp.addEventListener('keydown', e => { if (e.key === 'Enter') done(inp.value); if (e.key === 'Escape') done(null); });
+        setTimeout(() => inp.focus(), 50);
+      });
+    }
+
+    // Make sure we hold a verified password for this session. Returns /me info or null if cancelled.
+    async function ensureGatewayAuth() {
+      const ar = currentLang === 'ar';
+      if (!gatewayConfigured()) throw new Error(ar ? 'سيرفر التحديث لسا ما انضبط.' : 'The update server is not set up yet.');
+      for (let attempt = 0; attempt < 3; attempt++) {
+        if (!gatewayPass) {
+          const pw = await askPassword(ar ? 'أكّد كلمة المرور' : 'Confirm your password',
+            ar ? `للتحديث على كل الأجهزة، اكتب كلمة مرور حساب <b>${escHtml(currentUser.username)}</b>. بتنطلب مرة وحدة لحد ما تسكّر التطبيق.` : `To publish to every device, enter the password for <b>${escHtml(currentUser.username)}</b>. Asked once until you close the app.`);
+          if (pw == null) return null;
+          gatewayPass = pw;
+        }
+        try { return await gw('/me'); }
+        catch (e) { if (e.status !== 401) throw e; showToast(e.message, true); }
+      }
+      return null;
+    }
+
     const fileToBase64 = f => new Promise((ok, bad) => {
       const r = new FileReader();
       r.onload = () => ok(String(r.result).split(',')[1] || '');
@@ -5412,48 +5455,11 @@
       r.readAsDataURL(f);
     });
 
-    // Connection card shown at the top of the Data and Users tabs
+    // Info card at the top of the Data and Users tabs
     function cloudConnectHtml() {
       const ar = currentLang === 'ar';
-      if (cloudPipelineOn()) {
-        return `<div class="cc-card on"><span class="sync-dot ok"></span><span class="grow">${ar ? 'التحديث السحابي شغّال على هذا الجهاز. أي تعديل بيوصل لكل الأجهزة خلال دقيقة أو دقيقتين.' : 'Cloud updating is on for this device. Changes reach every device within 1–2 minutes.'}</span>
-          <button type="button" class="btn btn-outline btn-sm" onclick="disconnectCloud()">${ar ? 'فصل' : 'Disconnect'}</button></div>`;
-      }
-      return `<div class="cc-card">
-        <div class="grow">
-          <b>${ar ? 'اربط هذا الجهاز بالتحديث السحابي' : 'Connect this device to cloud updating'}</b>
-          <p>${ar ? 'بعد الربط بتقدر ترفع الشيتات وتعدّل اليوزرات من هالجهاز، والتحديث بينتشر لكل الأجهزة. الصق مفتاح الربط (يبدأ بـ github_pat_) مرة وحدة، وبيضل محفوظ على هالجهاز بس.' : 'Once connected, sheet uploads and user edits from this device reach every device. Paste the access key (starts with github_pat_) once; it stays on this device only.'}</p>
-          <div class="cc-row">
-            <input type="password" id="ccTokenInput" class="form-control" placeholder="github_pat_..." autocomplete="off" spellcheck="false" />
-            <button type="button" class="btn btn-bronze" onclick="connectCloud()">${ar ? 'ربط' : 'Connect'}</button>
-          </div>
-          <div id="ccMsg" class="cc-msg"></div>
-        </div></div>`;
-    }
-
-    async function connectCloud() {
-      const input = document.getElementById('ccTokenInput');
-      const msg = document.getElementById('ccMsg');
-      const val = (input.value || '').trim();
-      if (!val) { msg.textContent = 'الصق مفتاح الربط أولاً'; return; }
-      localStorage.setItem(TOKEN_KEY, val);
-      msg.textContent = 'جاري التحقق...';
-      try {
-        const repo = await gh(`/repos/${DATA_REPO}`);
-        if (!repo.permissions || !repo.permissions.push) throw new Error('المفتاح بيقرأ بس، لازم صلاحية Contents: Read and write.');
-        input.value = '';
-        showToast('تم ربط الجهاز بالتحديث السحابي');
-        refreshCloudTabs();
-      } catch (e) {
-        localStorage.removeItem(TOKEN_KEY);
-        msg.textContent = e.message;
-      }
-    }
-
-    function disconnectCloud() {
-      if (!confirm('فصل هذا الجهاز عن التحديث السحابي؟ بتحتاج تلصق المفتاح من جديد لترجع تحدّث منه.')) return;
-      localStorage.removeItem(TOKEN_KEY);
-      refreshCloudTabs();
+      if (!gatewayConfigured()) return `<div class="cc-card"><span class="grow">${ar ? 'سيرفر التحديث لسا ما انضبط، فالتحديث من التطبيق موقف مؤقتاً.' : 'The update server is not set up yet, so updating from the app is paused.'}</span></div>`;
+      return `<div class="cc-card on"><span class="sync-dot ok"></span><span class="grow">${ar ? 'أي تحديث من هون بيوصل لكل الأجهزة خلال دقيقة أو دقيقتين. بيتطلب منك تأكيد كلمة المرور مرة وحدة.' : 'Updates from here reach every device within 1–2 minutes. You confirm your password once.'}</span></div>`;
     }
 
     function refreshCloudTabs() {
@@ -5468,15 +5474,47 @@
       let run = null;
       while (Date.now() - t0 < 8 * 60 * 1000) {
         await new Promise(r => setTimeout(r, run ? 6000 : 4000));
-        try {
-          const data = await gh(`/repos/${DATA_REPO}/actions/runs?head_sha=${commitSha}&per_page=1`);
-          run = (data.workflow_runs || [])[0] || null;
-        } catch (_) { }
+        try { run = (await gw('/run?sha=' + commitSha)).run; } catch (_) { }
         if (!run) { onStep('queued'); continue; }
         if (run.status !== 'completed') { onStep(run.status === 'queued' ? 'queued' : 'running'); continue; }
-        return run.conclusion === 'success' ? { ok: true, url: run.html_url } : { ok: false, url: run.html_url };
+        return run.conclusion === 'success' ? { ok: true, url: run.url } : { ok: false, url: run.url };
       }
       return { ok: false, timeout: true };
+    }
+
+    // Weak password on an update account: explain and offer to change it right away
+    async function handleWeakPassword() {
+      const ar = currentLang === 'ar';
+      if (!confirm(ar ? `كلمة مرور حسابك قصيرة. الحسابات اللي بتحدّث لازم كلمة مرورها ${MIN_UPDATE_PASSWORD} خانات أو أكثر.\n\nبدك تغيّرها هلأ؟` : `Your password is too short. Accounts that update need ${MIN_UPDATE_PASSWORD}+ characters.\n\nChange it now?`)) return false;
+      return changeOwnPassword();
+    }
+
+    async function changeOwnPassword() {
+      const ar = currentLang === 'ar';
+      if (!gatewayConfigured()) { alert(ar ? 'سيرفر التحديث لسا ما انضبط.' : 'The update server is not set up yet.'); return false; }
+      if (!gatewayPass) {
+        const cur = await askPassword(ar ? 'كلمة المرور الحالية' : 'Current password', ar ? 'اكتب كلمة المرور الحالية لحسابك.' : 'Enter your current password.');
+        if (cur == null) return false;
+        gatewayPass = cur;
+      }
+      const p = (currentUser.permissions || {});
+      const min = (p.manage_data || p.manage_users) ? MIN_UPDATE_PASSWORD : 4;
+      const np = await askPassword(ar ? 'كلمة المرور الجديدة' : 'New password', ar ? `${min} خانات أو أكثر. استعمل أحرف وأرقام.` : `${min}+ characters. Use letters and numbers.`);
+      if (np == null) return false;
+      if (np.length < min) { alert(ar ? `كلمة المرور لازم ${min} خانات أو أكثر` : `Password must be ${min}+ characters`); return false; }
+      const np2 = await askPassword(ar ? 'أعد كتابة كلمة المرور الجديدة' : 'Repeat the new password', ar ? 'للتأكد إنها مكتوبة صح.' : 'To make sure it is typed right.');
+      if (np2 !== np) { alert(ar ? 'كلمتين المرور مش متطابقات' : 'The passwords do not match'); return false; }
+      try {
+        await gw('/users/save', { method: 'POST', json: { username: currentUser.username, password: np, display_name: currentUser.display_name, role: currentUser.role, active: true, permissions: currentUser.permissions } });
+        gatewayPass = np;
+        await saveSession(currentUser.username, np);
+        showToast(ar ? 'تم تغيير كلمة المرور. بتشتغل على كل الأجهزة خلال دقيقة أو دقيقتين.' : 'Password changed. It works on every device within 1–2 minutes.');
+        return true;
+      } catch (e) {
+        if (e.status === 401) gatewayPass = null;
+        alert(e.message);
+        return false;
+      }
     }
 
     function cloudProgressHtml(step, files) {
@@ -5513,26 +5551,21 @@
         picked.push({ f, key, name: f.name.replace(/[\\/]/g, '_') });
       }
       const label = picked.map(p => escHtml(p.name)).join('<br>');
+      let me;
+      try { me = await ensureGatewayAuth(); }
+      catch (e) { statusEl.style.color = 'var(--q-danger)'; statusEl.textContent = e.message; return; }
+      if (!me) { statusEl.textContent = ''; return; }
+      if (!me.strong) { statusEl.textContent = ''; if (await handleWeakPassword()) uploadSheetsToCloud(fileList); return; }
       statusEl.style.color = 'var(--q-bronze-dark)';
       statusEl.innerHTML = cloudProgressHtml('upload', label);
       try {
-        const ref = await gh(`/repos/${DATA_REPO}/git/ref/heads/main`);
-        const baseCommit = await gh(`/repos/${DATA_REPO}/git/commits/${ref.object.sha}`);
-        const tree = await gh(`/repos/${DATA_REPO}/git/trees/${baseCommit.tree.sha}?recursive=1`);
-        const keys = picked.map(p => p.key);
-        // Replace the previous file of the same type so the build always reads the newest one
-        const removals = (tree.tree || []).filter(e => e.type === 'blob' && e.path.startsWith('sheets/')
-          && keys.includes(detectSheetKeyFromFile(e.path.slice(7))) && !picked.some(p => 'sheets/' + p.name === e.path))
-          .map(e => ({ path: e.path, mode: '100644', type: 'blob', sha: null }));
-        const adds = [];
+        // Each file goes up on its own (base64 text, streamed by the gateway into the private repo)
+        const uploaded = [];
         for (const p of picked) {
-          const blob = await gh(`/repos/${DATA_REPO}/git/blobs`, { method: 'POST', body: JSON.stringify({ content: await fileToBase64(p.f), encoding: 'base64' }) });
-          adds.push({ path: 'sheets/' + p.name, mode: '100644', type: 'blob', sha: blob.sha });
+          const res = await gw('/blob', { method: 'POST', body: await fileToBase64(p.f), headers: { 'Content-Type': 'text/plain' } });
+          uploaded.push({ name: p.name, key: p.key, sha: res.sha });
         }
-        const newTree = await gh(`/repos/${DATA_REPO}/git/trees`, { method: 'POST', body: JSON.stringify({ base_tree: baseCommit.tree.sha, tree: [...adds, ...removals] }) });
-        const who = currentUser.display_name || currentUser.username;
-        const commit = await gh(`/repos/${DATA_REPO}/git/commits`, { method: 'POST', body: JSON.stringify({ message: `Sheets update by ${who}: ${picked.map(p => p.name).join(', ')}`, tree: newTree.sha, parents: [ref.object.sha] }) });
-        await gh(`/repos/${DATA_REPO}/git/refs/heads/main`, { method: 'PATCH', body: JSON.stringify({ sha: commit.sha }) });
+        const commit = { sha: (await gw('/commit-sheets', { method: 'POST', json: { files: uploaded } })).commit };
         statusEl.innerHTML = cloudProgressHtml('queued', label);
         const result = await waitForCloudBuild(commit.sha, st => { statusEl.innerHTML = cloudProgressHtml(st, label); });
         if (!result.ok) {
@@ -5551,27 +5584,25 @@
       } catch (e) {
         statusEl.style.color = 'var(--q-danger)';
         statusEl.textContent = (ar ? 'ما انرفعت الملفات: ' : 'Upload failed: ') + e.message;
-        if (e.status === 401) { localStorage.removeItem(TOKEN_KEY); refreshCloudTabs(); }
       }
     }
 
-    // ---- Users in the cloud: users.json in the private repo (password hashes only) ----
-    let cloudUsersDoc = null; // { users, sha }
-
-    async function fetchCloudUsersDoc() {
-      const res = await gh(`/repos/${DATA_REPO}/contents/users.json?ref=main`);
-      cloudUsersDoc = { users: JSON.parse(b64DecodeUtf8(res.content)).users || [], sha: res.sha };
-      return cloudUsersDoc;
+    // ---- Users in the cloud: users.json in the private repo (password hashes only), via the gateway ----
+    async function cloudUserWrite(path, payload) {
+      const me = await ensureGatewayAuth();
+      if (!me) return false;
+      const isSelfPw = payload.username && payload.username.toLowerCase() === currentUser.username.toLowerCase() && payload.password;
+      if (!me.strong && !(isSelfPw && payload.password.length >= MIN_UPDATE_PASSWORD)) { await handleWeakPassword(); return false; }
+      const res = await gw(path, { method: 'POST', json: payload });
+      onCloudUsersCommitted(res.commit);
+      return true;
     }
 
-    async function writeCloudUsersDoc(users, message) {
-      const body = { message, content: b64EncodeUtf8(JSON.stringify({ users }, null, 2) + '\n'), sha: cloudUsersDoc.sha, branch: 'main' };
-      const res = await gh(`/repos/${DATA_REPO}/contents/users.json`, { method: 'PUT', body: JSON.stringify(body) });
-      cloudUsersDoc = { users, sha: res.content.sha };
-      // Publish in the background; the list updates locally right away
+    function onCloudUsersCommitted(commitSha) {
+      // Publish in the background; the list updates right away
       const ar = currentLang === 'ar';
       showToast(ar ? 'تم الحفظ. التعديل بيوصل لكل الأجهزة خلال دقيقة أو دقيقتين.' : 'Saved. Every device gets the change within 1–2 minutes.');
-      waitForCloudBuild(res.commit.sha, () => { }).then(r => {
+      waitForCloudBuild(commitSha, () => { }).then(r => {
         if (r.ok) { refreshCloudUsers().then(syncCurrentUserFromCloud); showToast(ar ? 'تم نشر تعديل اليوزرات لكل الأجهزة' : 'User changes published to every device'); }
         else showToast(ar ? 'تعذر نشر تعديل اليوزرات. افتح تبويب اليوزرات وحاول مرة ثانية.' : 'Could not publish user changes. Open Users and try again.', true);
       });
@@ -5584,15 +5615,8 @@
       try {
         let usersArr = null;
         const cloudOn = cloudPipelineOn();
-        if (cloudOn) {
-          try { usersArr = (await fetchCloudUsersDoc()).users; }
-          catch (e) {
-            container.innerHTML = cloudConnectHtml() + `<div class="v2-note warn" style="margin-top:10px">${escHtml(e.message)}</div>`;
-            if (e.status === 401) { localStorage.removeItem(TOKEN_KEY); container.innerHTML = cloudConnectHtml(); }
-            return;
-          }
-        }
-        if (!usersArr && !isStaticCloudHost) {
+        // The list itself comes from the published users file (no password needed just to look)
+        if (!usersArr && !cloudOn && !isStaticCloudHost) {
           try {
             const res = await fetch('/api/users');
             if (res.ok) {
@@ -5604,11 +5628,20 @@
           } catch (e) { isStaticCloudHost = true; }
         }
         if (!usersArr) {
-          if (!cloudUsers) await refreshRemoteCloudData(false);
-          usersArr = cloudUsers || [];
+          await refreshCloudUsers();
+          usersArr = (cloudUsers || []).map(({ password, pw_hash, ...u }) => u);
         }
         allUsersCache = usersArr;
-        const canEdit = cloudOn;
+        renderUsersTable(usersArr);
+      } catch (e) {
+        container.innerHTML = `<div style="padding:16px;">خطأ: ${e.message}</div>`;
+      }
+    }
+
+    function renderUsersTable(usersArr) {
+      const container = document.getElementById('usersListContainer');
+      const canEdit = cloudPipelineOn();
+      {
         container.innerHTML = `
           ${cloudConnectHtml()}
           <div class="table-wrap${canEdit ? '' : ' users-readonly'}">
@@ -5626,8 +5659,8 @@
               <tbody>
                 ${usersArr.map(u => `
                   <tr>
-                    <td style="font-family:Roboto; font-weight:800;">${u.username}</td>
-                    <td><strong>${u.display_name}</strong></td>
+                    <td style="font-family:Roboto; font-weight:800;">${escHtml(u.username)}</td>
+                    <td><strong>${escHtml(u.display_name)}</strong></td>
                     <td><span class="role-badge ${u.role}">${u.role.toUpperCase()}</span></td>
                     <td>${u.active ? '<span class="tag tag-green">فعّال</span>' : '<span class="tag tag-red">موقوف</span>'}</td>
                     <td>
@@ -5647,8 +5680,6 @@
             </table>
           </div>
         `;
-      } catch (e) {
-        container.innerHTML = `<div style="padding:16px;">خطأ: ${e.message}</div>`;
       }
     }
 
@@ -5715,21 +5746,28 @@
         return;
       }
 
+      const privileged = permissions.manage_data || permissions.manage_users;
+      if (password && password.length < (privileged ? MIN_UPDATE_PASSWORD : 4)) {
+        alert(privileged
+          ? (currentLang === 'ar' ? `الحساب اللي بيقدر يحدّث البيانات أو اليوزرات لازم كلمة مروره ${MIN_UPDATE_PASSWORD} خانات أو أكثر.` : `Accounts that can update need a ${MIN_UPDATE_PASSWORD}+ character password.`)
+          : (currentLang === 'ar' ? 'كلمة المرور لازم 4 خانات أو أكثر' : 'Password must be 4+ characters'));
+        return;
+      }
+
       if (cloudPipelineOn()) {
         try {
-          await fetchCloudUsersDoc();
-          const users = cloudUsersDoc.users.slice();
-          const i = users.findIndex(x => x.username.toLowerCase() === uname);
-          const prev = i >= 0 ? users[i] : {};
-          const rec = {
-            username: uname, display_name: display_name || uname, role, active, permissions,
-            pw_hash: password ? await hashSecret(password) : prev.pw_hash
-          };
-          if (i >= 0) users[i] = rec; else users.push(rec);
-          await writeCloudUsersDoc(users, `${isNew ? 'Add' : 'Update'} user ${uname} by ${currentUser.username}`);
+          const ok = await cloudUserWrite('/users/save', { username: uname, display_name: display_name || uname, role, active, permissions, password });
+          if (!ok) return;
+          const rec = { username: uname, display_name: display_name || uname, role, active, permissions };
+          const i = allUsersCache.findIndex(x => x.username.toLowerCase() === uname);
+          if (i >= 0) allUsersCache[i] = rec; else allUsersCache.push(rec);
           closeUserEditorModal();
-          await loadUsersList();
-          if (currentUser.username === uname) { Object.assign(currentUser, { permissions, role, display_name: rec.display_name }); applyUserPermissionsUI(); }
+          renderUsersTable(allUsersCache);
+          if (currentUser.username === uname) {
+            Object.assign(currentUser, { permissions, role, display_name: rec.display_name });
+            if (password) { gatewayPass = password; await saveSession(uname, password); }
+            applyUserPermissionsUI();
+          }
         } catch (e) { alert(e.message); }
         return;
       }
@@ -5763,9 +5801,9 @@
       if (cloudPipelineOn()) {
         try {
           if (username.toLowerCase() === 'admin') throw new Error('لا يمكن حذف حساب الأدمن الرئيسي');
-          await fetchCloudUsersDoc();
-          await writeCloudUsersDoc(cloudUsersDoc.users.filter(x => x.username.toLowerCase() !== username.toLowerCase()), `Delete user ${username} by ${currentUser.username}`);
-          loadUsersList();
+          if (!(await cloudUserWrite('/users/delete', { username }))) return;
+          allUsersCache = allUsersCache.filter(x => x.username.toLowerCase() !== username.toLowerCase());
+          renderUsersTable(allUsersCache);
         } catch (e) { alert(e.message); }
         return;
       }
