@@ -3183,6 +3183,8 @@
 
     function logoutAccount() {
       localStorage.removeItem('qattous_session_user');
+      try { localStorage.removeItem('qattous_gw_session'); } catch (_) { }
+      if (typeof gatewayPass !== 'undefined') gatewayPass = null;
       currentUser = { username: '', display_name: '', role: 'user', active: false, permissions: {} };
       lastScanResponse = null;
       currentReportData = null;
@@ -3208,6 +3210,7 @@
           gatewayPass = p; // memory only: lets updates and password changes skip a second prompt
           await saveSession(u, p);
           onSignedIn();
+          primeGatewaySession();
         } else {
           if (errEl) errEl.textContent = res.error;
         }
@@ -5393,12 +5396,23 @@
     const gatewayConfigured = () => !/REPLACE-ME/.test(GATEWAY_URL);
     const cloudPipelineOn = () => gatewayConfigured();
 
+    // 30-day update session from the gateway (signed, no password inside); ends on password change, reset or sign-out
+    const GW_SESSION_KEY = 'qattous_gw_session';
+    function getGwSession() {
+      try { const s = JSON.parse(localStorage.getItem(GW_SESSION_KEY) || 'null'); return s && s.u === (currentUser.username || '').toLowerCase() ? s.t : ''; } catch (_) { return ''; }
+    }
+    function setGwSession(tok) {
+      try { if (tok) localStorage.setItem(GW_SESSION_KEY, JSON.stringify({ u: (currentUser.username || '').toLowerCase(), t: tok })); else localStorage.removeItem(GW_SESSION_KEY); } catch (_) { }
+    }
+
     async function gw(path, opts = {}) {
+      const sessionTok = getGwSession();
       const res = await fetch(GATEWAY_URL + path, {
         ...opts,
         headers: {
           'X-QSM-User': encodeURIComponent(currentUser.username || ''),
-          'X-QSM-Pass': encodeURIComponent(gatewayPass || ''),
+          ...(gatewayPass ? { 'X-QSM-Pass': encodeURIComponent(gatewayPass) } : {}),
+          ...(sessionTok ? { 'X-QSM-Session': sessionTok } : {}),
           ...(opts.json ? { 'Content-Type': 'application/json' } : {}),
           ...(opts.headers || {})
         },
@@ -5408,10 +5422,21 @@
       let data = {};
       try { data = await res.json(); } catch (_) { }
       if (!res.ok || data.ok === false) {
-        if (res.status === 401) gatewayPass = null;
-        throw Object.assign(new Error(data.error || ('Error ' + res.status)), { status: res.status });
+        if (res.status === 401) {
+          if (data.session_expired) setGwSession('');
+          else if (!data.need_password) gatewayPass = null;
+        }
+        throw Object.assign(new Error(data.error || ('Error ' + res.status)), { status: res.status, needPassword: !!data.need_password });
       }
+      if (data.session) setGwSession(data.session);
       return data;
+    }
+
+    // After sign-in: get the update session quietly, so uploads never ask for the password
+    function primeGatewaySession() {
+      const p = currentUser.permissions || {};
+      if (!gatewayConfigured() || !gatewayPass || !(p.manage_data || p.manage_users)) return;
+      gw('/me').catch(() => { });
     }
 
     // Ask for the signed-in account's password once per session (confirms it's really them)
@@ -5443,10 +5468,14 @@
     async function ensureGatewayAuth() {
       const ar = currentLang === 'ar';
       if (!gatewayConfigured()) throw new Error(ar ? 'سيرفر التحديث لسا ما انضبط.' : 'The update server is not set up yet.');
+      // A valid session means no prompt at all
+      if (!gatewayPass && getGwSession()) {
+        try { return await gw('/me'); } catch (e) { if (e.status !== 401) throw e; }
+      }
       for (let attempt = 0; attempt < 3; attempt++) {
         if (!gatewayPass) {
           const pw = await askPassword(ar ? 'أكّد كلمة المرور' : 'Confirm your password',
-            ar ? `للتحديث على كل الأجهزة، اكتب كلمة مرور حساب <b>${escHtml(currentUser.username)}</b>. بتنطلب مرة وحدة لحد ما تسكّر التطبيق.` : `To publish to every device, enter the password for <b>${escHtml(currentUser.username)}</b>. Asked once until you close the app.`);
+            ar ? `للتحديث على كل الأجهزة، اكتب كلمة مرور حساب <b>${escHtml(currentUser.username)}</b>. بعدها ما بتنطلب على هالجهاز لمدة 30 يوم.` : `To publish to every device, enter the password for <b>${escHtml(currentUser.username)}</b>. Not asked again on this device for 30 days.`);
           if (pw == null) return null;
           gatewayPass = pw;
         }
