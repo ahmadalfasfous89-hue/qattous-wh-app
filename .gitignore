@@ -8,3 +8,4 @@ __pycache__/
 cloud_pipeline/
 .claude/
 design/
+CLOUD_PIPELINE_ON
