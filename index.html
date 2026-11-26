@@ -5481,7 +5481,7 @@
       const t0 = Date.now();
       let run = null;
       while (Date.now() - t0 < 8 * 60 * 1000) {
-        await new Promise(r => setTimeout(r, run ? 6000 : 4000));
+        await new Promise(r => setTimeout(r, run ? 3000 : 2500));
         try { run = (await gw('/run?sha=' + commitSha)).run; } catch (_) { }
         if (!run) { onStep('queued'); continue; }
         if (run.status !== 'completed') { onStep(run.status === 'queued' ? 'queued' : 'running'); continue; }
@@ -5616,7 +5616,9 @@
         }
         const commit = { sha: (await gw('/commit-sheets', { method: 'POST', json: { files: uploaded } })).commit };
         statusEl.innerHTML = cloudProgressHtml('queued', label);
-        const result = await waitForCloudBuild(commit.sha, st => { statusEl.innerHTML = cloudProgressHtml(st, label); });
+        const t0 = Date.now();
+        const secs = () => `<div class="cc-files">${Math.round((Date.now() - t0) / 1000)} ${ar ? 'ثانية' : 's'}</div>`;
+        const result = await waitForCloudBuild(commit.sha, st => { statusEl.innerHTML = cloudProgressHtml(st, label) + secs(); });
         if (!result.ok) {
           statusEl.style.color = 'var(--q-danger)';
           statusEl.innerHTML = result.timeout
@@ -5625,7 +5627,7 @@
           return;
         }
         statusEl.innerHTML = cloudProgressHtml('publish', label);
-        await new Promise(r => setTimeout(r, 4000));
+        await new Promise(r => setTimeout(r, 1000));
         await refreshRemoteCloudData(false);
         statusEl.style.color = 'var(--q-success)';
         statusEl.innerHTML = (ar ? 'تم النشر لكل الأجهزة · ' : 'Published to every device · ') + escHtml((cloudBundle && cloudBundle.updated_at) || '');
