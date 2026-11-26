@@ -5483,7 +5483,10 @@
       while (Date.now() - t0 < 8 * 60 * 1000) {
         await new Promise(r => setTimeout(r, run ? 3000 : 2500));
         try { run = (await gw('/run?sha=' + commitSha)).run; } catch (_) { }
-        if (!run) { onStep('queued'); continue; }
+        if (!run) {
+          if (Date.now() - t0 > 75 * 1000) return { ok: false, noRun: true }; // a build normally starts within seconds
+          onStep('queued'); continue;
+        }
         if (run.status !== 'completed') { onStep(run.status === 'queued' ? 'queued' : 'running'); continue; }
         return run.conclusion === 'success' ? { ok: true, url: run.url } : { ok: false, url: run.url };
       }
@@ -5621,7 +5624,9 @@
         const result = await waitForCloudBuild(commit.sha, st => { statusEl.innerHTML = cloudProgressHtml(st, label) + secs(); });
         if (!result.ok) {
           statusEl.style.color = 'var(--q-danger)';
-          statusEl.innerHTML = result.timeout
+          statusEl.innerHTML = result.noRun
+            ? (ar ? 'الملفات انرفعت بس البناء ما بدأ. ارفع الملف مرة ثانية، وإذا تكررت خبّر المسؤول.' : 'Files uploaded but the build did not start. Upload again; if it repeats, tell the admin.')
+            : result.timeout
             ? (ar ? 'الملفات انرفعت بس البناء طوّل. افحص بعد شوي بزر التحديث.' : 'Files uploaded but the build is slow. Check again shortly with refresh.')
             : (ar ? `فشل بناء البيانات، والأجهزة لسا على البيانات السابقة. <a href="${result.url}" target="_blank" rel="noopener">تفاصيل الخطأ</a>` : `The build failed; devices still have the previous data. <a href="${result.url}" target="_blank" rel="noopener">Details</a>`);
           return;
