@@ -4,3 +4,7 @@
 *.db-journal
 __pycache__/
 ~$*
+
+cloud_pipeline/
+.claude/
+design/

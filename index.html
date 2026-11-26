@@ -1875,6 +1875,24 @@
     .w-link, .w-loc { border: 0; background: none; padding: 0; font: inherit; color: var(--v2-bronze-d); cursor: pointer; text-decoration: underline; text-decoration-color: var(--v2-line); text-underline-offset: 3px; }
     .w-loc { color: var(--v2-ink); font-weight: 500; text-decoration: none; }
     .w-loc small { margin-inline-start: 6px; color: var(--v2-muted); font-weight: 400; font-size: .7rem; }
+    /* Cloud updating */
+    .cc-card { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border: 1px solid var(--v2-line); border-radius: 12px; background: var(--v2-bronze-t); margin-bottom: 14px; }
+    .cc-card.on { align-items: center; background: var(--v2-ok-t); border-color: transparent; font-size: .86rem; color: var(--v2-ok); }
+    .cc-card .grow { flex: 1; min-width: 0; }
+    .cc-card b { font-weight: 600; }
+    .cc-card p { font-size: .82rem; color: var(--v2-muted); margin: 4px 0 10px; line-height: 1.6; }
+    .cc-row { display: flex; gap: 8px; }
+    .cc-row .form-control { flex: 1; min-width: 0; direction: ltr; }
+    .cc-msg { font-size: .8rem; color: var(--v2-bad); margin-top: 6px; min-height: 1em; }
+    .cc-progress { display: grid; gap: 6px; text-align: start; max-width: 360px; margin: 6px auto 0; font-weight: 500; }
+    .cc-files { font-size: .76rem; color: var(--v2-muted); margin-bottom: 4px; word-break: break-all; }
+    .cc-step { display: flex; align-items: center; gap: 8px; color: var(--v2-muted); font-size: .84rem; }
+    .cc-step span { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--v2-line); flex: none; }
+    .cc-step.done { color: var(--v2-ok); }
+    .cc-step.done span { background: var(--v2-ok); border-color: var(--v2-ok); }
+    .cc-step.now { color: var(--v2-ink); }
+    .cc-step.now span { border-color: var(--v2-bronze); border-top-color: transparent; animation: v2spin .9s linear infinite; }
+    .users-readonly td:last-child button { display: none; }
     .install-steps { margin: 10px 0 0; padding-inline-start: 18px; font-size: .78rem; line-height: 1.7; color: var(--v2-ink); }
     .install-steps li { margin-bottom: 4px; }
 
@@ -2610,7 +2628,7 @@
         logoutAccount();
         return;
       }
-      const { password, ...safeUser } = matchU;
+      const { password, pw_hash, ...safeUser } = matchU;
       currentUser = safeUser;
       applyUserPermissionsUI();
     }
@@ -3025,6 +3043,7 @@
 
     // ==================== PRODUCTION AUTHENTICATION & SESSION ====================
     // The saved session keeps a hash of the password, never the password itself.
+    // Must match cloud_sync.password_hash() in Python: "s1:" + sha256("qattous-sm|" + password)
     async function hashSecret(text) {
       const salted = 'qattous-sm|' + text;
       try {
@@ -3033,12 +3052,42 @@
           return 's1:' + Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
       } catch (_) { }
-      let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
-      for (let i = 0; i < salted.length; i++) {
-        const c = salted.charCodeAt(i);
-        h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677);
+      return 's1:' + sha256Hex(salted); // plain-HTTP pages (e.g. PC opened by IP) have no crypto.subtle
+    }
+
+    function sha256Hex(str) {
+      const bytes = new TextEncoder().encode(str);
+      const K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
+      const H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+      const l = bytes.length, withPad = ((l + 9 + 63) >> 6) << 6;
+      const m = new Uint8Array(withPad);
+      m.set(bytes); m[l] = 0x80;
+      const dv = new DataView(m.buffer);
+      dv.setUint32(withPad - 4, (l * 8) >>> 0); dv.setUint32(withPad - 8, Math.floor(l / 0x20000000));
+      const w = new Uint32Array(64);
+      const r = (x, n) => (x >>> n) | (x << (32 - n));
+      for (let o = 0; o < withPad; o += 64) {
+        for (let i = 0; i < 16; i++) w[i] = dv.getUint32(o + i * 4);
+        for (let i = 16; i < 64; i++) {
+          const s0 = r(w[i - 15], 7) ^ r(w[i - 15], 18) ^ (w[i - 15] >>> 3), s1 = r(w[i - 2], 17) ^ r(w[i - 2], 19) ^ (w[i - 2] >>> 10);
+          w[i] = (w[i - 16] + s0 + w[i - 7] + s1) >>> 0;
+        }
+        let [a, b, c, d, e, f, g, h] = H;
+        for (let i = 0; i < 64; i++) {
+          const t1 = (h + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) >>> 0;
+          const t2 = ((r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+          h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+        }
+        H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+        H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0; H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
       }
-      return 'f1:' + (h2 >>> 0).toString(16) + (h1 >>> 0).toString(16);
+      return H.map(x => x.toString(16).padStart(8, '0')).join('');
+    }
+
+    // Users bundle carries pw_hash (new) or password (old files); accept either.
+    async function userPasswordMatches(u, password) {
+      if (u.pw_hash) return u.pw_hash === await hashSecret(password);
+      return u.password === password;
     }
 
     async function saveSession(username, password) {
@@ -3057,10 +3106,9 @@
       if (!(await refreshCloudUsers())) return { ok: false, offline: true };
       const found = (cloudUsers || []).find(x => x.username.toLowerCase() === saved.username.toLowerCase());
       if (!found || !found.active) return { ok: false };
-      const prefix = String(saved.h || '').slice(0, 3);
-      const expected = await hashSecret(found.password || '');
-      if (expected.slice(0, 3) !== prefix || expected !== saved.h) return { ok: false };
-      const { password, ...safeUser } = found;
+      const expected = found.pw_hash || await hashSecret(found.password || '');
+      if (!saved.h || expected !== saved.h) return { ok: false };
+      const { password, pw_hash, ...safeUser } = found;
       return { ok: true, user: safeUser };
     }
 
@@ -3087,14 +3135,15 @@
         return { ok: false, error: 'تعذر الاتصال. تأكد من الإنترنت وحاول مرة ثانية.' };
       }
       const uList = cloudUsers || [];
-      const found = uList.find(x => x.username.toLowerCase() === username.toLowerCase() && x.password === password);
+      const cand = uList.find(x => x.username.toLowerCase() === username.toLowerCase());
+      const found = cand && await userPasswordMatches(cand, password) ? cand : null;
       if (!found) {
         return { ok: false, error: 'اسم المستخدم أو كلمة المرور غير صحيحة. تأكد منها وحاول مرة ثانية.' };
       }
       if (!found.active) {
         return { ok: false, error: 'هذا الحساب موقوف. تواصل مع مسؤول النظام.' };
       }
-      const { password: _pw, ...safeUser } = found;
+      const { password: _pw, pw_hash: _ph, ...safeUser } = found;
       return { ok: true, user: safeUser };
     }
 
@@ -5049,9 +5098,14 @@
     async function loadSheetsMetadata() {
       const container = document.getElementById('sheetsListContainer');
       container.innerHTML = '<div style="padding:16px;">⏳ جاري قراءة حالة الشيتات...</div>';
+      const cloudOn = cloudPipelineOn();
+      // PC-only buttons (local re-index / PC push) are hidden when updates go through the cloud
+      ['btnRunSheetsUpdate', 'btnPushCloudUpdate'].forEach(id => { const b = document.getElementById(id); if (b) b.style.display = (cloudOn || isStaticCloudHost) ? 'none' : ''; });
+      const dz = document.getElementById('excelDropZone');
+      if (dz) dz.style.display = (!cloudOn && isStaticCloudHost) ? 'none' : '';
       try {
         let sheetsList = null;
-        if (!isStaticCloudHost) {
+        if (!cloudOn && !isStaticCloudHost) {
           try {
             const res = await fetch('/api/meta');
             if (res.ok) {
@@ -5080,6 +5134,7 @@
           });
         }
         container.innerHTML = `
+          ${(cloudOn || isStaticCloudHost) ? cloudConnectHtml() : ''}
           <table>
             <thead>
               <tr>
@@ -5137,7 +5192,14 @@
 
     async function handleExcelFilesSelect(fileList) {
       if (!fileList || !fileList.length) return;
+      if (cloudPipelineOn()) return uploadSheetsToCloud(fileList);
       const statusEl = document.getElementById('dropUploadStatus');
+      if (isStaticCloudHost) {
+        // Without the cloud link a phone could only change its own copy, so don't pretend it published.
+        statusEl.style.color = 'var(--q-danger)';
+        statusEl.textContent = currentLang === 'ar' ? 'اربط هذا الجهاز بالتحديث السحابي أولاً عشان التحديث يوصل لكل الأجهزة.' : 'Connect this device to cloud updating first so the update reaches every device.';
+        return;
+      }
       statusEl.style.color = 'var(--q-bronze-dark)';
       statusEl.innerHTML = `⏳ جاري قراءة ورفع (${fileList.length}) ملف إكسل...`;
 
@@ -5306,13 +5368,230 @@
       }
     }
 
+    // ==================== CLOUD UPDATING (any device) ====================
+    // Sheets and users live in the private repo qattous-wh-data. Each upload/edit is a commit there;
+    // a GitHub Actions job rebuilds data_bundle.json + users_bundle.json and publishes them to this app.
+    // The access key is typed once per device by an admin and stays in this device's storage only.
+    const DATA_REPO = 'ahmadalfasfous89-hue/qattous-wh-data';
+    const GH_API = 'https://api.github.com';
+    const TOKEN_KEY = 'qattous_gh_token';
+
+    const getCloudToken = () => { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (_) { return ''; } };
+    const cloudPipelineOn = () => !!getCloudToken();
+
+    async function gh(path, opts = {}) {
+      const res = await fetch(GH_API + path, {
+        ...opts,
+        headers: {
+          'Authorization': 'Bearer ' + getCloudToken(),
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+          ...(opts.body ? { 'Content-Type': 'application/json' } : {}),
+          ...(opts.headers || {})
+        },
+        cache: 'no-store'
+      });
+      if (!res.ok) {
+        let msg = '';
+        try { msg = (await res.json()).message || ''; } catch (_) { }
+        const err = new Error(res.status === 401 ? 'مفتاح الربط غير صالح أو منتهي. أدخل مفتاح جديد.'
+          : res.status === 403 || res.status === 404 ? 'مفتاح الربط ما عنده صلاحية على مستودع البيانات.' : (msg || ('GitHub ' + res.status)));
+        err.status = res.status;
+        throw err;
+      }
+      return res.status === 204 ? null : res.json();
+    }
+
+    const b64EncodeUtf8 = s => btoa(unescape(encodeURIComponent(s)));
+    const b64DecodeUtf8 = s => decodeURIComponent(escape(atob(String(s).replace(/\s/g, ''))));
+    const fileToBase64 = f => new Promise((ok, bad) => {
+      const r = new FileReader();
+      r.onload = () => ok(String(r.result).split(',')[1] || '');
+      r.onerror = () => bad(r.error);
+      r.readAsDataURL(f);
+    });
+
+    // Connection card shown at the top of the Data and Users tabs
+    function cloudConnectHtml() {
+      const ar = currentLang === 'ar';
+      if (cloudPipelineOn()) {
+        return `<div class="cc-card on"><span class="sync-dot ok"></span><span class="grow">${ar ? 'التحديث السحابي شغّال على هذا الجهاز. أي تعديل بيوصل لكل الأجهزة خلال دقيقة أو دقيقتين.' : 'Cloud updating is on for this device. Changes reach every device within 1–2 minutes.'}</span>
+          <button type="button" class="btn btn-outline btn-sm" onclick="disconnectCloud()">${ar ? 'فصل' : 'Disconnect'}</button></div>`;
+      }
+      return `<div class="cc-card">
+        <div class="grow">
+          <b>${ar ? 'اربط هذا الجهاز بالتحديث السحابي' : 'Connect this device to cloud updating'}</b>
+          <p>${ar ? 'بعد الربط بتقدر ترفع الشيتات وتعدّل اليوزرات من هالجهاز، والتحديث بينتشر لكل الأجهزة. الصق مفتاح الربط (يبدأ بـ github_pat_) مرة وحدة، وبيضل محفوظ على هالجهاز بس.' : 'Once connected, sheet uploads and user edits from this device reach every device. Paste the access key (starts with github_pat_) once; it stays on this device only.'}</p>
+          <div class="cc-row">
+            <input type="password" id="ccTokenInput" class="form-control" placeholder="github_pat_..." autocomplete="off" spellcheck="false" />
+            <button type="button" class="btn btn-bronze" onclick="connectCloud()">${ar ? 'ربط' : 'Connect'}</button>
+          </div>
+          <div id="ccMsg" class="cc-msg"></div>
+        </div></div>`;
+    }
+
+    async function connectCloud() {
+      const input = document.getElementById('ccTokenInput');
+      const msg = document.getElementById('ccMsg');
+      const val = (input.value || '').trim();
+      if (!val) { msg.textContent = 'الصق مفتاح الربط أولاً'; return; }
+      localStorage.setItem(TOKEN_KEY, val);
+      msg.textContent = 'جاري التحقق...';
+      try {
+        const repo = await gh(`/repos/${DATA_REPO}`);
+        if (!repo.permissions || !repo.permissions.push) throw new Error('المفتاح بيقرأ بس، لازم صلاحية Contents: Read and write.');
+        input.value = '';
+        showToast('تم ربط الجهاز بالتحديث السحابي');
+        refreshCloudTabs();
+      } catch (e) {
+        localStorage.removeItem(TOKEN_KEY);
+        msg.textContent = e.message;
+      }
+    }
+
+    function disconnectCloud() {
+      if (!confirm('فصل هذا الجهاز عن التحديث السحابي؟ بتحتاج تلصق المفتاح من جديد لترجع تحدّث منه.')) return;
+      localStorage.removeItem(TOKEN_KEY);
+      refreshCloudTabs();
+    }
+
+    function refreshCloudTabs() {
+      const active = document.querySelector('.view-section.active');
+      if (active && active.id === 'dataView') loadSheetsMetadata();
+      if (active && active.id === 'usersView') loadUsersList();
+    }
+
+    // Follow the build that a commit started; resolves when every device can see the result.
+    async function waitForCloudBuild(commitSha, onStep) {
+      const t0 = Date.now();
+      let run = null;
+      while (Date.now() - t0 < 8 * 60 * 1000) {
+        await new Promise(r => setTimeout(r, run ? 6000 : 4000));
+        try {
+          const data = await gh(`/repos/${DATA_REPO}/actions/runs?head_sha=${commitSha}&per_page=1`);
+          run = (data.workflow_runs || [])[0] || null;
+        } catch (_) { }
+        if (!run) { onStep('queued'); continue; }
+        if (run.status !== 'completed') { onStep(run.status === 'queued' ? 'queued' : 'running'); continue; }
+        return run.conclusion === 'success' ? { ok: true, url: run.html_url } : { ok: false, url: run.html_url };
+      }
+      return { ok: false, timeout: true };
+    }
+
+    function cloudProgressHtml(step, files) {
+      const ar = currentLang === 'ar';
+      const steps = [
+        ['upload', ar ? 'رفع الملفات' : 'Uploading files'],
+        ['queued', ar ? 'بانتظار السيرفر' : 'Waiting for the server'],
+        ['running', ar ? 'قراءة الشيتات وبناء البيانات' : 'Reading sheets and building data'],
+        ['publish', ar ? 'نشر لكل الأجهزة' : 'Publishing to every device']
+      ];
+      const idx = steps.findIndex(s => s[0] === step);
+      return `<div class="cc-progress">
+        ${files ? `<div class="cc-files">${files}</div>` : ''}
+        ${steps.map((s, i) => `<div class="cc-step ${i < idx ? 'done' : i === idx ? 'now' : ''}"><span></span>${s[1]}</div>`).join('')}
+      </div>`;
+    }
+
+    async function uploadSheetsToCloud(fileList) {
+      const statusEl = document.getElementById('dropUploadStatus');
+      const ar = currentLang === 'ar';
+      const files = Array.from(fileList);
+      const picked = [];
+      for (const f of files) {
+        let key = detectSheetKeyFromFile(f.name);
+        if (!key && typeof XLSX !== 'undefined') {
+          try {
+            const wb = XLSX.read(await f.slice(0, 2 * 1024 * 1024).arrayBuffer(), { type: 'array', sheetRows: 2 });
+            const first = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 })[0] || [];
+            key = detectSheetKeyFromFile(f.name, first.map(String));
+          } catch (_) { }
+        }
+        if (!key) { statusEl.style.color = 'var(--q-danger)'; statusEl.textContent = (ar ? 'ما عرفنا نوع الملف: ' : 'Unknown sheet type: ') + f.name; return; }
+        if (f.size > 95 * 1024 * 1024) { statusEl.style.color = 'var(--q-danger)'; statusEl.textContent = (ar ? 'الملف أكبر من 95MB: ' : 'File over 95MB: ') + f.name; return; }
+        picked.push({ f, key, name: f.name.replace(/[\\/]/g, '_') });
+      }
+      const label = picked.map(p => escHtml(p.name)).join('<br>');
+      statusEl.style.color = 'var(--q-bronze-dark)';
+      statusEl.innerHTML = cloudProgressHtml('upload', label);
+      try {
+        const ref = await gh(`/repos/${DATA_REPO}/git/ref/heads/main`);
+        const baseCommit = await gh(`/repos/${DATA_REPO}/git/commits/${ref.object.sha}`);
+        const tree = await gh(`/repos/${DATA_REPO}/git/trees/${baseCommit.tree.sha}?recursive=1`);
+        const keys = picked.map(p => p.key);
+        // Replace the previous file of the same type so the build always reads the newest one
+        const removals = (tree.tree || []).filter(e => e.type === 'blob' && e.path.startsWith('sheets/')
+          && keys.includes(detectSheetKeyFromFile(e.path.slice(7))) && !picked.some(p => 'sheets/' + p.name === e.path))
+          .map(e => ({ path: e.path, mode: '100644', type: 'blob', sha: null }));
+        const adds = [];
+        for (const p of picked) {
+          const blob = await gh(`/repos/${DATA_REPO}/git/blobs`, { method: 'POST', body: JSON.stringify({ content: await fileToBase64(p.f), encoding: 'base64' }) });
+          adds.push({ path: 'sheets/' + p.name, mode: '100644', type: 'blob', sha: blob.sha });
+        }
+        const newTree = await gh(`/repos/${DATA_REPO}/git/trees`, { method: 'POST', body: JSON.stringify({ base_tree: baseCommit.tree.sha, tree: [...adds, ...removals] }) });
+        const who = currentUser.display_name || currentUser.username;
+        const commit = await gh(`/repos/${DATA_REPO}/git/commits`, { method: 'POST', body: JSON.stringify({ message: `Sheets update by ${who}: ${picked.map(p => p.name).join(', ')}`, tree: newTree.sha, parents: [ref.object.sha] }) });
+        await gh(`/repos/${DATA_REPO}/git/refs/heads/main`, { method: 'PATCH', body: JSON.stringify({ sha: commit.sha }) });
+        statusEl.innerHTML = cloudProgressHtml('queued', label);
+        const result = await waitForCloudBuild(commit.sha, st => { statusEl.innerHTML = cloudProgressHtml(st, label); });
+        if (!result.ok) {
+          statusEl.style.color = 'var(--q-danger)';
+          statusEl.innerHTML = result.timeout
+            ? (ar ? 'الملفات انرفعت بس البناء طوّل. افحص بعد شوي بزر التحديث.' : 'Files uploaded but the build is slow. Check again shortly with refresh.')
+            : (ar ? `فشل بناء البيانات، والأجهزة لسا على البيانات السابقة. <a href="${result.url}" target="_blank" rel="noopener">تفاصيل الخطأ</a>` : `The build failed; devices still have the previous data. <a href="${result.url}" target="_blank" rel="noopener">Details</a>`);
+          return;
+        }
+        statusEl.innerHTML = cloudProgressHtml('publish', label);
+        await new Promise(r => setTimeout(r, 4000));
+        await refreshRemoteCloudData(false);
+        statusEl.style.color = 'var(--q-success)';
+        statusEl.innerHTML = (ar ? 'تم النشر لكل الأجهزة · ' : 'Published to every device · ') + escHtml((cloudBundle && cloudBundle.updated_at) || '');
+        loadSheetsMetadata();
+      } catch (e) {
+        statusEl.style.color = 'var(--q-danger)';
+        statusEl.textContent = (ar ? 'ما انرفعت الملفات: ' : 'Upload failed: ') + e.message;
+        if (e.status === 401) { localStorage.removeItem(TOKEN_KEY); refreshCloudTabs(); }
+      }
+    }
+
+    // ---- Users in the cloud: users.json in the private repo (password hashes only) ----
+    let cloudUsersDoc = null; // { users, sha }
+
+    async function fetchCloudUsersDoc() {
+      const res = await gh(`/repos/${DATA_REPO}/contents/users.json?ref=main`);
+      cloudUsersDoc = { users: JSON.parse(b64DecodeUtf8(res.content)).users || [], sha: res.sha };
+      return cloudUsersDoc;
+    }
+
+    async function writeCloudUsersDoc(users, message) {
+      const body = { message, content: b64EncodeUtf8(JSON.stringify({ users }, null, 2) + '\n'), sha: cloudUsersDoc.sha, branch: 'main' };
+      const res = await gh(`/repos/${DATA_REPO}/contents/users.json`, { method: 'PUT', body: JSON.stringify(body) });
+      cloudUsersDoc = { users, sha: res.content.sha };
+      // Publish in the background; the list updates locally right away
+      const ar = currentLang === 'ar';
+      showToast(ar ? 'تم الحفظ. التعديل بيوصل لكل الأجهزة خلال دقيقة أو دقيقتين.' : 'Saved. Every device gets the change within 1–2 minutes.');
+      waitForCloudBuild(res.commit.sha, () => { }).then(r => {
+        if (r.ok) { refreshCloudUsers().then(syncCurrentUserFromCloud); showToast(ar ? 'تم نشر تعديل اليوزرات لكل الأجهزة' : 'User changes published to every device'); }
+        else showToast(ar ? 'تعذر نشر تعديل اليوزرات. افتح تبويب اليوزرات وحاول مرة ثانية.' : 'Could not publish user changes. Open Users and try again.', true);
+      });
+    }
+
     // ==================== USERS & PERMISSIONS MANAGEMENT ====================
     async function loadUsersList() {
       const container = document.getElementById('usersListContainer');
       container.innerHTML = '<div style="padding:16px;">⏳ جاري تحميل قائمة الحسابات...</div>';
       try {
         let usersArr = null;
-        if (!isStaticCloudHost) {
+        const cloudOn = cloudPipelineOn();
+        if (cloudOn) {
+          try { usersArr = (await fetchCloudUsersDoc()).users; }
+          catch (e) {
+            container.innerHTML = cloudConnectHtml() + `<div class="v2-note warn" style="margin-top:10px">${escHtml(e.message)}</div>`;
+            if (e.status === 401) { localStorage.removeItem(TOKEN_KEY); container.innerHTML = cloudConnectHtml(); }
+            return;
+          }
+        }
+        if (!usersArr && !isStaticCloudHost) {
           try {
             const res = await fetch('/api/users');
             if (res.ok) {
@@ -5328,8 +5607,10 @@
           usersArr = cloudUsers || [];
         }
         allUsersCache = usersArr;
+        const canEdit = cloudOn || !isStaticCloudHost;
         container.innerHTML = `
-          <div class="table-wrap">
+          ${(cloudOn || isStaticCloudHost) ? cloudConnectHtml() : ''}
+          <div class="table-wrap${canEdit ? '' : ' users-readonly'}">
             <table>
               <thead>
                 <tr>
@@ -5377,7 +5658,10 @@
       document.getElementById('editUserUsername').disabled = !!u;
       document.getElementById('editUserDisplay').value = u ? u.display_name : '';
       document.getElementById('editUserRole').value = u ? u.role : 'user';
-      document.getElementById('editUserPassword').value = '1234';
+      // Existing user: empty = keep the current password (it used to be pre-filled with 1234 and reset it)
+      const pw = document.getElementById('editUserPassword');
+      pw.value = '';
+      pw.placeholder = u ? (currentLang === 'ar' ? 'اتركها فاضية لتبقى كما هي' : 'Leave empty to keep it') : (currentLang === 'ar' ? 'كلمة مرور الحساب الجديد' : 'New account password');
       document.getElementById('editUserActive').checked = u ? u.active : true;
 
       const perms = u ? u.permissions : ROLE_PRESETS.user;
@@ -5419,6 +5703,35 @@
       document.querySelectorAll('.modal-perm-cb').forEach(cb => {
         permissions[cb.value] = cb.checked;
       });
+      if (!cloudPipelineOn() && isStaticCloudHost) {
+        alert(currentLang === 'ar' ? 'اربط هذا الجهاز بالتحديث السحابي أولاً (أعلى تبويب اليوزرات).' : 'Connect this device to cloud updating first (top of the Users tab).');
+        return;
+      }
+      const uname = username.toLowerCase();
+      const isNew = !allUsersCache.some(x => x.username.toLowerCase() === uname);
+      if (isNew && !password) {
+        alert(currentLang === 'ar' ? 'اكتب كلمة مرور للحساب الجديد' : 'Enter a password for the new account');
+        return;
+      }
+
+      if (cloudPipelineOn()) {
+        try {
+          await fetchCloudUsersDoc();
+          const users = cloudUsersDoc.users.slice();
+          const i = users.findIndex(x => x.username.toLowerCase() === uname);
+          const prev = i >= 0 ? users[i] : {};
+          const rec = {
+            username: uname, display_name: display_name || uname, role, active, permissions,
+            pw_hash: password ? await hashSecret(password) : prev.pw_hash
+          };
+          if (i >= 0) users[i] = rec; else users.push(rec);
+          await writeCloudUsersDoc(users, `${isNew ? 'Add' : 'Update'} user ${uname} by ${currentUser.username}`);
+          closeUserEditorModal();
+          await loadUsersList();
+          if (currentUser.username === uname) { Object.assign(currentUser, { permissions, role, display_name: rec.display_name }); applyUserPermissionsUI(); }
+        } catch (e) { alert(e.message); }
+        return;
+      }
 
       const res = await fetch('/api/users/save', {
         method: 'POST',
@@ -5442,6 +5755,15 @@
 
     async function deleteUserAccount(username) {
       if (!confirm(`هل أنت متأكد من حذف الحساب ${username}؟`)) return;
+      if (cloudPipelineOn()) {
+        try {
+          if (username.toLowerCase() === 'admin') throw new Error('لا يمكن حذف حساب الأدمن الرئيسي');
+          await fetchCloudUsersDoc();
+          await writeCloudUsersDoc(cloudUsersDoc.users.filter(x => x.username.toLowerCase() !== username.toLowerCase()), `Delete user ${username} by ${currentUser.username}`);
+          loadUsersList();
+        } catch (e) { alert(e.message); }
+        return;
+      }
       const res = await fetch('/api/users/delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
