@@ -5100,9 +5100,10 @@
       container.innerHTML = '<div style="padding:16px;">⏳ جاري قراءة حالة الشيتات...</div>';
       const cloudOn = cloudPipelineOn();
       // PC-only buttons (local re-index / PC push) are hidden when updates go through the cloud
-      ['btnRunSheetsUpdate', 'btnPushCloudUpdate'].forEach(id => { const b = document.getElementById(id); if (b) b.style.display = (cloudOn || isStaticCloudHost) ? 'none' : ''; });
+      // Publishing goes through the cloud on every device (the PC no longer publishes), so the old PC buttons are gone
+      ['btnRunSheetsUpdate', 'btnPushCloudUpdate'].forEach(id => { const b = document.getElementById(id); if (b) b.style.display = 'none'; });
       const dz = document.getElementById('excelDropZone');
-      if (dz) dz.style.display = (!cloudOn && isStaticCloudHost) ? 'none' : '';
+      if (dz) dz.style.display = cloudOn ? '' : 'none';
       try {
         let sheetsList = null;
         if (!cloudOn && !isStaticCloudHost) {
@@ -5134,7 +5135,7 @@
           });
         }
         container.innerHTML = `
-          ${(cloudOn || isStaticCloudHost) ? cloudConnectHtml() : ''}
+          ${cloudConnectHtml()}
           <table>
             <thead>
               <tr>
@@ -5194,8 +5195,8 @@
       if (!fileList || !fileList.length) return;
       if (cloudPipelineOn()) return uploadSheetsToCloud(fileList);
       const statusEl = document.getElementById('dropUploadStatus');
-      if (isStaticCloudHost) {
-        // Without the cloud link a phone could only change its own copy, so don't pretend it published.
+      {
+        // Without the cloud link nothing reaches other devices (the PC no longer publishes), so don't pretend it did.
         statusEl.style.color = 'var(--q-danger)';
         statusEl.textContent = currentLang === 'ar' ? 'اربط هذا الجهاز بالتحديث السحابي أولاً عشان التحديث يوصل لكل الأجهزة.' : 'Connect this device to cloud updating first so the update reaches every device.';
         return;
@@ -5607,9 +5608,9 @@
           usersArr = cloudUsers || [];
         }
         allUsersCache = usersArr;
-        const canEdit = cloudOn || !isStaticCloudHost;
+        const canEdit = cloudOn;
         container.innerHTML = `
-          ${(cloudOn || isStaticCloudHost) ? cloudConnectHtml() : ''}
+          ${cloudConnectHtml()}
           <div class="table-wrap${canEdit ? '' : ' users-readonly'}">
             <table>
               <thead>
@@ -5703,7 +5704,7 @@
       document.querySelectorAll('.modal-perm-cb').forEach(cb => {
         permissions[cb.value] = cb.checked;
       });
-      if (!cloudPipelineOn() && isStaticCloudHost) {
+      if (!cloudPipelineOn()) {
         alert(currentLang === 'ar' ? 'اربط هذا الجهاز بالتحديث السحابي أولاً (أعلى تبويب اليوزرات).' : 'Connect this device to cloud updating first (top of the Users tab).');
         return;
       }
@@ -5754,6 +5755,10 @@
     }
 
     async function deleteUserAccount(username) {
+      if (!cloudPipelineOn()) {
+        alert(currentLang === 'ar' ? 'اربط هذا الجهاز بالتحديث السحابي أولاً (أعلى تبويب اليوزرات).' : 'Connect this device to cloud updating first (top of the Users tab).');
+        return;
+      }
       if (!confirm(`هل أنت متأكد من حذف الحساب ${username}؟`)) return;
       if (cloudPipelineOn()) {
         try {
