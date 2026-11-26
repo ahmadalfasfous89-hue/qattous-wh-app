@@ -2632,7 +2632,13 @@
         return;
       }
       const { password, pw_hash, ...safeUser } = matchU;
-      currentUser = safeUser;
+      // An admin reset this account's password while it was open: sign out so the new one is used
+      if (pw_hash && currentUser._pw_hash && pw_hash !== currentUser._pw_hash && safeUser.must_change) {
+        showToast(currentLang === 'ar' ? 'المسؤول غيّر كلمة مرور حسابك. سجّل الدخول بكلمة المرور الجديدة.' : 'Your admin reset your password. Sign in with the new one.', true);
+        logoutAccount();
+        return;
+      }
+      currentUser = { ...safeUser, _pw_hash: pw_hash || currentUser._pw_hash };
       applyUserPermissionsUI();
     }
 
@@ -3199,6 +3205,7 @@
         const res = await authenticateUser(u, p);
         if (res.ok) {
           currentUser = res.user;
+          gatewayPass = p; // memory only: lets updates and password changes skip a second prompt
           await saveSession(u, p);
           onSignedIn();
         } else {
@@ -3218,6 +3225,7 @@
       renderEmptyState();
       focusScanForLaser(false);
       if (!cloudBundle) refreshRemoteCloudData(false);
+      if (currentUser.must_change) setTimeout(() => changeOwnPassword(true), 300);
     }
 
     // ==================== SCANNER, PDA WEDGE & MANUAL AUTOCOMPLETE ====================
@@ -5489,32 +5497,73 @@
       return changeOwnPassword();
     }
 
-    async function changeOwnPassword() {
+    // Any user changes their own password (10+ characters). forced = after an admin reset: no way around it.
+    async function changeOwnPassword(forced = false) {
       const ar = currentLang === 'ar';
       if (!gatewayConfigured()) { alert(ar ? 'سيرفر التحديث لسا ما انضبط.' : 'The update server is not set up yet.'); return false; }
-      if (!gatewayPass) {
-        const cur = await askPassword(ar ? 'كلمة المرور الحالية' : 'Current password', ar ? 'اكتب كلمة المرور الحالية لحسابك.' : 'Enter your current password.');
-        if (cur == null) return false;
-        gatewayPass = cur;
+      for (; ;) {
+        if (!gatewayPass) {
+          const cur = await askPassword(ar ? 'كلمة المرور الحالية' : 'Current password', forced
+            ? (ar ? 'اكتب كلمة المرور المؤقتة اللي أعطاك ياها المسؤول.' : 'Enter the temporary password your admin gave you.')
+            : (ar ? 'اكتب كلمة المرور الحالية لحسابك.' : 'Enter your current password.'));
+          if (cur == null) { if (forced) logoutAccount(); return false; }
+          gatewayPass = cur;
+        }
+        const np = await askPassword(forced ? (ar ? 'اختار كلمة مرور جديدة' : 'Choose a new password') : (ar ? 'كلمة المرور الجديدة' : 'New password'),
+          (forced ? (ar ? 'المسؤول عملّك كلمة مرور مؤقتة. اختار كلمة مرور خاصة فيك قبل ما تكمل.<br>' : 'Your admin set a temporary password. Choose your own before you continue.<br>') : '')
+          + (ar ? `<b>${MIN_UPDATE_PASSWORD} خانات أو أكثر</b> (أرقام أو أحرف). لا تستعمل رقم تلفونك.` : `<b>${MIN_UPDATE_PASSWORD}+ characters</b> (digits or letters). Don't use your phone number.`));
+        if (np == null) { if (forced) logoutAccount(); return false; }
+        if (np.length < MIN_UPDATE_PASSWORD) { alert(ar ? `كلمة المرور لازم ${MIN_UPDATE_PASSWORD} خانات أو أكثر` : `Password must be ${MIN_UPDATE_PASSWORD}+ characters`); continue; }
+        const np2 = await askPassword(ar ? 'أعد كتابة كلمة المرور الجديدة' : 'Repeat the new password', ar ? 'للتأكد إنها مكتوبة صح.' : 'To make sure it is typed right.');
+        if (np2 == null) { if (forced) logoutAccount(); return false; }
+        if (np2 !== np) { alert(ar ? 'كلمتين المرور مش متطابقات. جرّب مرة ثانية.' : 'The passwords do not match. Try again.'); continue; }
+        try {
+          await gw('/users/save', { method: 'POST', json: { username: currentUser.username, password: np, display_name: currentUser.display_name, role: currentUser.role, active: true, permissions: currentUser.permissions } });
+          gatewayPass = np;
+          currentUser.must_change = false;
+          await saveSession(currentUser.username, np);
+          showToast(ar ? 'تم تغيير كلمة المرور. بتشتغل على كل الأجهزة خلال دقيقة أو دقيقتين.' : 'Password changed. It works on every device within 1–2 minutes.');
+          return true;
+        } catch (e) {
+          if (e.status === 401) gatewayPass = null;
+          alert(e.message);
+          if (!forced) return false;
+        }
       }
-      const p = (currentUser.permissions || {});
-      const min = (p.manage_data || p.manage_users) ? MIN_UPDATE_PASSWORD : 4;
-      const np = await askPassword(ar ? 'كلمة المرور الجديدة' : 'New password', ar ? `${min} خانات أو أكثر. استعمل أحرف وأرقام.` : `${min}+ characters. Use letters and numbers.`);
-      if (np == null) return false;
-      if (np.length < min) { alert(ar ? `كلمة المرور لازم ${min} خانات أو أكثر` : `Password must be ${min}+ characters`); return false; }
-      const np2 = await askPassword(ar ? 'أعد كتابة كلمة المرور الجديدة' : 'Repeat the new password', ar ? 'للتأكد إنها مكتوبة صح.' : 'To make sure it is typed right.');
-      if (np2 !== np) { alert(ar ? 'كلمتين المرور مش متطابقات' : 'The passwords do not match'); return false; }
+    }
+
+    // Admin: a forgotten password gets a random 10-digit temporary one, shown once to hand over
+    async function resetUserPassword(username) {
+      const ar = currentLang === 'ar';
+      if (!confirm(ar ? `تعمل كلمة مرور جديدة للحساب ${username}؟\nكلمة المرور القديمة بتبطل تشتغل، وبيطلب منه يختار كلمة خاصة فيه أول ما يدخل.` : `Create a new password for ${username}?\nThe old one stops working, and they must choose their own at next sign-in.`)) return;
       try {
-        await gw('/users/save', { method: 'POST', json: { username: currentUser.username, password: np, display_name: currentUser.display_name, role: currentUser.role, active: true, permissions: currentUser.permissions } });
-        gatewayPass = np;
-        await saveSession(currentUser.username, np);
-        showToast(ar ? 'تم تغيير كلمة المرور. بتشتغل على كل الأجهزة خلال دقيقة أو دقيقتين.' : 'Password changed. It works on every device within 1–2 minutes.');
-        return true;
-      } catch (e) {
-        if (e.status === 401) gatewayPass = null;
-        alert(e.message);
-        return false;
-      }
+        const me = await ensureGatewayAuth();
+        if (!me) return;
+        if (!me.strong) { await handleWeakPassword(); return; }
+        const res = await gw('/users/reset', { method: 'POST', json: { username } });
+        onCloudUsersCommitted(res.commit);
+        showTempPassword(username, res.temp_password);
+      } catch (e) { alert(e.message); }
+    }
+
+    function showTempPassword(username, temp) {
+      const ar = currentLang === 'ar';
+      const wrap = document.createElement('div');
+      wrap.className = 'modal-backdrop open';
+      wrap.style.zIndex = 3000;
+      wrap.innerHTML = `<div class="modal-card" style="max-width:380px;text-align:center">
+        <h3 style="font-weight:600;margin-bottom:6px">${ar ? 'كلمة المرور المؤقتة' : 'Temporary password'}</h3>
+        <p style="font-size:.84rem;color:var(--v2-muted);margin-bottom:12px">${ar ? `أعطيها لـ <b>${escHtml(username)}</b>. بتشتغل خلال دقيقة أو دقيقتين، وأول ما يدخل بيختار كلمة خاصة فيه. ما رح تنعرض مرة ثانية.` : `Give it to <b>${escHtml(username)}</b>. It works within 1–2 minutes; they choose their own at first sign-in. It won't be shown again.`}</p>
+        <div class="num" style="font-size:1.8rem;font-weight:600;letter-spacing:.12em;padding:12px;border:1px dashed var(--v2-bronze);border-radius:12px;background:var(--v2-bronze-t);user-select:all">${escHtml(temp)}</div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:14px">
+          <button type="button" class="btn btn-outline" data-copy>${ar ? 'نسخ' : 'Copy'}</button>
+          <button type="button" class="btn btn-bronze" data-close>${ar ? 'تم' : 'Done'}</button>
+        </div></div>`;
+      document.body.appendChild(wrap);
+      wrap.querySelector('[data-close]').onclick = () => wrap.remove();
+      wrap.querySelector('[data-copy]').onclick = async () => {
+        try { await navigator.clipboard.writeText(temp); showToast(ar ? 'تم النسخ' : 'Copied'); } catch (_) { showToast(ar ? 'انسخها يدوياً' : 'Copy it manually', true); }
+      };
     }
 
     function cloudProgressHtml(step, files) {
@@ -5671,6 +5720,7 @@
                     <td>
                       <div style="display:flex; gap:6px;">
                         <button class="btn btn-outline btn-sm" onclick="openUserEditorModal('${u.username}')">✏️ تعديل</button>
+                        ${u.username !== currentUser.username ? `<button class="btn btn-outline btn-sm" title="${currentLang === 'ar' ? 'نسي كلمة المرور؟ اعمله وحدة مؤقتة' : 'Forgot password? Create a temporary one'}" onclick="resetUserPassword('${u.username}')">🔑 ${currentLang === 'ar' ? 'كلمة مرور جديدة' : 'New password'}</button>` : ''}
                         ${u.username !== 'admin' ? `<button class="btn btn-outline btn-sm" style="color:var(--q-danger);" onclick="deleteUserAccount('${u.username}')">🗑️</button>` : ''}
                       </div>
                     </td>
@@ -5746,11 +5796,8 @@
         return;
       }
 
-      const privileged = permissions.manage_data || permissions.manage_users;
-      if (password && password.length < (privileged ? MIN_UPDATE_PASSWORD : 4)) {
-        alert(privileged
-          ? (currentLang === 'ar' ? `الحساب اللي بيقدر يحدّث البيانات أو اليوزرات لازم كلمة مروره ${MIN_UPDATE_PASSWORD} خانات أو أكثر.` : `Accounts that can update need a ${MIN_UPDATE_PASSWORD}+ character password.`)
-          : (currentLang === 'ar' ? 'كلمة المرور لازم 4 خانات أو أكثر' : 'Password must be 4+ characters'));
+      if (password && password.length < MIN_UPDATE_PASSWORD) {
+        alert(currentLang === 'ar' ? `كلمة المرور لازم ${MIN_UPDATE_PASSWORD} خانات أو أكثر` : `Password must be ${MIN_UPDATE_PASSWORD}+ characters`);
         return;
       }
 
