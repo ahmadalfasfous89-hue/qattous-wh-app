@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26 13:56:17",
+  "updated_at": "2026-11-26 14:01:22",
   "users": [
     {
       "username": "admin",
@@ -119,6 +119,24 @@
         "manage_data": false,
         "manage_users": false
       }
+    },
+    {
+      "username": "abuarja",
+      "pw_hash": "s1:7b0c2192f9eccb0b430140de22beb4d42c32b77afe34dd4b15309361c972e2a8",
+      "display_name": "invmanager",
+      "role": "admin",
+      "active": true,
+      "permissions": {
+        "mode_wh_only": true,
+        "mode_stores_only": true,
+        "mode_wh_stores": true,
+        "scan_bin": true,
+        "view_eligible_store": true,
+        "generate_reports": true,
+        "manage_data": true,
+        "manage_users": true
+      },
+      "must_change": true
     }
   ]
 }
