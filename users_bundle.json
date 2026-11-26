@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-11-26 10:05:28",
+  "updated_at": "2026-11-26 11:04:09",
   "users": [
     {
       "username": "admin",
-      "password": "1234",
+      "pw_hash": "s1:9792fcb239abb9cbf459079678c2a21d1024bf4cd05e845ec3f64020c588f62a",
       "display_name": "أحمد فسفوس (Admin)",
       "role": "admin",
       "active": true,
@@ -19,59 +19,8 @@
       }
     },
     {
-      "username": "supervisor",
-      "password": "1234",
-      "display_name": "مشرف المستودع (Supervisor)",
-      "role": "supervisor",
-      "active": true,
-      "permissions": {
-        "mode_wh_only": true,
-        "mode_stores_only": true,
-        "mode_wh_stores": true,
-        "scan_bin": true,
-        "view_eligible_store": true,
-        "generate_reports": true,
-        "manage_data": false,
-        "manage_users": false
-      }
-    },
-    {
-      "username": "wh_user",
-      "password": "1234",
-      "display_name": "موظف مستودع (Warehouse Only)",
-      "role": "user",
-      "active": true,
-      "permissions": {
-        "mode_wh_only": true,
-        "mode_stores_only": false,
-        "mode_wh_stores": false,
-        "scan_bin": true,
-        "view_eligible_store": false,
-        "generate_reports": false,
-        "manage_data": false,
-        "manage_users": false
-      }
-    },
-    {
-      "username": "store_user",
-      "password": "1234",
-      "display_name": "موظف محلات (Stores & WH)",
-      "role": "user",
-      "active": true,
-      "permissions": {
-        "mode_wh_only": true,
-        "mode_stores_only": true,
-        "mode_wh_stores": true,
-        "scan_bin": true,
-        "view_eligible_store": false,
-        "generate_reports": false,
-        "manage_data": false,
-        "manage_users": false
-      }
-    },
-    {
       "username": "ahmadfas",
-      "password": "1234",
+      "pw_hash": "s1:9792fcb239abb9cbf459079678c2a21d1024bf4cd05e845ec3f64020c588f62a",
       "display_name": "ahmadfas",
       "role": "user",
       "active": true,
@@ -88,7 +37,7 @@
     },
     {
       "username": "albanna",
-      "password": "1234",
+      "pw_hash": "s1:9792fcb239abb9cbf459079678c2a21d1024bf4cd05e845ec3f64020c588f62a",
       "display_name": "محمد البنا",
       "role": "user",
       "active": true,
@@ -105,7 +54,7 @@
     },
     {
       "username": "kiwan",
-      "password": "1234",
+      "pw_hash": "s1:9792fcb239abb9cbf459079678c2a21d1024bf4cd05e845ec3f64020c588f62a",
       "display_name": "محمود ابو كيوان",
       "role": "user",
       "active": true,
@@ -117,6 +66,57 @@
         "view_eligible_store": false,
         "generate_reports": false,
         "manage_data": true,
+        "manage_users": false
+      }
+    },
+    {
+      "username": "store_user",
+      "pw_hash": "s1:9792fcb239abb9cbf459079678c2a21d1024bf4cd05e845ec3f64020c588f62a",
+      "display_name": "موظف محلات (Stores & WH)",
+      "role": "user",
+      "active": true,
+      "permissions": {
+        "mode_wh_only": true,
+        "mode_stores_only": true,
+        "mode_wh_stores": true,
+        "scan_bin": true,
+        "view_eligible_store": false,
+        "generate_reports": false,
+        "manage_data": false,
+        "manage_users": false
+      }
+    },
+    {
+      "username": "supervisor",
+      "pw_hash": "s1:9792fcb239abb9cbf459079678c2a21d1024bf4cd05e845ec3f64020c588f62a",
+      "display_name": "مشرف المستودع (Supervisor)",
+      "role": "supervisor",
+      "active": true,
+      "permissions": {
+        "mode_wh_only": true,
+        "mode_stores_only": true,
+        "mode_wh_stores": true,
+        "scan_bin": true,
+        "view_eligible_store": true,
+        "generate_reports": true,
+        "manage_data": false,
+        "manage_users": false
+      }
+    },
+    {
+      "username": "wh_user",
+      "pw_hash": "s1:9792fcb239abb9cbf459079678c2a21d1024bf4cd05e845ec3f64020c588f62a",
+      "display_name": "موظف مستودع (Warehouse Only)",
+      "role": "user",
+      "active": true,
+      "permissions": {
+        "mode_wh_only": true,
+        "mode_stores_only": false,
+        "mode_wh_stores": false,
+        "scan_bin": true,
+        "view_eligible_store": false,
+        "generate_reports": false,
+        "manage_data": false,
         "manage_users": false
       }
     }
