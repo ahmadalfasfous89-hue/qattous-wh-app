@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-25 22:11:34",
+  "updated_at": "2026-11-26 09:47:16",
   "users": [
     {
       "username": "admin",
@@ -73,6 +73,23 @@
       "username": "ahmadfas",
       "password": "1234",
       "display_name": "ahmadfas",
+      "role": "user",
+      "active": true,
+      "permissions": {
+        "mode_wh_only": true,
+        "mode_stores_only": false,
+        "mode_wh_stores": true,
+        "scan_bin": true,
+        "view_eligible_store": false,
+        "generate_reports": false,
+        "manage_data": true,
+        "manage_users": false
+      }
+    },
+    {
+      "username": "albanna",
+      "password": "1234",
+      "display_name": "محمد البنا",
       "role": "user",
       "active": true,
       "permissions": {
