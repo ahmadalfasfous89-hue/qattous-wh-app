@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-11-26 11:04:09",
+  "updated_at": "2026-11-26 11:40:51",
   "users": [
     {
       "username": "admin",
-      "pw_hash": "s1:9792fcb239abb9cbf459079678c2a21d1024bf4cd05e845ec3f64020c588f62a",
+      "pw_hash": "s1:74df7164565d7868b816420e35be77e77f9253c5efd145cd97d88ada0d1084ee",
       "display_name": "أحمد فسفوس (Admin)",
       "role": "admin",
       "active": true,
