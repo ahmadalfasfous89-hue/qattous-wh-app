@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26 12:59:03",
+  "updated_at": "2026-11-26 13:16:40",
   "users": [
     {
       "username": "admin",
@@ -37,7 +37,7 @@
     },
     {
       "username": "albanna",
-      "pw_hash": "s1:9792fcb239abb9cbf459079678c2a21d1024bf4cd05e845ec3f64020c588f62a",
+      "pw_hash": "s1:63d27d6fea4a202919d8123c6c66cca93916c2f835afb36cd03bb6158fee1b01",
       "display_name": "محمد البنا",
       "role": "user",
       "active": true,
